@@ -5,6 +5,17 @@ Nature du document : préparation (lecture du défi, des règles et des ressourc
 
 ---
 
+## LANCER L'APPLICATION
+--- 
+1- Le backend:
+python pipeline\acquire.py
+python pipeline\build.py
+
+2- Le Frontend:
+npm install
+npm run dev
+---
+
 ## 0. Constat bloquant : le développement ne peut pas commencer avant le 14 novembre
 
 | Élément | Ce que dit la source officielle | Source consultée le 13/11/2026 |
