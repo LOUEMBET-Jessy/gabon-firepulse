@@ -13,6 +13,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import { LIMITS, type AssistantAction, type AssistantContext, type AssistantReply, type ChatTurn } from "../assistant/protocol";
 import { getStore } from "../server/store";
 import { aiConfig, type AiConfig } from "./config";
+import { AssistantUnavailable } from "./errors";
+import { runGemini, type GenerateContent } from "./gemini";
 import { SYSTEM_PROMPT } from "./prompt";
 import { TOOL_DEFINITIONS, describeContext, runTool } from "./tools";
 
@@ -23,15 +25,7 @@ type BetaMessageParam = Anthropic.Beta.Messages.BetaMessageParam;
 /** Fonction d'appel du modele : injectable pour les tests. */
 export type CreateMessage = (params: BetaParams, options: { signal?: AbortSignal }) => Promise<Beta>;
 
-export class AssistantUnavailable extends Error {
-  constructor(
-    message: string,
-    public status: number,
-    public retryAfterSeconds?: number,
-  ) {
-    super(message);
-  }
-}
+export { AssistantUnavailable };
 
 let client: Anthropic | null = null;
 
@@ -62,11 +56,13 @@ export function sanitizeHistory(raw: unknown): ChatTurn[] {
 export async function runAssistant(
   history: ChatTurn[],
   context: AssistantContext,
-  options: { createMessage?: CreateMessage; config?: AiConfig; signal?: AbortSignal } = {},
+  options: { createMessage?: CreateMessage; generateContent?: GenerateContent; config?: AiConfig; signal?: AbortSignal } = {},
 ): Promise<AssistantReply> {
   const config = options.config ?? aiConfig();
-  if (!config.enabled && !options.createMessage) throw new AssistantUnavailable(config.reason ?? "Assistant indisponible.", 503);
+  const injected = Boolean(options.createMessage || options.generateContent);
+  if (!config.enabled && !injected) throw new AssistantUnavailable(config.reason ?? "Assistant indisponible.", 503);
   if (!history.length || history[history.length - 1].role !== "user") throw new AssistantUnavailable("Le dernier message doit venir de l'utilisateur.", 400);
+  if (config.provider === "gemini") return runGemini(history, context, config, { generate: options.generateContent, signal: options.signal });
 
   const create = options.createMessage ?? defaultCreateMessage();
   const store = getStore();

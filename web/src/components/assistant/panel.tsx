@@ -31,10 +31,13 @@ import { describeAction, useActionRunner, useAssistantContext } from "./runtime"
 
 /* ------------------------------------------------------------------ Rendu du texte */
 
-/** Mise en forme minimale et sure : paragraphes, listes « - », gras **...**. Aucun HTML injecte. */
+/** Mise en forme minimale et sure : paragraphes, listes « - » ou « * », gras **...**. Aucun HTML injecte. */
 function RichText({ text }: { text: string }) {
   const inline = (line: string, key: number) =>
-    line.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+    line
+      .replace(/`([^`]+)`/g, "$1")
+      .split(/(\*\*[^*]+\*\*)/g)
+      .map((part, i) =>
       part.startsWith("**") && part.endsWith("**") ? (
         <strong key={`${key}-${i}`} className="font-semibold text-ink">
           {part.slice(2, -2)}
@@ -48,13 +51,13 @@ function RichText({ text }: { text: string }) {
     <div className="flex flex-col gap-2.5">
       {blocks.map((block, b) => {
         const lines = block.split("\n");
-        if (lines.every((l) => /^\s*[-•]\s+/.test(l))) {
+        if (lines.every((l) => /^\s*[-•*]\s+/.test(l))) {
           return (
             <ul key={b} className="flex flex-col gap-1.5">
               {lines.map((l, i) => (
                 <li key={i} className="flex gap-2">
                   <span aria-hidden className="mt-[9px] size-1 shrink-0 rounded-full bg-accent" />
-                  <span>{inline(l.replace(/^\s*[-•]\s+/, ""), i)}</span>
+                  <span>{inline(l.replace(/^\s*[-•*]\s+/, ""), i)}</span>
                 </li>
               ))}
             </ul>
@@ -278,7 +281,7 @@ export function AssistantPanel() {
         }
         return { id: uid("r"), action, state: ok ? "applied" : "failed" };
       });
-      pushMessage({ id, role: "assistant", text: body.text, receipts, sources: body.sources ?? [] });
+      pushMessage({ id, role: "assistant", text: body.text, receipts, sources: body.sources ?? [], fallbackModel: body.fallback ? body.model : undefined });
       if (receipts.some((r) => r.action.type === "start_tour")) setAssistant({ open: false });
     } catch (error) {
       const aborted = error instanceof DOMException && error.name === "AbortError";
@@ -396,6 +399,7 @@ export function AssistantPanel() {
                       <RichText text={m.text} />
                       <Receipts message={m} onConfirm={(r) => confirmExport(m, r)} />
                       {m.sources?.length ? <p className="mt-2.5 text-[11.5px] text-ink-3">Chiffres lus dans : {m.sources.join(" · ")}</p> : null}
+                      {m.fallbackModel ? <p className="mt-1 text-[11.5px] text-ink-3">Réponse du modèle de secours {m.fallbackModel} : le modèle principal était surchargé.</p> : null}
                     </div>
                   </div>
                 )}

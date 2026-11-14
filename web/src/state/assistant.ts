@@ -24,6 +24,8 @@ export interface UiMessage {
   text: string;
   receipts?: ActionReceipt[];
   sources?: string[];
+  /** Modele de secours ayant repondu, le cas echeant. */
+  fallbackModel?: string;
   /** Message d'erreur du service (affiche autrement, jamais renvoye au modele). */
   error?: boolean;
 }

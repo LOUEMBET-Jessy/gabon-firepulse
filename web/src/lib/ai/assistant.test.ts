@@ -18,7 +18,10 @@ type Block = Anthropic.Beta.Messages.BetaContentBlock;
 const config: AiConfig = {
   enabled: true,
   reason: null,
+  provider: "anthropic",
   model: "claude-opus-5-5",
+  fallbackModels: [],
+  requestTimeoutMs: 25_000,
   effort: "low",
   maxTokens: 8000,
   maxToolRounds: 6,

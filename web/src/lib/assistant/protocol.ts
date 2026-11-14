@@ -109,6 +109,9 @@ export interface AssistantReply {
   actions: AssistantAction[];
   /** Outils de lecture utilises pour repondre (transparence : d'ou viennent les chiffres). */
   sources: string[];
+  /** Modele qui a repondu, et s'il s'agit d'un modele de secours. */
+  model?: string;
+  fallback?: boolean;
 }
 
 export interface AssistantStatus {
@@ -116,6 +119,7 @@ export interface AssistantStatus {
   /** Raison lisible si l'assistant n'est pas disponible. */
   reason: string | null;
   model: string | null;
+  provider?: "anthropic" | "gemini" | null;
 }
 
 export const LIMITS = {

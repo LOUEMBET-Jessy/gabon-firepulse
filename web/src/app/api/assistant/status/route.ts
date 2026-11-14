@@ -7,6 +7,6 @@ import type { AssistantStatus } from "@/lib/assistant/protocol";
 export async function GET() {
   await connection();
   const config = aiConfig();
-  const status: AssistantStatus = { available: config.enabled, reason: config.reason, model: config.enabled ? config.model : null };
+  const status: AssistantStatus = { available: config.enabled, reason: config.reason, model: config.enabled ? config.model : null, provider: config.enabled ? config.provider : null };
   return Response.json(status, { headers: { "Cache-Control": "no-store" } });
 }
