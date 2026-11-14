@@ -1,0 +1,224 @@
+@import "tailwindcss";
+
+/*
+ * Gabon FirePulse - jetons de design.
+ * Theme unique, sombre. Rayons : 8 px (controles), 12 px (panneaux).
+ * Couleurs de capteurs validees pour les daltonismes (script validate_palette, surface #0f1626).
+ */
+@theme {
+  --color-bg: #080d18;
+  --color-surface: #0f1626;
+  --color-surface-2: #151e33;
+  --color-surface-3: #1d2842;
+  --color-line: #1e2a42;
+  --color-line-strong: #2f3f61;
+  --color-ink: #e9edf5;
+  --color-ink-2: #a9b4c8;
+  --color-ink-3: #7b8aa5;
+  --color-accent: #56c8ee;
+  --color-accent-strong: #8adcf5;
+  --color-accent-ink: #04202c;
+
+  /* Identite des capteurs (categoriel, ordre fixe). */
+  --color-modis: #d95926;
+  --color-snpp: #3987e5;
+  --color-noaa20: #199e70;
+
+  /* Etats (toujours accompagnes d'une icone et d'un libelle). */
+  --color-critical: #e5484d;
+  --color-warning: #f5b025;
+  --color-good: #2fb344;
+  --color-info: #8ea2c9;
+
+  /* Rampe sequentielle "activite thermique" : une seule teinte, du sombre au clair. */
+  --color-heat-0: #131b2e;
+  --color-heat-1: #3a2412;
+  --color-heat-2: #5f3611;
+  --color-heat-3: #8a4b10;
+  --color-heat-4: #b96412;
+  --color-heat-5: #e2861c;
+  --color-heat-6: #f6b547;
+  --color-heat-7: #fde2a2;
+
+  /* Rampe divergente (ecart a la reference) : bleu, gris neutre, rouge. */
+  --color-div-n3: #2f6fd0;
+  --color-div-n2: #4d7fbd;
+  --color-div-n1: #47597c;
+  --color-div-0: #2b3447;
+  --color-div-p1: #7c4a4a;
+  --color-div-p2: #b84a48;
+  --color-div-p3: #e5484d;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  --radius-control: 8px;
+  --radius-panel: 12px;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-fade-up: fade-up 0.5s var(--ease-out-expo) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+}
+
+/* Echelle de superposition : 10 barre fixe, 20 panneau flottant, 30 popover, 40 dialogue, 50 notification. */
+
+html {
+  color-scheme: dark;
+  background: var(--color-bg);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  text-rendering: optimizeLegibility;
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 35%, transparent);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
+}
+
+.skeleton {
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--color-surface-2) 25%, var(--color-surface-3) 50%, var(--color-surface-2) 75%);
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+}
+
+/* Motif "estimation MODIS" : hachures, pour ne pas reposer sur la seule couleur. */
+.hatch {
+  background-image: repeating-linear-gradient(135deg, rgb(8 13 24 / 0.55) 0 1.5px, transparent 1.5px 5px);
+}
+.hatch-missing {
+  background-image: repeating-linear-gradient(45deg, var(--color-line-strong) 0 1px, transparent 1px 5px);
+}
+
+/* Cartographie : habillage des controles MapLibre. */
+.maplibregl-map {
+  font-family: var(--font-sans);
+}
+.maplibregl-ctrl-group {
+  background: var(--color-surface-2) !important;
+  border: 1px solid var(--color-line-strong);
+  box-shadow: none !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+.maplibregl-ctrl-group button {
+  width: 32px;
+  height: 32px;
+}
+.maplibregl-ctrl-group button + button {
+  border-top: 1px solid var(--color-line) !important;
+}
+.maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+  filter: invert(0.9);
+}
+.maplibregl-ctrl-attrib {
+  background: rgb(8 13 24 / 0.7) !important;
+  color: var(--color-ink-3);
+  font-size: 10px;
+}
+.maplibregl-ctrl-attrib a {
+  color: var(--color-ink-2);
+}
+.maplibregl-ctrl-scale {
+  background: rgb(8 13 24 / 0.6);
+  border-color: var(--color-ink-3);
+  color: var(--color-ink-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+/* Graphiques Recharts : pas de contour de focus parasite sur les SVG. */
+.recharts-wrapper :focus,
+.recharts-surface:focus {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .skeleton {
+    animation: none;
+  }
+}
+
+/* Rapport imprimable : fond clair, mise en page A4. */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-root {
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-2: #f4f6fa;
+    --color-surface-3: #e9edf5;
+    --color-line: #d5dbe7;
+    --color-line-strong: #b4bdd0;
+    --color-ink: #10151f;
+    --color-ink-2: #3c4658;
+    --color-ink-3: #5b667a;
+    --color-heat-0: #f1f3f8;
+    color: #10151f;
+  }
+  .print-break {
+    break-before: page;
+  }
+  .print-avoid {
+    break-inside: avoid;
+  }
+}

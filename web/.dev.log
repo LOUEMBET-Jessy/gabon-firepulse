@@ -1,0 +1,162 @@
+▲ Next.js 16.4.6 (Turbopack)
+- Local:         http://localhost:3210
+- Network:       http://192.168.209.1:3210
+✓ Ready in 1621ms
+✓ Running next.config.ts took 242ms
+- Cache Components enabled
+- Partial Prefetching enabled
+
+ GET /api/calendar?zone=country 200 in 267ms (next.js: 157ms, application-code: 110ms)
+ GET /api/calendar?zone=country 200 in 14ms (next.js: 2ms, application-code: 11ms)
+ GET /api/overview?zone=country&from=2025-01-01&to=2025-12-31 200 in 48ms (next.js: 26ms, application-code: 22ms)
+ GET /api/regions?from=2025-01-01&to=2025-12-31 200 in 80ms (next.js: 27ms, application-code: 54ms)
+ GET /api/detections?from=2025-01-01&to=2025-12-31 200 in 47ms (next.js: 24ms, application-code: 24ms)
+ GET /api/aggregates?from=2025-01-01&to=2025-12-31 200 in 37ms (next.js: 25ms, application-code: 12ms)
+ GET /api/detections/5 200 in 981ms (next.js: 965ms, application-code: 16ms)
+ GET /api/detections?zone=bbox:1,2 400 in 10ms (next.js: 2ms, application-code: 8ms)
+ GET /api/export?kind=detections&from=2025-08-01&to=2025-08-02&sats=aqua 200 in 50ms (next.js: 35ms, application-code: 15ms)
+  Turbopack has seen frequent file updates and is waiting for the filesystem to settle (0.5s elapsed so far; last modified: "\\\\?\\C:\\Users\\HP\\Desktop\\Projets Entreprises\\NASA_HACKATHON\\project\\web\\node_modules\\.pnpm\\geist@1.9.2_next@16.4.6_@ba_35b9e94b71b6f2d0491b4fafa6544df0\\node_modules\\geist").
+[api] TypeError: nationalRatioQ10 is not iterable
+    at calibrateZone (src\lib\server\engine.ts:66:19)
+    at zoneDaily (src\lib\server\engine.ts:196:23)
+    at calendar (src\lib\server\engine.ts:359:17)
+    at <unknown> (src\app\api\calendar\route.ts:7:53)
+    at handle (src\lib\server\http.ts:59:26)
+    at GET (src\app\api\calendar\route.ts:7:16)
+  64 |   const local = zone.kind !== "country";
+  65 |   const k = new Array<number>(N_CONFIG).fill(1);
+> 66 |   const q10 = [...nationalRatioQ10];
+     |                   ^
+  67 |   const q90 = [...nationalRatioQ90];
+  68 |   const configs = {} as PerConfig<ZoneCalibrationEntry | null>;
+  69 |   const reference = cellDays[REFERENCE];
+ GET /api/calendar?zone=province:0 500 in 168ms (next.js: 4ms, application-code: 164ms)
+[api] TypeError: nationalRatioQ10 is not iterable
+    at calibrateZone (src\lib\server\engine.ts:66:19)
+    at zoneDaily (src\lib\server\engine.ts:196:23)
+    at calendar (src\lib\server\engine.ts:359:17)
+    at <unknown> (src\app\api\calendar\route.ts:7:53)
+    at handle (src\lib\server\http.ts:59:26)
+    at GET (src\app\api\calendar\route.ts:7:16)
+  64 |   const local = zone.kind !== "country";
+  65 |   const k = new Array<number>(N_CONFIG).fill(1);
+> 66 |   const q10 = [...nationalRatioQ10];
+     |                   ^
+  67 |   const q90 = [...nationalRatioQ90];
+  68 |   const configs = {} as PerConfig<ZoneCalibrationEntry | null>;
+  69 |   const reference = cellDays[REFERENCE];
+ GET /api/calendar?zone=province:1 500 in 16ms (next.js: 1.4ms, application-code: 15ms)
+[api] TypeError: nationalRatioQ10 is not iterable
+    at calibrateZone (src\lib\server\engine.ts:66:19)
+    at zoneDaily (src\lib\server\engine.ts:196:23)
+    at calendar (src\lib\server\engine.ts:359:17)
+    at <unknown> (src\app\api\calendar\route.ts:7:53)
+    at handle (src\lib\server\http.ts:59:26)
+    at GET (src\app\api\calendar\route.ts:7:16)
+  64 |   const local = zone.kind !== "country";
+  65 |   const k = new Array<number>(N_CONFIG).fill(1);
+> 66 |   const q10 = [...nationalRatioQ10];
+     |                   ^
+  67 |   const q90 = [...nationalRatioQ90];
+  68 |   const configs = {} as PerConfig<ZoneCalibrationEntry | null>;
+  69 |   const reference = cellDays[REFERENCE];
+ GET /api/calendar?zone=province:2 500 in 15ms (next.js: 1.3ms, application-code: 14ms)
+[api] TypeError: nationalRatioQ10 is not iterable
+    at calibrateZone (src\lib\server\engine.ts:66:19)
+    at zoneDaily (src\lib\server\engine.ts:196:23)
+    at calendar (src\lib\server\engine.ts:359:17)
+    at <unknown> (src\app\api\calendar\route.ts:7:53)
+    at handle (src\lib\server\http.ts:59:26)
+    at GET (src\app\api\calendar\route.ts:7:16)
+  64 |   const local = zone.kind !== "country";
+  65 |   const k = new Array<number>(N_CONFIG).fill(1);
+> 66 |   const q10 = [...nationalRatioQ10];
+     |                   ^
+  67 |   const q90 = [...nationalRatioQ90];
+  68 |   const configs = {} as PerConfig<ZoneCalibrationEntry | null>;
+  69 |   const reference = cellDays[REFERENCE];
+ GET /api/calendar?zone=province:3 500 in 13ms (next.js: 1.9ms, application-code: 12ms)
+[api] TypeError: nationalRatioQ10 is not iterable
+    at calibrateZone (src\lib\server\engine.ts:66:19)
+    at zoneDaily (src\lib\server\engine.ts:196:23)
+    at calendar (src\lib\server\engine.ts:359:17)
+    at <unknown> (src\app\api\calendar\route.ts:7:53)
+    at handle (src\lib\server\http.ts:59:26)
+    at GET (src\app\api\calendar\route.ts:7:16)
+  64 |   const local = zone.kind !== "country";
+  65 |   const k = new Array<number>(N_CONFIG).fill(1);
+> 66 |   const q10 = [...nationalRatioQ10];
+     |                   ^
+  67 |   const q90 = [...nationalRatioQ90];
+  68 |   const configs = {} as PerConfig<ZoneCalibrationEntry | null>;
+  69 |   const reference = cellDays[REFERENCE];
+ GET /api/calendar?zone=province:4 500 in 14ms (next.js: 1.7ms, application-code: 12ms)
+[api] TypeError: nationalRatioQ10 is not iterable
+    at calibrateZone (src\lib\server\engine.ts:66:19)
+    at zoneDaily (src\lib\server\engine.ts:196:23)
+    at calendar (src\lib\server\engine.ts:359:17)
+    at <unknown> (src\app\api\calendar\route.ts:7:53)
+    at handle (src\lib\server\http.ts:59:26)
+    at GET (src\app\api\calendar\route.ts:7:16)
+  64 |   const local = zone.kind !== "country";
+  65 |   const k = new Array<number>(N_CONFIG).fill(1);
+> 66 |   const q10 = [...nationalRatioQ10];
+     |                   ^
+  67 |   const q90 = [...nationalRatioQ90];
+  68 |   const configs = {} as PerConfig<ZoneCalibrationEntry | null>;
+  69 |   const reference = cellDays[REFERENCE];
+ GET /api/calendar?zone=province:5 500 in 12ms (next.js: 1.3ms, application-code: 11ms)
+[api] TypeError: nationalRatioQ10 is not iterable
+    at calibrateZone (src\lib\server\engine.ts:66:19)
+    at zoneDaily (src\lib\server\engine.ts:196:23)
+    at calendar (src\lib\server\engine.ts:359:17)
+    at <unknown> (src\app\api\calendar\route.ts:7:53)
+    at handle (src\lib\server\http.ts:59:26)
+    at GET (src\app\api\calendar\route.ts:7:16)
+  64 |   const local = zone.kind !== "country";
+  65 |   const k = new Array<number>(N_CONFIG).fill(1);
+> 66 |   const q10 = [...nationalRatioQ10];
+     |                   ^
+  67 |   const q90 = [...nationalRatioQ90];
+  68 |   const configs = {} as PerConfig<ZoneCalibrationEntry | null>;
+  69 |   const reference = cellDays[REFERENCE];
+ GET /api/calendar?zone=province:6 500 in 12ms (next.js: 1.2ms, application-code: 11ms)
+[api] TypeError: nationalRatioQ10 is not iterable
+    at calibrateZone (src\lib\server\engine.ts:66:19)
+    at zoneDaily (src\lib\server\engine.ts:196:23)
+    at calendar (src\lib\server\engine.ts:359:17)
+    at <unknown> (src\app\api\calendar\route.ts:7:53)
+    at handle (src\lib\server\http.ts:59:26)
+    at GET (src\app\api\calendar\route.ts:7:16)
+  64 |   const local = zone.kind !== "country";
+  65 |   const k = new Array<number>(N_CONFIG).fill(1);
+> 66 |   const q10 = [...nationalRatioQ10];
+     |                   ^
+  67 |   const q90 = [...nationalRatioQ90];
+  68 |   const configs = {} as PerConfig<ZoneCalibrationEntry | null>;
+  69 |   const reference = cellDays[REFERENCE];
+ GET /api/calendar?zone=province:7 500 in 13ms (next.js: 1.3ms, application-code: 12ms)
+[api] TypeError: nationalRatioQ10 is not iterable
+    at calibrateZone (src\lib\server\engine.ts:66:19)
+    at zoneDaily (src\lib\server\engine.ts:196:23)
+    at calendar (src\lib\server\engine.ts:359:17)
+    at <unknown> (src\app\api\calendar\route.ts:7:53)
+    at handle (src\lib\server\http.ts:59:26)
+    at GET (src\app\api\calendar\route.ts:7:16)
+  64 |   const local = zone.kind !== "country";
+  65 |   const k = new Array<number>(N_CONFIG).fill(1);
+> 66 |   const q10 = [...nationalRatioQ10];
+     |                   ^
+  67 |   const q90 = [...nationalRatioQ90];
+  68 |   const configs = {} as PerConfig<ZoneCalibrationEntry | null>;
+  69 |   const reference = cellDays[REFERENCE];
+ GET /api/calendar?zone=province:8 500 in 13ms (next.js: 1.4ms, application-code: 12ms)
+ GET /api/calendar?zone=province:0 200 in 82ms (next.js: 2ms, application-code: 80ms)
+ GET /api/calendar?zone=province:1 200 in 29ms (next.js: 1.3ms, application-code: 28ms)
+ GET /api/calendar?zone=province:2 200 in 24ms (next.js: 1.2ms, application-code: 23ms)
+ GET /api/calendar?zone=province:3 200 in 26ms (next.js: 1.3ms, application-code: 25ms)
+ GET /api/calendar?zone=province:4 200 in 21ms (next.js: 1.2ms, application-code: 20ms)
+ GET /api/calendar?zone=province:5 200 in 26ms (next.js: 1.4ms, application-code: 25ms)
+ GET /api/calendar?zone=province:6 200 in 22ms (next.js: 1.3ms, application-code: 21ms)
+ GET /api/calendar?zone=province:7 200 in 22ms (next.js: 1.3ms, application-code: 21ms)
+ GET /api/calendar?zone=province:8 200 in 22ms (next.js: 1.5ms, application-code: 21ms)

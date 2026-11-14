@@ -1,0 +1,87 @@
+{
+ "built_at": "2026-11-13T09:40:37Z",
+ "data_kind": "real",
+ "data_kind_label": "Donnees NASA FIRMS reelles (archives annuelles par pays), figees a la date d'acces indiquee",
+ "country": "Gabon",
+ "coverage": {
+  "first_date": "2000-11-01",
+  "last_date": "2025-12-31"
+ },
+ "rows": {
+  "read": 292589,
+  "kept": 292589,
+  "rejected": 0,
+  "eligible": 225533,
+  "outside_provinces": 7581
+ },
+ "by_satellite": {
+  "terra": 23907,
+  "aqua": 35375,
+  "snpp": 147745,
+  "noaa20": 85562
+ },
+ "envelope": {
+  "lon_min": 8.0,
+  "lon_max": 15.0,
+  "lat_min": -4.5,
+  "lat_max": 3.0
+ },
+ "firms": {
+  "base_url": "https://firms.modaps.eosdis.nasa.gov/data/country",
+  "missing_years": [
+   {
+    "dataset": "modis",
+    "year": 2026,
+    "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2026/modis_2026_Gabon.csv",
+    "http_status": 404,
+    "checked_at": "2026-11-13T09:25:58Z"
+   },
+   {
+    "dataset": "viirs-snpp",
+    "year": 2026,
+    "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2026/viirs-snpp_2026_Gabon.csv",
+    "http_status": 404,
+    "checked_at": "2026-11-13T09:26:55Z"
+   },
+   {
+    "dataset": "viirs-jpss1",
+    "year": 2026,
+    "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2026/viirs-jpss1_2026_Gabon.csv",
+    "http_status": 404,
+    "checked_at": "2026-11-13T09:27:36Z"
+   }
+  ],
+  "accessed_first": "2026-11-13T09:24:56Z",
+  "accessed_last": "2026-11-13T09:27:34Z"
+ },
+ "boundaries": [
+  {
+   "level": "ADM0",
+   "path": "data/raw/boundaries/geoboundaries_GAB_ADM0_simplified.geojson",
+   "api_url": "https://www.geoboundaries.org/api/current/gbOpen/GAB/ADM0/",
+   "download_url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/GAB/ADM0/geoBoundaries-GAB-ADM0_simplified.geojson",
+   "source": "geoBoundaries, Wikipedia",
+   "license": "Creative Commons Attribution-ShareAlike 3.0 Unported",
+   "license_detail": "we also attribute to Wikipedia's creating user ChrL",
+   "year_represented": "2005",
+   "boundary_id": "GAB-ADM0-25889322",
+   "sha256": "71046924ecaa90fbd96ebe42eb3c4643264d6c1d9bd932c18fa347f61c6910b7",
+   "bytes": 43251,
+   "accessed_at": "2026-11-13T09:27:37Z"
+  },
+  {
+   "level": "ADM1",
+   "path": "data/raw/boundaries/geoboundaries_GAB_ADM1_simplified.geojson",
+   "api_url": "https://www.geoboundaries.org/api/current/gbOpen/GAB/ADM1/",
+   "download_url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/GAB/ADM1/geoBoundaries-GAB-ADM1_simplified.geojson",
+   "source": "geoBoundaries, Wikipedia",
+   "license": "Creative Commons Attribution-ShareAlike 3.0 Unported",
+   "license_detail": "we also attribute to Wikipedia's creating user ChrL",
+   "year_represented": "2005",
+   "boundary_id": "GAB-ADM1-98808126",
+   "sha256": "6ee4c6990d0997cc8a321b0162a9323cd835aa443e8985d2c5d4de5177289f29",
+   "bytes": 89573,
+   "accessed_at": "2026-11-13T09:27:40Z"
+  }
+ ]
+}

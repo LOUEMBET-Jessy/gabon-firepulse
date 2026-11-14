@@ -1,0 +1,852 @@
+{
+ "built_at": "2026-11-13T09:40:37Z",
+ "count": 292589,
+ "epoch": "2000-01-01",
+ "first_day": 305,
+ "last_day": 9496,
+ "columns": [
+  {
+   "name": "lat",
+   "dtype": "f32",
+   "offset": 0,
+   "bytes": 1170356
+  },
+  {
+   "name": "lon",
+   "dtype": "f32",
+   "offset": 1170356,
+   "bytes": 1170356
+  },
+  {
+   "name": "frp",
+   "dtype": "f32",
+   "offset": 2340712,
+   "bytes": 1170356
+  },
+  {
+   "name": "bright",
+   "dtype": "f32",
+   "offset": 3511068,
+   "bytes": 1170356
+  },
+  {
+   "name": "bright2",
+   "dtype": "f32",
+   "offset": 4681424,
+   "bytes": 1170356
+  },
+  {
+   "name": "scan",
+   "dtype": "f32",
+   "offset": 5851780,
+   "bytes": 1170356
+  },
+  {
+   "name": "track",
+   "dtype": "f32",
+   "offset": 7022136,
+   "bytes": 1170356
+  },
+  {
+   "name": "cell",
+   "dtype": "i32",
+   "offset": 8192492,
+   "bytes": 1170356
+  },
+  {
+   "name": "line",
+   "dtype": "u32",
+   "offset": 9362848,
+   "bytes": 1170356
+  },
+  {
+   "name": "day",
+   "dtype": "u16",
+   "offset": 10533204,
+   "bytes": 585178
+  },
+  {
+   "name": "time",
+   "dtype": "u16",
+   "offset": 11118382,
+   "bytes": 585178
+  },
+  {
+   "name": "sat",
+   "dtype": "u8",
+   "offset": 11703560,
+   "bytes": 292589
+  },
+  {
+   "name": "conf_class",
+   "dtype": "u8",
+   "offset": 11996149,
+   "bytes": 292589
+  },
+  {
+   "name": "conf_native",
+   "dtype": "u8",
+   "offset": 12288738,
+   "bytes": 292589
+  },
+  {
+   "name": "night",
+   "dtype": "u8",
+   "offset": 12581327,
+   "bytes": 292589
+  },
+  {
+   "name": "type",
+   "dtype": "u8",
+   "offset": 12873916,
+   "bytes": 292589
+  },
+  {
+   "name": "version",
+   "dtype": "u8",
+   "offset": 13166505,
+   "bytes": 292589
+  },
+  {
+   "name": "src",
+   "dtype": "u8",
+   "offset": 13459094,
+   "bytes": 292589
+  },
+  {
+   "name": "province",
+   "dtype": "i8",
+   "offset": 13751683,
+   "bytes": 292589
+  },
+  {
+   "name": "eligible",
+   "dtype": "u8",
+   "offset": 14044272,
+   "bytes": 292589
+  }
+ ],
+ "versions": [
+  "2",
+  "6.03",
+  "6.2",
+  "61.03"
+ ],
+ "satellites": [
+  {
+   "code": 0,
+   "key": "terra",
+   "name": "Terra",
+   "sensor": "MODIS",
+   "dataset": "modis",
+   "file_value": "Terra",
+   "first_date": "2000-11-01",
+   "last_date": "2025-12-25",
+   "detections": 23907,
+   "eligible": 18428,
+   "by_type": {
+    "0": 19824,
+    "2": 4083
+   },
+   "by_confidence_class": {
+    "low": 1643,
+    "nominal": 17470,
+    "high": 4794
+   },
+   "night": 9159
+  },
+  {
+   "code": 1,
+   "key": "aqua",
+   "name": "Aqua",
+   "sensor": "MODIS",
+   "dataset": "modis",
+   "file_value": "Aqua",
+   "first_date": "2002-07-04",
+   "last_date": "2025-12-30",
+   "detections": 35375,
+   "eligible": 30833,
+   "by_type": {
+    "0": 32800,
+    "2": 2575
+   },
+   "by_confidence_class": {
+    "low": 2110,
+    "nominal": 26701,
+    "high": 6564
+   },
+   "night": 3747
+  },
+  {
+   "code": 2,
+   "key": "snpp",
+   "name": "Suomi-NPP",
+   "sensor": "VIIRS",
+   "dataset": "viirs-snpp",
+   "file_value": "N",
+   "first_date": "2012-01-20",
+   "last_date": "2025-12-31",
+   "detections": 147745,
+   "eligible": 112903,
+   "by_type": {
+    "0": 116447,
+    "2": 30843,
+    "3": 455
+   },
+   "by_confidence_class": {
+    "low": 3648,
+    "nominal": 140175,
+    "high": 3922
+   },
+   "night": 52627
+  },
+  {
+   "code": 3,
+   "key": "noaa20",
+   "name": "NOAA-20",
+   "sensor": "VIIRS",
+   "dataset": "viirs-jpss1",
+   "file_value": "N20",
+   "first_date": "2018-04-01",
+   "last_date": "2025-12-31",
+   "detections": 85562,
+   "eligible": 63369,
+   "by_type": {
+    "0": 65295,
+    "2": 20035,
+    "3": 232
+   },
+   "by_confidence_class": {
+    "low": 1995,
+    "nominal": 81894,
+    "high": 1673
+   },
+   "night": 31564
+  }
+ ],
+ "provinces": [
+  {
+   "index": 0,
+   "iso": "GA-1",
+   "name": "Estuaire"
+  },
+  {
+   "index": 1,
+   "iso": "GA-2",
+   "name": "Haut-Ogooué"
+  },
+  {
+   "index": 2,
+   "iso": "GA-3",
+   "name": "Moyen-Ogooué"
+  },
+  {
+   "index": 3,
+   "iso": "GA-4",
+   "name": "Ngounié"
+  },
+  {
+   "index": 4,
+   "iso": "GA-5",
+   "name": "Nyanga"
+  },
+  {
+   "index": 5,
+   "iso": "GA-6",
+   "name": "Ogooué-Ivindo"
+  },
+  {
+   "index": 6,
+   "iso": "GA-7",
+   "name": "Ogooué-Lolo"
+  },
+  {
+   "index": 7,
+   "iso": "GA-8",
+   "name": "Ogooué-Maritime"
+  },
+  {
+   "index": 8,
+   "iso": "GA-9",
+   "name": "Woleu-Ntem"
+  }
+ ],
+ "sources": [
+  {
+   "file": "modis_2000_Gabon.csv",
+   "dataset": "modis",
+   "year": 2000,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2000/modis_2000_Gabon.csv",
+   "sha256": "1f8938b515ed74bcc9c510c269b128176409627ce71d0f9d0c29d01afb0c0da2",
+   "bytes": 7677,
+   "accessed_at": "2026-11-13T09:24:56Z",
+   "rows_read": 98,
+   "rows_kept": 98,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2001_Gabon.csv",
+   "dataset": "modis",
+   "year": 2001,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2001/modis_2001_Gabon.csv",
+   "sha256": "887674f9a75e31a2603cd1917666608397095d9e15fb7c5cafc51ae9b3ae1634",
+   "bytes": 118091,
+   "accessed_at": "2026-11-13T09:24:58Z",
+   "rows_read": 1526,
+   "rows_kept": 1526,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2002_Gabon.csv",
+   "dataset": "modis",
+   "year": 2002,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2002/modis_2002_Gabon.csv",
+   "sha256": "996e354c9aec54706f09e8203be9530bd9129a9045ac8d3e1beb38becfc3c6a5",
+   "bytes": 129426,
+   "accessed_at": "2026-11-13T09:25:00Z",
+   "rows_read": 1689,
+   "rows_kept": 1689,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2003_Gabon.csv",
+   "dataset": "modis",
+   "year": 2003,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2003/modis_2003_Gabon.csv",
+   "sha256": "04135d065a07214d95c1331c3795e69fe9a04822918d3a1a6d0536d0755c0667",
+   "bytes": 213266,
+   "accessed_at": "2026-11-13T09:25:04Z",
+   "rows_read": 2782,
+   "rows_kept": 2782,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2004_Gabon.csv",
+   "dataset": "modis",
+   "year": 2004,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2004/modis_2004_Gabon.csv",
+   "sha256": "f1beda49054921b05863ad5b14b77a78382b4b1bfc3e2b37a3b5f5b9e2c29e0e",
+   "bytes": 252053,
+   "accessed_at": "2026-11-13T09:25:06Z",
+   "rows_read": 3287,
+   "rows_kept": 3287,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2005_Gabon.csv",
+   "dataset": "modis",
+   "year": 2005,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2005/modis_2005_Gabon.csv",
+   "sha256": "49d2984b26c305fc33edd206b57fd40246c72d51a2c1432fd3686951d55a4e07",
+   "bytes": 213437,
+   "accessed_at": "2026-11-13T09:25:08Z",
+   "rows_read": 2795,
+   "rows_kept": 2795,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2006_Gabon.csv",
+   "dataset": "modis",
+   "year": 2006,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2006/modis_2006_Gabon.csv",
+   "sha256": "b1cdb924f45c636291ca77dfb979878d3e94bd2fca8529a994d28d4c04a64ae0",
+   "bytes": 177711,
+   "accessed_at": "2026-11-13T09:25:10Z",
+   "rows_read": 2310,
+   "rows_kept": 2310,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2007_Gabon.csv",
+   "dataset": "modis",
+   "year": 2007,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2007/modis_2007_Gabon.csv",
+   "sha256": "6303b595db9d0a2cad431fc4c8a76df1a83087a015eccf6a1df0498ce4308be4",
+   "bytes": 174894,
+   "accessed_at": "2026-11-13T09:25:13Z",
+   "rows_read": 2279,
+   "rows_kept": 2279,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2008_Gabon.csv",
+   "dataset": "modis",
+   "year": 2008,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2008/modis_2008_Gabon.csv",
+   "sha256": "01e4e73e87f82de2aa147c71879a5c6c6d97516b4ea50c6d67f7c2e0c1197e8d",
+   "bytes": 202286,
+   "accessed_at": "2026-11-13T09:25:15Z",
+   "rows_read": 2639,
+   "rows_kept": 2639,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2009_Gabon.csv",
+   "dataset": "modis",
+   "year": 2009,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2009/modis_2009_Gabon.csv",
+   "sha256": "2f53f7e7f86ba424ec0a47673f4e7b34182630f0d0baa36592c8f77d4f24a334",
+   "bytes": 140588,
+   "accessed_at": "2026-11-13T09:25:17Z",
+   "rows_read": 1835,
+   "rows_kept": 1835,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2010_Gabon.csv",
+   "dataset": "modis",
+   "year": 2010,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2010/modis_2010_Gabon.csv",
+   "sha256": "8c267d9d8cf259625f5f909cb722afcad750b12b1d725af0d51dac02699dcf11",
+   "bytes": 190610,
+   "accessed_at": "2026-11-13T09:25:19Z",
+   "rows_read": 2484,
+   "rows_kept": 2484,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2011_Gabon.csv",
+   "dataset": "modis",
+   "year": 2011,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2011/modis_2011_Gabon.csv",
+   "sha256": "024e8167ce5f32cfc9b1c01d394e28ee6e5c20792c0d9ac824ffb9713394d9af",
+   "bytes": 220247,
+   "accessed_at": "2026-11-13T09:25:21Z",
+   "rows_read": 2870,
+   "rows_kept": 2870,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2012_Gabon.csv",
+   "dataset": "modis",
+   "year": 2012,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2012/modis_2012_Gabon.csv",
+   "sha256": "23efd90c8ee8cc40448e437e2267c0c3ecb2cd8bd94de3cc314be83861ea120a",
+   "bytes": 190547,
+   "accessed_at": "2026-11-13T09:25:24Z",
+   "rows_read": 2474,
+   "rows_kept": 2474,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2013_Gabon.csv",
+   "dataset": "modis",
+   "year": 2013,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2013/modis_2013_Gabon.csv",
+   "sha256": "9986ad65377f555875ee09ae886b145268bff6362200e2719b314265affff317",
+   "bytes": 199719,
+   "accessed_at": "2026-11-13T09:25:26Z",
+   "rows_read": 2600,
+   "rows_kept": 2600,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2014_Gabon.csv",
+   "dataset": "modis",
+   "year": 2014,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2014/modis_2014_Gabon.csv",
+   "sha256": "28876ff823890c479e058250dea54a60eda5d0a345ca4645ba3b9fa530fe2615",
+   "bytes": 154606,
+   "accessed_at": "2026-11-13T09:25:28Z",
+   "rows_read": 2015,
+   "rows_kept": 2015,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2015_Gabon.csv",
+   "dataset": "modis",
+   "year": 2015,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2015/modis_2015_Gabon.csv",
+   "sha256": "f59a6f4a525e4e1d0ecd7d988ebce90b37ec9a38c7560caaa688bc1ef978bf08",
+   "bytes": 171193,
+   "accessed_at": "2026-11-13T09:25:30Z",
+   "rows_read": 2233,
+   "rows_kept": 2233,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2016_Gabon.csv",
+   "dataset": "modis",
+   "year": 2016,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2016/modis_2016_Gabon.csv",
+   "sha256": "dd17aa6850e92fcbc3378bf13b4d939d3aae17f97e61d5e79fffeee8a0d2badc",
+   "bytes": 184176,
+   "accessed_at": "2026-11-13T09:25:32Z",
+   "rows_read": 2399,
+   "rows_kept": 2399,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2017_Gabon.csv",
+   "dataset": "modis",
+   "year": 2017,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2017/modis_2017_Gabon.csv",
+   "sha256": "80ca0ad128f419c8d11d11410e65274e065a1f6beacb8b2218e4420fa6baa417",
+   "bytes": 158580,
+   "accessed_at": "2026-11-13T09:25:34Z",
+   "rows_read": 2063,
+   "rows_kept": 2063,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2018_Gabon.csv",
+   "dataset": "modis",
+   "year": 2018,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2018/modis_2018_Gabon.csv",
+   "sha256": "17faa9bf6328128f20aa9acbb6834e12b58e063be73a4fb96885e00735807c37",
+   "bytes": 173168,
+   "accessed_at": "2026-11-13T09:25:37Z",
+   "rows_read": 2225,
+   "rows_kept": 2225,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2019_Gabon.csv",
+   "dataset": "modis",
+   "year": 2019,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2019/modis_2019_Gabon.csv",
+   "sha256": "c2498892ec1b57605a5be097524090bec72b5f030b2d7a8ee77f39bf8f5d0a54",
+   "bytes": 180560,
+   "accessed_at": "2026-11-13T09:25:40Z",
+   "rows_read": 2321,
+   "rows_kept": 2321,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2020_Gabon.csv",
+   "dataset": "modis",
+   "year": 2020,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2020/modis_2020_Gabon.csv",
+   "sha256": "5a3f069f87272d248cac49690715c8ce9122836dcab38fbd86ce2f54e0cda81e",
+   "bytes": 161641,
+   "accessed_at": "2026-11-13T09:25:42Z",
+   "rows_read": 2080,
+   "rows_kept": 2080,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2021_Gabon.csv",
+   "dataset": "modis",
+   "year": 2021,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2021/modis_2021_Gabon.csv",
+   "sha256": "0fda93efc9171f973c1268256a2b27f90d9592f92e9cd31dec1933960926ced1",
+   "bytes": 179079,
+   "accessed_at": "2026-11-13T09:25:47Z",
+   "rows_read": 2304,
+   "rows_kept": 2304,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2022_Gabon.csv",
+   "dataset": "modis",
+   "year": 2022,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2022/modis_2022_Gabon.csv",
+   "sha256": "325e635c067dee1f8c7a0069f17a8fbbd3f2bbe2c7ca64e84db55e42a1791c67",
+   "bytes": 173012,
+   "accessed_at": "2026-11-13T09:25:49Z",
+   "rows_read": 2225,
+   "rows_kept": 2225,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2023_Gabon.csv",
+   "dataset": "modis",
+   "year": 2023,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2023/modis_2023_Gabon.csv",
+   "sha256": "6ceb8985e74385cc629bc1ff3dcd6ee9d568efbe30b70e0a4047113dc144a2ef",
+   "bytes": 157897,
+   "accessed_at": "2026-11-13T09:25:51Z",
+   "rows_read": 2011,
+   "rows_kept": 2011,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2024_Gabon.csv",
+   "dataset": "modis",
+   "year": 2024,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2024/modis_2024_Gabon.csv",
+   "sha256": "b41275298e57c4b79607219c58090ea1a0c199853f399236c94a9fb39ea77bad",
+   "bytes": 246611,
+   "accessed_at": "2026-11-13T09:25:54Z",
+   "rows_read": 3135,
+   "rows_kept": 3135,
+   "rows_rejected": 0
+  },
+  {
+   "file": "modis_2025_Gabon.csv",
+   "dataset": "modis",
+   "year": 2025,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2025/modis_2025_Gabon.csv",
+   "sha256": "9a8ad46e2aaaf8a30a9899d9aaf20b07d41b6ed12721f058a28f0c408f4ea56f",
+   "bytes": 204434,
+   "accessed_at": "2026-11-13T09:25:57Z",
+   "rows_read": 2603,
+   "rows_kept": 2603,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-jpss1_2018_Gabon.csv",
+   "dataset": "viirs-jpss1",
+   "year": 2018,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2018/viirs-jpss1_2018_Gabon.csv",
+   "sha256": "dec1407899f55b3d5183e86c310b6630bceda7baa065e3dfaa7659b69bce2d98",
+   "bytes": 747872,
+   "accessed_at": "2026-11-13T09:27:00Z",
+   "rows_read": 9344,
+   "rows_kept": 9344,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-jpss1_2019_Gabon.csv",
+   "dataset": "viirs-jpss1",
+   "year": 2019,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2019/viirs-jpss1_2019_Gabon.csv",
+   "sha256": "9937582a5e34682f448971506d84402132733b52800ff7511c39b1f5d846de86",
+   "bytes": 916730,
+   "accessed_at": "2026-11-13T09:27:09Z",
+   "rows_read": 11459,
+   "rows_kept": 11459,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-jpss1_2020_Gabon.csv",
+   "dataset": "viirs-jpss1",
+   "year": 2020,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2020/viirs-jpss1_2020_Gabon.csv",
+   "sha256": "11544df6030ab5da2f4b280744976322045b451792d52c2b30052c7468b1fe40",
+   "bytes": 887636,
+   "accessed_at": "2026-11-13T09:27:12Z",
+   "rows_read": 11096,
+   "rows_kept": 11096,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-jpss1_2021_Gabon.csv",
+   "dataset": "viirs-jpss1",
+   "year": 2021,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2021/viirs-jpss1_2021_Gabon.csv",
+   "sha256": "39ad6afd1ec91d04f35ee9785bd1dad46a028cfd3f3910616e52e39961b0b7cb",
+   "bytes": 792557,
+   "accessed_at": "2026-11-13T09:27:15Z",
+   "rows_read": 9904,
+   "rows_kept": 9904,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-jpss1_2022_Gabon.csv",
+   "dataset": "viirs-jpss1",
+   "year": 2022,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2022/viirs-jpss1_2022_Gabon.csv",
+   "sha256": "ef800dab2e4014828651942c0629d62d3aec088418f513dcd116fe7f44786950",
+   "bytes": 871420,
+   "accessed_at": "2026-11-13T09:27:20Z",
+   "rows_read": 10890,
+   "rows_kept": 10890,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-jpss1_2023_Gabon.csv",
+   "dataset": "viirs-jpss1",
+   "year": 2023,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2023/viirs-jpss1_2023_Gabon.csv",
+   "sha256": "c6f2652d147ce11737daea38a6f828abcba1a25b70ff8204f3f1bb961b61371b",
+   "bytes": 769591,
+   "accessed_at": "2026-11-13T09:27:24Z",
+   "rows_read": 9616,
+   "rows_kept": 9616,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-jpss1_2024_Gabon.csv",
+   "dataset": "viirs-jpss1",
+   "year": 2024,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2024/viirs-jpss1_2024_Gabon.csv",
+   "sha256": "afc596ca5e11e170b7dbf6d6e8c003c83ef4eac76b9e84b29c73fe2b0fe0d87c",
+   "bytes": 1013488,
+   "accessed_at": "2026-11-13T09:27:30Z",
+   "rows_read": 12654,
+   "rows_kept": 12654,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-jpss1_2025_Gabon.csv",
+   "dataset": "viirs-jpss1",
+   "year": 2025,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2025/viirs-jpss1_2025_Gabon.csv",
+   "sha256": "1bf54cfe58d677f576470ccde4d73cc0b0e9b84ba140b4afc997e96735ac2373",
+   "bytes": 848889,
+   "accessed_at": "2026-11-13T09:27:34Z",
+   "rows_read": 10599,
+   "rows_kept": 10599,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-snpp_2012_Gabon.csv",
+   "dataset": "viirs-snpp",
+   "year": 2012,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2012/viirs-snpp_2012_Gabon.csv",
+   "sha256": "da72ba2d80709f1fc431de7472edcd4be39c1ca6a3f540366d4bc34c87e14fb6",
+   "bytes": 837123,
+   "accessed_at": "2026-11-13T09:26:00Z",
+   "rows_read": 10728,
+   "rows_kept": 10728,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-snpp_2013_Gabon.csv",
+   "dataset": "viirs-snpp",
+   "year": 2013,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2013/viirs-snpp_2013_Gabon.csv",
+   "sha256": "e137223692bbf4749fe3714ec9a0e2442f53bfc67cd14fc9c4b7889390ff89dc",
+   "bytes": 910449,
+   "accessed_at": "2026-11-13T09:26:04Z",
+   "rows_read": 11657,
+   "rows_kept": 11657,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-snpp_2014_Gabon.csv",
+   "dataset": "viirs-snpp",
+   "year": 2014,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2014/viirs-snpp_2014_Gabon.csv",
+   "sha256": "5c92bef4e4e09c159ac432ef250ff9beb2efa8794ff4fbd32200d7897c8eaf6e",
+   "bytes": 724754,
+   "accessed_at": "2026-11-13T09:26:08Z",
+   "rows_read": 9283,
+   "rows_kept": 9283,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-snpp_2015_Gabon.csv",
+   "dataset": "viirs-snpp",
+   "year": 2015,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2015/viirs-snpp_2015_Gabon.csv",
+   "sha256": "2aa1a4d699dd1bb76072b6610a58ec678370a630c24a98bc12f281856d243c4f",
+   "bytes": 764771,
+   "accessed_at": "2026-11-13T09:26:10Z",
+   "rows_read": 9799,
+   "rows_kept": 9799,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-snpp_2016_Gabon.csv",
+   "dataset": "viirs-snpp",
+   "year": 2016,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2016/viirs-snpp_2016_Gabon.csv",
+   "sha256": "856558237a92292d0998760819915af04aa6da0623af09a9ae91081145f71fa3",
+   "bytes": 827016,
+   "accessed_at": "2026-11-13T09:26:13Z",
+   "rows_read": 10598,
+   "rows_kept": 10598,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-snpp_2017_Gabon.csv",
+   "dataset": "viirs-snpp",
+   "year": 2017,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2017/viirs-snpp_2017_Gabon.csv",
+   "sha256": "fc2b4cc8d2070ab2efddf4614a096030a4e6a262f3158bd7ad5e2b455740101a",
+   "bytes": 770495,
+   "accessed_at": "2026-11-13T09:26:17Z",
+   "rows_read": 9878,
+   "rows_kept": 9878,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-snpp_2018_Gabon.csv",
+   "dataset": "viirs-snpp",
+   "year": 2018,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2018/viirs-snpp_2018_Gabon.csv",
+   "sha256": "9ebce4e28e8ec9af746095f98502ab10d3f582a2abd711a9eeb84bd26e420d74",
+   "bytes": 891380,
+   "accessed_at": "2026-11-13T09:26:20Z",
+   "rows_read": 11439,
+   "rows_kept": 11439,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-snpp_2019_Gabon.csv",
+   "dataset": "viirs-snpp",
+   "year": 2019,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2019/viirs-snpp_2019_Gabon.csv",
+   "sha256": "8cade1969fb9212a20dd7db05e2b012da3ad467cb89c65d6b66bf8ae61e9d246",
+   "bytes": 893792,
+   "accessed_at": "2026-11-13T09:26:26Z",
+   "rows_read": 11468,
+   "rows_kept": 11468,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-snpp_2020_Gabon.csv",
+   "dataset": "viirs-snpp",
+   "year": 2020,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2020/viirs-snpp_2020_Gabon.csv",
+   "sha256": "734b8decbd357af8fea2ad09058acf96470ea5f786666cb9c7eb85ca72772653",
+   "bytes": 878840,
+   "accessed_at": "2026-11-13T09:26:32Z",
+   "rows_read": 11266,
+   "rows_kept": 11266,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-snpp_2021_Gabon.csv",
+   "dataset": "viirs-snpp",
+   "year": 2021,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2021/viirs-snpp_2021_Gabon.csv",
+   "sha256": "1cab1dca19416d2adb5531b510b0acd089fed4f7705c158c0d1d742c7d0f5c66",
+   "bytes": 752162,
+   "accessed_at": "2026-11-13T09:26:37Z",
+   "rows_read": 9645,
+   "rows_kept": 9645,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-snpp_2022_Gabon.csv",
+   "dataset": "viirs-snpp",
+   "year": 2022,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2022/viirs-snpp_2022_Gabon.csv",
+   "sha256": "18ac9a842967236be73e34e3b08dd817f85ea30023ca6d898b8208eebe0e9166",
+   "bytes": 780048,
+   "accessed_at": "2026-11-13T09:26:41Z",
+   "rows_read": 9997,
+   "rows_kept": 9997,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-snpp_2023_Gabon.csv",
+   "dataset": "viirs-snpp",
+   "year": 2023,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2023/viirs-snpp_2023_Gabon.csv",
+   "sha256": "76976ce5939dc42c9b25df709d48c08d626b1faf8c37a36997a505b8e29c5ffd",
+   "bytes": 762000,
+   "accessed_at": "2026-11-13T09:26:45Z",
+   "rows_read": 9764,
+   "rows_kept": 9764,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-snpp_2024_Gabon.csv",
+   "dataset": "viirs-snpp",
+   "year": 2024,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2024/viirs-snpp_2024_Gabon.csv",
+   "sha256": "3ca215ceff303f9c3a740bd5a03d1047f4925603864396a8883f8219f0419ff3",
+   "bytes": 888388,
+   "accessed_at": "2026-11-13T09:26:49Z",
+   "rows_read": 11383,
+   "rows_kept": 11383,
+   "rows_rejected": 0
+  },
+  {
+   "file": "viirs-snpp_2025_Gabon.csv",
+   "dataset": "viirs-snpp",
+   "year": 2025,
+   "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2025/viirs-snpp_2025_Gabon.csv",
+   "sha256": "ab2f6cfff83d40b0851d0545a30ef79a2a493815d48575dd031fdebf50a4abc3",
+   "bytes": 846221,
+   "accessed_at": "2026-11-13T09:26:53Z",
+   "rows_read": 10840,
+   "rows_kept": 10840,
+   "rows_rejected": 0
+  }
+ ]
+}
