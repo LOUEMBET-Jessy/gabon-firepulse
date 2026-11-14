@@ -122,8 +122,8 @@ const style: StyleSpecification = {
       filter: [">=", ["get", "s"], 2],
       paint: {
         "circle-color": ["case", ["==", ["get", "s"], 2], SENSOR_COLOR.snpp, SENSOR_COLOR.noaa20],
-        "circle-radius": ["interpolate", ["linear"], ["zoom"], 5, 1.5, 7, 2.4, 9, 4, 12, 7],
-        "circle-opacity": ["interpolate", ["linear"], ["zoom"], 5, 0.6, 9, 0.85],
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 5, 1.3, 7, 2, 9, 3.4, 12, 6],
+        "circle-opacity": ["interpolate", ["linear"], ["zoom"], 5, 0.75, 9, 0.9],
         "circle-stroke-color": "#070b14",
         "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 7, 0, 9, 1],
       },
@@ -204,13 +204,13 @@ export default function FireMap(props: FireMapProps) {
           filter: ["<", ["get", "s"], 2],
           layout: {
             "icon-image": "modis-square",
-            "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.42, 7, 0.6, 9, 0.95, 12, 1.6],
+            "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.4, 7, 0.58, 9, 0.95, 12, 1.7],
             "icon-allow-overlap": true,
             "icon-ignore-placement": true,
           },
           paint: { "icon-opacity": ["interpolate", ["linear"], ["zoom"], 5, 0.8, 9, 0.95] },
         },
-        "selected-ring",
+        "points-viirs",
       );
       setReady(true);
     });
@@ -416,5 +416,10 @@ export default function FireMap(props: FireMapProps) {
       </div>
     );
   }
-  return <div ref={container} className={className} aria-label="Carte du Gabon" role="application" />;
+  // MapLibre impose "position: relative" a son conteneur : la mise en page est portee par l'element parent.
+  return (
+    <div className={className}>
+      <div ref={container} className="size-full" aria-label="Carte du Gabon" />
+    </div>
+  );
 }

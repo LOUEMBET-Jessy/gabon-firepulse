@@ -4,14 +4,13 @@ import { CaretDown, CloudSlash, Info, Warning, WarningOctagon, ArrowUp, ArrowDow
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 
 import { ApiError } from "@/lib/api";
+import { buttonClass, cx, type ButtonSize, type ButtonVariant } from "@/lib/classes";
 import { fmtDateShort, fmtDateTimeUtc } from "@/lib/format";
 import { RELIABILITY, STATUS, TONE_COLOR } from "@/lib/labels";
 import type { AnomalyStatus, Reliability } from "@/lib/science/anomaly";
 import type { Provenance } from "@/lib/types";
 
-export function cx(...parts: (string | false | null | undefined)[]): string {
-  return parts.filter(Boolean).join(" ");
-}
+export { buttonClass, cx };
 
 /* ------------------------------------------------------------------ Panneaux */
 
@@ -43,7 +42,7 @@ export function PanelHeader({
         </h2>
         {subtitle ? <p className="mt-1 text-[13px] leading-snug text-ink-3">{subtitle}</p> : null}
       </div>
-      {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}
+      {actions ? <div className="flex max-w-full flex-wrap items-center gap-2">{actions}</div> : null}
     </header>
   );
 }
@@ -62,17 +61,7 @@ export function SourceNote({ provenance, extra }: { provenance: Provenance | und
 
 /* ------------------------------------------------------------------ Controles */
 
-type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "secondary" | "ghost"; size?: "sm" | "md" };
-
-export function buttonClass(variant: ButtonProps["variant"] = "secondary", size: ButtonProps["size"] = "md"): string {
-  return cx(
-    "inline-flex select-none items-center justify-center gap-1.5 whitespace-nowrap rounded-control font-medium transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45",
-    size === "sm" ? "h-8 px-2.5 text-[13px]" : "h-9 px-3.5 text-[13.5px]",
-    variant === "primary" && "bg-accent text-accent-ink hover:bg-accent-strong",
-    variant === "secondary" && "border border-line-strong bg-surface-2 text-ink hover:border-ink-3 hover:bg-surface-3",
-    variant === "ghost" && "text-ink-2 hover:bg-surface-2 hover:text-ink",
-  );
-}
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant; size?: ButtonSize };
 
 export function Button({ variant, size, className, type = "button", ...rest }: ButtonProps) {
   return <button type={type} className={cx(buttonClass(variant, size), className)} {...rest} />;
@@ -132,7 +121,7 @@ export function Checkbox({
         checked={checked}
         disabled={disabled}
         onChange={(e) => onChange(e.target.checked)}
-        className="size-4 shrink-0 cursor-pointer appearance-none rounded-[4px] border border-line-strong bg-surface-2 transition-colors checked:border-accent checked:bg-accent checked:bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22><path d=%22M3.5 8.5l3 3 6-7%22 fill=%22none%22 stroke=%22%2304202c%22 stroke-width=%222.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/></svg>')]"
+        className="check"
       />
       <span className="min-w-0 flex-1">{children}</span>
     </label>

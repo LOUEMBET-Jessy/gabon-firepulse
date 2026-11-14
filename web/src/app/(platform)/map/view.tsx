@@ -232,7 +232,7 @@ export function MapView() {
               </Checkbox>
             ))}
           </Group>
-          <Group title="Type de source" hint="Le produit classe chaque détection. Les sources statiques sont surtout des torchères et sites industriels.">
+          <Group title="Type de source" hint="Le produit classe chaque détection : feu de végétation présumé, ou source statique (par exemple une torchère ou une installation industrielle).">
             <Segmented
               label="Type de source"
               value={filters.types}

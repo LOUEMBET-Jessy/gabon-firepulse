@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import { MoreLink, RegionBars } from "@/components/blocks";
-import { AnnualChart, HistoryChart, Legend, SensorCompareChart, TooltipCard, TooltipRow, type CompareUnit } from "@/components/charts";
+import { AnnualChart, HistoryChart, Legend, SensorCompareChart, TooltipCard, TooltipRow, monthTick, useNarrow, type CompareUnit } from "@/components/charts";
 import { zoneLabel } from "@/components/shell/pickers";
 import { ChartSkeleton, ErrorState, Notice, PageHeader, Panel, PanelHeader, Segmented, SourceNote, cx, inputClass } from "@/components/ui";
 import { useCalendar, useMetadata, useRegions } from "@/lib/api";
@@ -24,6 +24,7 @@ function trendSentence(t: TrendResult | null): string {
 }
 
 function CompareYears({ calendar, a, b }: { calendar: CalendarResponse; a: number; b: number }) {
+  const narrow = useNarrow();
   const data = useMemo(
     () =>
       calendar.baselines.map((base) => {
@@ -55,7 +56,7 @@ function CompareYears({ calendar, a, b }: { calendar: CalendarResponse; a: numbe
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={data} margin={{ top: 12, right: 18, bottom: 0, left: 0 }}>
             <CartesianGrid stroke="#1e2a42" vertical={false} />
-            <XAxis dataKey="name" tick={{ fill: "#7b8aa5", fontSize: 11.5, fontFamily: "var(--font-mono)" }} tickLine={false} axisLine={{ stroke: "#1e2a42" }} interval={0} />
+            <XAxis dataKey="name" tick={{ fill: "#7b8aa5", fontSize: 11.5, fontFamily: "var(--font-mono)" }} tickLine={false} axisLine={{ stroke: "#1e2a42" }} interval={0} tickFormatter={monthTick(narrow)} />
             <YAxis tick={{ fill: "#7b8aa5", fontSize: 11.5, fontFamily: "var(--font-mono)" }} tickLine={false} axisLine={false} width={46} tickFormatter={(v: number) => fmtInt(v)} />
             <Tooltip
               cursor={{ stroke: "#2f3f61" }}
@@ -161,7 +162,7 @@ export function TrendsView() {
             provenance={data?.provenance}
             extra={
               trendScope === "full"
-                ? `Tendance sur les années complètes, hors années alimentées surtout par Terra seul. Elle dépend du calage MODIS : la comparer à la tendance VIIRS seul.${weakCalibration ? " Dans cette zone le calage est fragile : une tendance sur la série harmonisée peut refléter le changement de capteur plutôt que l'activité." : ""}`
+                ? `Intervalle des années estimées : étendue des rapports annuels observés en validation. Tendance sur les années complètes, hors années alimentées surtout par Terra seul. Elle dépend du calage MODIS : la comparer à la tendance VIIRS seul.${weakCalibration ? " Dans cette zone le calage est fragile : une tendance sur la série harmonisée peut refléter le changement de capteur plutôt que l'activité." : ""}`
                 : "Tendance sur les seules années observées par VIIRS : aucune hypothèse de calage, mais une série plus courte."
             }
           />
@@ -248,12 +249,12 @@ export function TrendsView() {
             ) : null}
           </div>
         </div>
-        <SourceNote provenance={data?.provenance} extra="Les facteurs de calage sont estimés au niveau national puis appliqués à toute zone. Détections retenues uniquement (feu de végétation présumé, confiance non faible)." />
+        <SourceNote provenance={data?.provenance} extra="Les chiffres de validation ci-contre sont nationaux ; le facteur est ensuite ajusté à chaque zone. Détections retenues uniquement (feu de végétation présumé, confiance non faible)." />
       </Panel>
 
       {zoneCal && data?.calibration.local ? (
         <Notice tone={weakCalibration ? "warning" : "info"} title={`Calage ajusté à la zone : facteur national multiplié par ${fmt2(zoneCal.k)}`}>
-          Le rapport entre VIIRS et MODIS n'est pas le même en savane et en forêt dense. Le facteur national est donc corrigé avec les années communes de la zone ({fmtInt(zoneCal.referenceCellDays)} cellules-jour Suomi-NPP).{" "}
+          Le rapport entre VIIRS et MODIS varie d'une région à l'autre. Le facteur national est donc corrigé avec les années communes de la zone ({fmtInt(zoneCal.referenceCellDays)} cellules-jour Suomi-NPP).{" "}
           {zoneCal.annualErrorLoyo === null
             ? "La zone est trop peu active pour mesurer l'erreur de ce calage."
             : `Erreur annuelle médiane en retirant une année à la fois : ${fmtPct(zoneCal.annualErrorLoyo, 0)} sur ${zoneCal.yearsScored} années.`}{" "}

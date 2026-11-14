@@ -237,7 +237,7 @@ export default function MethodologyPage() {
 
       <Section id="zones" title="Calage ajusté à chaque zone">
         <p>
-          Le facteur national se transpose mal d'une province à l'autre. MODIS détecte une plus faible part de l'activité en forêt dense qu'en savane : appliqué tel quel, le facteur national sous-estime VIIRS de près de moitié dans certaines provinces et le surestime dans d'autres.
+          Le facteur national se transpose mal d'une province à l'autre : appliqué tel quel, il sous-estime VIIRS de près de moitié dans certaines provinces et le surestime dans d'autres (colonne « avant » du tableau). Le type de végétation et la taille des feux pourraient l'expliquer, mais aucune donnée d'occupation du sol n'est chargée ici pour l'établir.
         </p>
         <p>
           Chaque zone reçoit donc une correction <span className="num">k = (R + {ZONE_PRIOR_WEIGHT}) / (P + {ZONE_PRIOR_WEIGHT})</span>, où R est le total VIIRS Suomi-NPP de la zone sur les jours communs et P la prédiction par les facteurs nationaux. Le poids de {ZONE_PRIOR_WEIGHT} cellules-jour maintient une zone peu active près du facteur national. L'erreur est mesurée en recalculant k sans l'année testée.
@@ -256,7 +256,7 @@ export default function MethodologyPage() {
           ])}
         />
         <p>
-          Le calage local réduit l'erreur partout, mais elle reste élevée dans les provinces forestières, où MODIS voit trop peu de feux pour servir d'estimateur précis. Quand une zone a moins de 24 mois mesurables, ou plus de {fmtPct(WEAK_CALIBRATION_ERROR)} d'erreur annuelle, la fiabilité de ses valeurs estimées est classée « faible » et l'interface le signale. Pour une tendance dans ces zones, la série VIIRS seule (depuis 2012) est préférable.
+          Le calage local réduit l'erreur dans la plupart des provinces, mais elle reste élevée là où MODIS signale trop peu de détections pour servir d'estimateur précis. Quand une zone a moins de 24 mois mesurables, ou plus de {fmtPct(WEAK_CALIBRATION_ERROR)} d'erreur annuelle, la fiabilité de ses valeurs estimées est classée « faible » et l'interface le signale. Pour une tendance dans ces zones, la série VIIRS seule (depuis 2012) est préférable.
         </p>
         <p className="text-[13px] text-ink-3">Pour le pays entier, les facteurs nationaux s'appliquent sans correction. Une zone dessinée à la main est calée de la même façon qu'une province, à la volée.</p>
       </Section>
@@ -323,7 +323,7 @@ export default function MethodologyPage() {
           <strong>Références des algorithmes</strong>, citées sur la page FIRMS : Giglio, Schroeder et Justice (2016), algorithme MODIS Collection 6, doi 10.1016/j.rse.2016.02.054 ; Schroeder, Oliva, Giglio et Csiszar (2014), produit VIIRS 375 m, doi 10.1016/j.rse.2013.12.008.
         </p>
         <p>
-          <strong>Remerciement demandé par FIRMS.</strong> « We acknowledge the use of data and/or imagery from NASA's Fire Information for Resource Management System (FIRMS), part of NASA's Earth Science Data and Information System (ESDIS). »
+          <strong>Remerciement demandé par FIRMS.</strong> « We acknowledge the use of data and/or imagery from NASA's Fire Information for Resource Management System (FIRMS) », système rattaché à LANCE et à l'ESDIS.
         </p>
         <details className="rounded-control border border-line bg-surface-2">
           <summary className="cursor-pointer px-4 py-2.5 text-[13.5px] font-medium text-ink">Les {store.meta.sources.length} fichiers sources, avec empreinte et date d'accès</summary>

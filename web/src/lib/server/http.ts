@@ -54,8 +54,10 @@ export function parseDetectionFilter(params: URLSearchParams, store: Store): Det
 
 /** Enveloppe un gestionnaire : 400 pour une demande invalide, 500 explique pour le reste. */
 export async function handle(request: Request, fn: (params: URLSearchParams, store: Store) => unknown | Promise<unknown>): Promise<Response> {
+  // Lu hors du bloc try : pendant la compilation, Next interrompt ici le pre-rendu de la route
+  // (elle depend de la requete) et ce signal ne doit pas etre pris pour une erreur.
+  const params = new URL(request.url).searchParams;
   try {
-    const params = new URL(request.url).searchParams;
     const result = await fn(params, getStore());
     if (result instanceof Response) return result;
     return Response.json(result, { headers: { "Cache-Control": "no-store" } });

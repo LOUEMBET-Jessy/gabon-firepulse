@@ -1,162 +1,43 @@
 ▲ Next.js 16.4.6 (Turbopack)
 - Local:         http://localhost:3210
 - Network:       http://192.168.209.1:3210
-✓ Ready in 1621ms
-✓ Running next.config.ts took 242ms
+✓ Ready in 1865ms
+✓ Running next.config.ts took 128ms
 - Cache Components enabled
 - Partial Prefetching enabled
 
- GET /api/calendar?zone=country 200 in 267ms (next.js: 157ms, application-code: 110ms)
- GET /api/calendar?zone=country 200 in 14ms (next.js: 2ms, application-code: 11ms)
- GET /api/overview?zone=country&from=2025-01-01&to=2025-12-31 200 in 48ms (next.js: 26ms, application-code: 22ms)
- GET /api/regions?from=2025-01-01&to=2025-12-31 200 in 80ms (next.js: 27ms, application-code: 54ms)
- GET /api/detections?from=2025-01-01&to=2025-12-31 200 in 47ms (next.js: 24ms, application-code: 24ms)
- GET /api/aggregates?from=2025-01-01&to=2025-12-31 200 in 37ms (next.js: 25ms, application-code: 12ms)
- GET /api/detections/5 200 in 981ms (next.js: 965ms, application-code: 16ms)
- GET /api/detections?zone=bbox:1,2 400 in 10ms (next.js: 2ms, application-code: 8ms)
- GET /api/export?kind=detections&from=2025-08-01&to=2025-08-02&sats=aqua 200 in 50ms (next.js: 35ms, application-code: 15ms)
-  Turbopack has seen frequent file updates and is waiting for the filesystem to settle (0.5s elapsed so far; last modified: "\\\\?\\C:\\Users\\HP\\Desktop\\Projets Entreprises\\NASA_HACKATHON\\project\\web\\node_modules\\.pnpm\\geist@1.9.2_next@16.4.6_@ba_35b9e94b71b6f2d0491b4fafa6544df0\\node_modules\\geist").
-[api] TypeError: nationalRatioQ10 is not iterable
-    at calibrateZone (src\lib\server\engine.ts:66:19)
-    at zoneDaily (src\lib\server\engine.ts:196:23)
-    at calendar (src\lib\server\engine.ts:359:17)
-    at <unknown> (src\app\api\calendar\route.ts:7:53)
-    at handle (src\lib\server\http.ts:59:26)
-    at GET (src\app\api\calendar\route.ts:7:16)
-  64 |   const local = zone.kind !== "country";
-  65 |   const k = new Array<number>(N_CONFIG).fill(1);
-> 66 |   const q10 = [...nationalRatioQ10];
-     |                   ^
-  67 |   const q90 = [...nationalRatioQ90];
-  68 |   const configs = {} as PerConfig<ZoneCalibrationEntry | null>;
-  69 |   const reference = cellDays[REFERENCE];
- GET /api/calendar?zone=province:0 500 in 168ms (next.js: 4ms, application-code: 164ms)
-[api] TypeError: nationalRatioQ10 is not iterable
-    at calibrateZone (src\lib\server\engine.ts:66:19)
-    at zoneDaily (src\lib\server\engine.ts:196:23)
-    at calendar (src\lib\server\engine.ts:359:17)
-    at <unknown> (src\app\api\calendar\route.ts:7:53)
-    at handle (src\lib\server\http.ts:59:26)
-    at GET (src\app\api\calendar\route.ts:7:16)
-  64 |   const local = zone.kind !== "country";
-  65 |   const k = new Array<number>(N_CONFIG).fill(1);
-> 66 |   const q10 = [...nationalRatioQ10];
-     |                   ^
-  67 |   const q90 = [...nationalRatioQ90];
-  68 |   const configs = {} as PerConfig<ZoneCalibrationEntry | null>;
-  69 |   const reference = cellDays[REFERENCE];
- GET /api/calendar?zone=province:1 500 in 16ms (next.js: 1.4ms, application-code: 15ms)
-[api] TypeError: nationalRatioQ10 is not iterable
-    at calibrateZone (src\lib\server\engine.ts:66:19)
-    at zoneDaily (src\lib\server\engine.ts:196:23)
-    at calendar (src\lib\server\engine.ts:359:17)
-    at <unknown> (src\app\api\calendar\route.ts:7:53)
-    at handle (src\lib\server\http.ts:59:26)
-    at GET (src\app\api\calendar\route.ts:7:16)
-  64 |   const local = zone.kind !== "country";
-  65 |   const k = new Array<number>(N_CONFIG).fill(1);
-> 66 |   const q10 = [...nationalRatioQ10];
-     |                   ^
-  67 |   const q90 = [...nationalRatioQ90];
-  68 |   const configs = {} as PerConfig<ZoneCalibrationEntry | null>;
-  69 |   const reference = cellDays[REFERENCE];
- GET /api/calendar?zone=province:2 500 in 15ms (next.js: 1.3ms, application-code: 14ms)
-[api] TypeError: nationalRatioQ10 is not iterable
-    at calibrateZone (src\lib\server\engine.ts:66:19)
-    at zoneDaily (src\lib\server\engine.ts:196:23)
-    at calendar (src\lib\server\engine.ts:359:17)
-    at <unknown> (src\app\api\calendar\route.ts:7:53)
-    at handle (src\lib\server\http.ts:59:26)
-    at GET (src\app\api\calendar\route.ts:7:16)
-  64 |   const local = zone.kind !== "country";
-  65 |   const k = new Array<number>(N_CONFIG).fill(1);
-> 66 |   const q10 = [...nationalRatioQ10];
-     |                   ^
-  67 |   const q90 = [...nationalRatioQ90];
-  68 |   const configs = {} as PerConfig<ZoneCalibrationEntry | null>;
-  69 |   const reference = cellDays[REFERENCE];
- GET /api/calendar?zone=province:3 500 in 13ms (next.js: 1.9ms, application-code: 12ms)
-[api] TypeError: nationalRatioQ10 is not iterable
-    at calibrateZone (src\lib\server\engine.ts:66:19)
-    at zoneDaily (src\lib\server\engine.ts:196:23)
-    at calendar (src\lib\server\engine.ts:359:17)
-    at <unknown> (src\app\api\calendar\route.ts:7:53)
-    at handle (src\lib\server\http.ts:59:26)
-    at GET (src\app\api\calendar\route.ts:7:16)
-  64 |   const local = zone.kind !== "country";
-  65 |   const k = new Array<number>(N_CONFIG).fill(1);
-> 66 |   const q10 = [...nationalRatioQ10];
-     |                   ^
-  67 |   const q90 = [...nationalRatioQ90];
-  68 |   const configs = {} as PerConfig<ZoneCalibrationEntry | null>;
-  69 |   const reference = cellDays[REFERENCE];
- GET /api/calendar?zone=province:4 500 in 14ms (next.js: 1.7ms, application-code: 12ms)
-[api] TypeError: nationalRatioQ10 is not iterable
-    at calibrateZone (src\lib\server\engine.ts:66:19)
-    at zoneDaily (src\lib\server\engine.ts:196:23)
-    at calendar (src\lib\server\engine.ts:359:17)
-    at <unknown> (src\app\api\calendar\route.ts:7:53)
-    at handle (src\lib\server\http.ts:59:26)
-    at GET (src\app\api\calendar\route.ts:7:16)
-  64 |   const local = zone.kind !== "country";
-  65 |   const k = new Array<number>(N_CONFIG).fill(1);
-> 66 |   const q10 = [...nationalRatioQ10];
-     |                   ^
-  67 |   const q90 = [...nationalRatioQ90];
-  68 |   const configs = {} as PerConfig<ZoneCalibrationEntry | null>;
-  69 |   const reference = cellDays[REFERENCE];
- GET /api/calendar?zone=province:5 500 in 12ms (next.js: 1.3ms, application-code: 11ms)
-[api] TypeError: nationalRatioQ10 is not iterable
-    at calibrateZone (src\lib\server\engine.ts:66:19)
-    at zoneDaily (src\lib\server\engine.ts:196:23)
-    at calendar (src\lib\server\engine.ts:359:17)
-    at <unknown> (src\app\api\calendar\route.ts:7:53)
-    at handle (src\lib\server\http.ts:59:26)
-    at GET (src\app\api\calendar\route.ts:7:16)
-  64 |   const local = zone.kind !== "country";
-  65 |   const k = new Array<number>(N_CONFIG).fill(1);
-> 66 |   const q10 = [...nationalRatioQ10];
-     |                   ^
-  67 |   const q90 = [...nationalRatioQ90];
-  68 |   const configs = {} as PerConfig<ZoneCalibrationEntry | null>;
-  69 |   const reference = cellDays[REFERENCE];
- GET /api/calendar?zone=province:6 500 in 12ms (next.js: 1.2ms, application-code: 11ms)
-[api] TypeError: nationalRatioQ10 is not iterable
-    at calibrateZone (src\lib\server\engine.ts:66:19)
-    at zoneDaily (src\lib\server\engine.ts:196:23)
-    at calendar (src\lib\server\engine.ts:359:17)
-    at <unknown> (src\app\api\calendar\route.ts:7:53)
-    at handle (src\lib\server\http.ts:59:26)
-    at GET (src\app\api\calendar\route.ts:7:16)
-  64 |   const local = zone.kind !== "country";
-  65 |   const k = new Array<number>(N_CONFIG).fill(1);
-> 66 |   const q10 = [...nationalRatioQ10];
-     |                   ^
-  67 |   const q90 = [...nationalRatioQ90];
-  68 |   const configs = {} as PerConfig<ZoneCalibrationEntry | null>;
-  69 |   const reference = cellDays[REFERENCE];
- GET /api/calendar?zone=province:7 500 in 13ms (next.js: 1.3ms, application-code: 12ms)
-[api] TypeError: nationalRatioQ10 is not iterable
-    at calibrateZone (src\lib\server\engine.ts:66:19)
-    at zoneDaily (src\lib\server\engine.ts:196:23)
-    at calendar (src\lib\server\engine.ts:359:17)
-    at <unknown> (src\app\api\calendar\route.ts:7:53)
-    at handle (src\lib\server\http.ts:59:26)
-    at GET (src\app\api\calendar\route.ts:7:16)
-  64 |   const local = zone.kind !== "country";
-  65 |   const k = new Array<number>(N_CONFIG).fill(1);
-> 66 |   const q10 = [...nationalRatioQ10];
-     |                   ^
-  67 |   const q90 = [...nationalRatioQ90];
-  68 |   const configs = {} as PerConfig<ZoneCalibrationEntry | null>;
-  69 |   const reference = cellDays[REFERENCE];
- GET /api/calendar?zone=province:8 500 in 13ms (next.js: 1.4ms, application-code: 12ms)
- GET /api/calendar?zone=province:0 200 in 82ms (next.js: 2ms, application-code: 80ms)
- GET /api/calendar?zone=province:1 200 in 29ms (next.js: 1.3ms, application-code: 28ms)
- GET /api/calendar?zone=province:2 200 in 24ms (next.js: 1.2ms, application-code: 23ms)
- GET /api/calendar?zone=province:3 200 in 26ms (next.js: 1.3ms, application-code: 25ms)
- GET /api/calendar?zone=province:4 200 in 21ms (next.js: 1.2ms, application-code: 20ms)
- GET /api/calendar?zone=province:5 200 in 26ms (next.js: 1.4ms, application-code: 25ms)
- GET /api/calendar?zone=province:6 200 in 22ms (next.js: 1.3ms, application-code: 21ms)
- GET /api/calendar?zone=province:7 200 in 22ms (next.js: 1.3ms, application-code: 21ms)
- GET /api/calendar?zone=province:8 200 in 22ms (next.js: 1.5ms, application-code: 21ms)
+○ Compiling /map ...
+ GET / 200 in 2.9s (next.js: 588ms, application-code: 2.3s)
+ GET /map 200 in 653ms (next.js: 5ms, application-code: 649ms)
+ GET /map 200 in 798ms (next.js: 32ms, application-code: 766ms)
+ GET /api/metadata 200 in 299ms (next.js: 177ms, application-code: 122ms)
+ GET /api/detections?zone=country&from=2025-01-01&to=2025-12-31&sats=terra%2Caqua%2Csnpp%2Cnoaa20&conf=low%2Cnominal%2Chigh&types=all&dn=all 200 in 270ms (next.js: 76ms, application-code: 194ms)
+✓ Compiled in 238ms
+ GET / 200 in 1042ms (next.js: 6ms, application-code: 1036ms)
+ GET /dashboard 200 in 264ms (next.js: 29ms, application-code: 235ms)
+ GET /api/metadata 200 in 27ms (next.js: 4ms, application-code: 23ms)
+ GET /api/regions?from=2025-01-01&to=2025-12-31 200 in 490ms (next.js: 115ms, application-code: 375ms)
+ GET /api/aggregates?zone=country&from=2025-01-01&to=2025-12-31 200 in 692ms (next.js: 118ms, application-code: 574ms)
+ GET /api/calendar?zone=country 200 in 923ms (next.js: 78ms, application-code: 845ms)
+ GET /api/overview?zone=country&from=2025-01-01&to=2025-12-31 200 in 119ms (next.js: 60ms, application-code: 60ms)
+ GET /map 200 in 130ms (next.js: 6ms, application-code: 124ms)
+ GET /api/metadata 200 in 25ms (next.js: 4ms, application-code: 21ms)
+ GET /api/detections?zone=country&from=2025-01-01&to=2025-12-31&sats=terra%2Caqua%2Csnpp%2Cnoaa20&conf=low%2Cnominal%2Chigh&types=all&dn=all 200 in 162ms (next.js: 3ms, application-code: 159ms)
+ GET /calendar 200 in 229ms (next.js: 27ms, application-code: 202ms)
+ GET /api/metadata 200 in 26ms (next.js: 5ms, application-code: 21ms)
+ GET /api/calendar?zone=country 200 in 36ms (next.js: 4ms, application-code: 32ms)
+ GET /trends 200 in 354ms (next.js: 27ms, application-code: 327ms)
+ GET /api/metadata 200 in 24ms (next.js: 4ms, application-code: 20ms)
+ GET /api/regions?from=2025-01-01&to=2025-12-31 200 in 43ms (next.js: 3ms, application-code: 40ms)
+ GET /api/calendar?zone=country 200 in 82ms (next.js: 5ms, application-code: 77ms)
+ GET /anomalies 200 in 185ms (next.js: 28ms, application-code: 157ms)
+ GET /api/metadata 200 in 30ms (next.js: 4ms, application-code: 26ms)
+ GET /api/calendar?zone=country 200 in 42ms (next.js: 4ms, application-code: 38ms)
+ GET /reports 200 in 247ms (next.js: 29ms, application-code: 218ms)
+ GET /api/metadata 200 in 25ms (next.js: 4ms, application-code: 21ms)
+ GET /api/overview?zone=country&from=2025-01-01&to=2025-12-31 200 in 128ms (next.js: 4ms, application-code: 124ms)
+ GET /api/regions?from=2025-01-01&to=2025-12-31 200 in 45ms (next.js: 4ms, application-code: 41ms)
+ GET /api/calendar?zone=country 200 in 80ms (next.js: 5ms, application-code: 75ms)
+ GET /methodology 200 in 845ms (next.js: 38ms, application-code: 807ms)
+ GET /api/metadata 200 in 24ms (next.js: 3ms, application-code: 21ms)
+[?25h

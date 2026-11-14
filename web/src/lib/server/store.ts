@@ -146,6 +146,9 @@ export interface Store {
   /** Par configuration : quantiles 10 % et 90 % du rapport reference / prediction en validation. */
   nationalRatioQ10: number[];
   nationalRatioQ90: number[];
+  /** Par configuration : etendue des rapports annuels reference / prediction en validation. */
+  nationalAnnualMin: number[];
+  nationalAnnualMax: number[];
   meta: DetectionsMeta;
   harmonization: HarmonizationFile;
   metadata: MetadataFile;
@@ -253,6 +256,8 @@ function load(): Store {
   const nationalFactors = CONFIG_KEYS.map((key) => harmonization.calibration[key]?.factors_by_month ?? new Array<number>(12).fill(1));
   const nationalRatioQ10 = CONFIG_KEYS.map((key) => harmonization.calibration[key]?.validation.monthly_ratio_q10 ?? 1);
   const nationalRatioQ90 = CONFIG_KEYS.map((key) => harmonization.calibration[key]?.validation.monthly_ratio_q90 ?? 1);
+  const nationalAnnualMin = CONFIG_KEYS.map((key) => harmonization.calibration[key]?.validation.annual_ratio_min ?? 1);
+  const nationalAnnualMax = CONFIG_KEYS.map((key) => harmonization.calibration[key]?.validation.annual_ratio_max ?? 1);
 
   const sourceOfDay = new Int8Array(nDays).fill(-1);
   for (const segment of harmonization.relay_segments) {
@@ -307,6 +312,8 @@ function load(): Store {
     nationalFactors,
     nationalRatioQ10,
     nationalRatioQ90,
+    nationalAnnualMin,
+    nationalAnnualMax,
     meta,
     harmonization,
     metadata,
@@ -318,7 +325,7 @@ function load(): Store {
 }
 
 /** A incrementer quand la forme de Store change : evite de reutiliser un cache perime en developpement. */
-const STORE_SCHEMA = 2;
+const STORE_SCHEMA = 3;
 const globalStore = globalThis as unknown as { __firepulseStore?: { schema: number; store: Store } };
 
 export function getStore(): Store {

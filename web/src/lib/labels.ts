@@ -60,7 +60,7 @@ export const DEFINITIONS = {
   detection:
     "Centre d'un pixel signalé par l'algorithme comme contenant une anomalie thermique. Ce n'est ni la position exacte d'un feu, ni un incendie confirmé, ni une surface brûlée.",
   eligible:
-    "Détection retenue dans l'indice : classée « feu de végétation présumé » par le produit et de confiance non faible. Les sources statiques (torchères, industrie) sont écartées.",
+    "Détection retenue dans l'indice : classée « feu de végétation présumé » par le produit et de confiance non faible. Les sources statiques, par exemple des torchères ou des installations industrielles, sont écartées.",
   anomaly:
     "Écart entre l'activité détectée d'un mois et la médiane du même mois les autres années, rapporté à la dispersion habituelle. C'est un signal d'analyse, ni une preuve ni une prédiction.",
   critical: "Mois calendaires qui concentrent ensemble 80 % de l'activité médiane annuelle de la zone.",

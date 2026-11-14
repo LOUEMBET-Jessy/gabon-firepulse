@@ -92,6 +92,9 @@ export interface ZoneCalibrationEntry {
   monthsScored: number;
   ratioQ10: number;
   ratioQ90: number;
+  /** Plus petit et plus grand rapport annuel reference / prediction observes sur les annees communes. */
+  annualRatioMin: number;
+  annualRatioMax: number;
   /** Vrai si la zone a assez de mois mesurables pour verifier le calage localement. */
   verified: boolean;
 }

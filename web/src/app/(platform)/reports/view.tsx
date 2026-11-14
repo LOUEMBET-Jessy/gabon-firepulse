@@ -307,7 +307,7 @@ export function ReportsView() {
                   </li>
                   {cal ? (
                     <li>
-                      <span className="text-ink">Précision du calage MODIS.</span> Erreur mensuelle médiane de {fmtPct(cal.validation.monthly_median_abs_pct_error, 1)} et erreur annuelle moyenne de {fmtPct(cal.validation.annual_mean_abs_pct_error, 1)}, mesurées en retirant une année à la fois, au niveau national.
+                      <span className="text-ink">Précision du calage MODIS.</span> Erreur mensuelle médiane de {fmtPct(cal.validation.monthly_median_abs_pct_error, 1)} et erreur annuelle moyenne de {fmtPct(cal.validation.annual_mean_abs_pct_error, 1)}, mesurées en retirant une année à la fois, au niveau national. Le facteur est ensuite ajusté à la zone du rapport.
                     </li>
                   ) : null}
                   <li>
@@ -318,7 +318,7 @@ export function ReportsView() {
                 <ul className="flex list-disc flex-col gap-1.5 pl-5 text-[13px] leading-relaxed text-ink-2">
                   <li>Une détection est le centre d'un pixel signalé comme anomalie thermique. Ce n'est ni un incendie confirmé, ni sa position exacte, ni une surface brûlée, et elle ne dit rien de la cause.</li>
                   <li>Les nuages, la fumée épaisse et l'heure de passage empêchent de voir une partie des feux. Une valeur nulle signifie « aucune détection », pas « aucun feu ».</li>
-                  <li>Les valeurs antérieures à 2012 sont des estimations. Les facteurs de calage sont nationaux et moins sûrs sur une petite zone.</li>
+                  <li>Les valeurs antérieures à 2012 sont des estimations. Le calage est ajusté à chaque zone, mais il reste moins sûr sur une zone petite ou peu active.</li>
                   <li>Un écart à la référence est un signal d'analyse à vérifier avec d'autres sources. Ce rapport n'est pas une alerte officielle.</li>
                 </ul>
               </div>

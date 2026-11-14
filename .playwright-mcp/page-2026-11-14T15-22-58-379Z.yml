@@ -1,0 +1,108 @@
+- generic [active] [ref=f2e1]:
+  - generic [ref=f2e2]:
+    - complementary [ref=f2e3]:
+      - link "Gabon FirePulse, accueil" [ref=f2e5] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f2e9]:
+          - generic [ref=f2e10]: Gabon FirePulse
+          - generic [ref=f2e11]: Détections MODIS et VIIRS harmonisées
+      - navigation "Navigation principale" [ref=f2e12]:
+        - link "Tableau de bord" [ref=f2e13] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Carte des détections" [ref=f2e16] [cursor=pointer]:
+          - /url: /map
+        - link "Calendrier d'activité" [ref=f2e19] [cursor=pointer]:
+          - /url: /calendar
+        - link "Tendances" [ref=f2e22] [cursor=pointer]:
+          - /url: /trends
+        - link "Périodes inhabituelles" [ref=f2e25] [cursor=pointer]:
+          - /url: /anomalies
+        - link "Rapports et exports" [ref=f2e28] [cursor=pointer]:
+          - /url: /reports
+        - link "Méthode et données" [ref=f2e31] [cursor=pointer]:
+          - /url: /methodology
+      - paragraph [ref=f2e34]: Projet étudiant indépendant, NASA Space Apps Challenge 2026. Ni produit officiel de la NASA, ni service d'alerte incendie.
+    - generic [ref=f2e35]:
+      - banner [ref=f2e36]:
+        - generic [ref=f2e37]:
+          - button "Zone d'analyse" [ref=f2e39]:
+            - generic [ref=f2e43]: Gabon
+          - button "Période" [ref=f2e47]:
+            - generic [ref=f2e51]: Année 2025
+        - button "Chargement" [ref=f2e55]
+      - main [ref=f2e59]:
+        - generic [ref=f2e61]:
+          - complementary "Filtres de la carte" [ref=f2e62]:
+            - group "Affichage" [ref=f2e63]:
+              - generic [ref=f2e65]:
+                - radiogroup "Mode d'affichage" [ref=f2e66]:
+                  - radio "Détections natives" [checked] [ref=f2e67]
+                  - radio "Grille harmonisée" [ref=f2e68]
+                - paragraph [ref=f2e69]: Chaque point est le centre d'un pixel signalé, à sa position d'origine.
+            - group "Satellites" [ref=f2e70]:
+              - generic [ref=f2e72]:
+                - generic [ref=f2e73] [cursor=pointer]:
+                  - checkbox "MODIS Terra" [checked] [ref=f2e74]
+                  - generic [ref=f2e75]: MODIS Terra
+                - generic [ref=f2e79] [cursor=pointer]:
+                  - checkbox "MODIS Aqua" [checked] [ref=f2e80]
+                  - generic [ref=f2e81]: MODIS Aqua
+                - generic [ref=f2e85] [cursor=pointer]:
+                  - checkbox "VIIRS Suomi-NPP" [checked] [ref=f2e86]
+                  - generic [ref=f2e87]: VIIRS Suomi-NPP
+                - generic [ref=f2e91] [cursor=pointer]:
+                  - checkbox "VIIRS NOAA-20" [checked] [ref=f2e92]
+                  - generic [ref=f2e93]: VIIRS NOAA-20
+            - group "Confiance" [ref=f2e97]:
+              - generic [ref=f2e99]:
+                - generic [ref=f2e100] [cursor=pointer]:
+                  - checkbox "Faible" [checked] [ref=f2e101]
+                  - generic [ref=f2e102]: Faible
+                - generic [ref=f2e103] [cursor=pointer]:
+                  - checkbox "Nominale" [checked] [ref=f2e104]
+                  - generic [ref=f2e105]: Nominale
+                - generic [ref=f2e106] [cursor=pointer]:
+                  - checkbox "Élevée" [checked] [ref=f2e107]
+                  - generic [ref=f2e108]: Élevée
+              - paragraph [ref=f2e109]: "MODIS : faible sous 30 %, élevée à partir de 80 %. VIIRS : classes natives l, n, h."
+            - group "Type de source" [ref=f2e110]:
+              - radiogroup "Type de source" [ref=f2e113]:
+                - radio "Toutes" [checked] [ref=f2e114]
+                - radio "Végétation" [ref=f2e115]
+                - radio "Statiques" [ref=f2e116]
+              - paragraph [ref=f2e117]: "Le produit classe chaque détection : feu de végétation présumé, ou source statique (par exemple une torchère ou une installation industrielle)."
+            - group "Moment du passage" [ref=f2e118]:
+              - radiogroup "Jour ou nuit" [ref=f2e121]:
+                - radio "Tous" [checked] [ref=f2e122]
+                - radio "Jour" [ref=f2e123]
+                - radio "Nuit" [ref=f2e124]
+            - group "Zone d'analyse" [ref=f2e125]:
+              - generic [ref=f2e127]:
+                - paragraph [ref=f2e128]: Gabon
+                - button "Dessiner un rectangle" [ref=f2e130]
+            - group "Couches de contexte" [ref=f2e133]:
+              - generic [ref=f2e135]:
+                - generic [ref=f2e136] [cursor=pointer]:
+                  - checkbox "Limites des provinces" [checked] [ref=f2e137]
+                  - generic [ref=f2e138]: Limites des provinces
+                - generic [ref=f2e139] [cursor=pointer]:
+                  - checkbox "Relief NASA Blue Marble (en ligne)" [ref=f2e140]
+                  - generic [ref=f2e141]: Relief NASA Blue Marble (en ligne)
+                - paragraph [ref=f2e142]: "Limites : geoBoundaries (CC BY-SA 3.0), état représenté : 2005. Elles servent de repère, pas de référence juridique."
+            - group "Exporter la sélection" [ref=f2e143]:
+              - generic [ref=f2e146]:
+                - link "CSV" [ref=f2e147] [cursor=pointer]:
+                  - /url: /api/export?kind=detections&format=csv&zone=country&from=2025-01-01&to=2025-12-31&sats=terra%2Caqua%2Csnpp%2Cnoaa20&conf=low%2Cnominal%2Chigh&types=all&dn=all
+                - link "GeoJSON" [ref=f2e150] [cursor=pointer]:
+                  - /url: /api/export?kind=detections&format=geojson&zone=country&from=2025-01-01&to=2025-12-31&sats=terra%2Caqua%2Csnpp%2Cnoaa20&conf=low%2Cnominal%2Chigh&types=all&dn=all
+              - paragraph [ref=f2e153]: L'export contient exactement les détections retenues par les filtres ci-dessus, avec le renvoi à leur ligne source.
+          - generic [ref=f2e154]:
+            - status "Chargement de la carte" [ref=f2e155]
+            - status [ref=f2e156]:
+              - generic [ref=f2e157]: Lecture des détections
+            - list [ref=f2e159]:
+              - listitem [ref=f2e160]: MODIS Terra et Aqua, pixel de 1 km
+              - listitem [ref=f2e162]: VIIRS Suomi-NPP, 375 m
+              - listitem [ref=f2e164]: VIIRS NOAA-20, 375 m
+  - button "Open Next.js Dev Tools" [ref=f2e171] [cursor=pointer]
+  - alert [ref=f2e175]

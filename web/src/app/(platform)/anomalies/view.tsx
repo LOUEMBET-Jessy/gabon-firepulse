@@ -102,7 +102,7 @@ export function AnomaliesView() {
             title="Mois signalés"
             subtitle={
               data
-                ? `${counts.strong} très supérieurs, ${counts.high} supérieurs, ${counts.low} inférieurs, sur ${counts.total} mois. ${counts.notAssessed} mois non évalués faute de données.`
+                ? `${counts.strong} très supérieurs, ${counts.high} supérieurs, ${counts.low} inférieurs, sur ${counts.total} mois. ${counts.notAssessed === 0 ? "Tous les mois ont pu être évalués." : counts.notAssessed === 1 ? "1 mois n'a pas pu être évalué." : `${counts.notAssessed} mois n'ont pas pu être évalués.`}`
                 : "Évaluation de chaque mois."
             }
           />

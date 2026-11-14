@@ -6,56 +6,30 @@ import { TooltipCard, TooltipRow } from "@/components/charts";
 import { StatusBadge, cx } from "@/components/ui";
 import { addDays, fmtDate, fmtDelta, fmtInt, fmtScore, isoToMs, MONTHS_LETTER, MONTHS_SHORT, monthLabel } from "@/lib/format";
 import { CONFIG_LABEL, DIVERGING, HEAT, KIND_LABEL, STATUS } from "@/lib/labels";
-import { quantile } from "@/lib/science/stats";
+import { activityBreaks, activityColor, deviationColor } from "@/lib/scales";
 import type { DailyResponse, MonthRecord, YearRecord } from "@/lib/types";
 import { CONFIG_KEYS } from "@/lib/types";
 
 export type HeatMode = "activity" | "deviation";
 
+export { activityBreaks, activityColor, deviationColor };
+
 /* ------------------------------------------------------------------ Echelles */
-
-/** Six seuils issus des quantiles des valeurs non nulles : sept classes d'effectif comparable. */
-export function activityBreaks(values: number[]): number[] {
-  const positive = values.filter((v) => v > 0);
-  if (positive.length < 7) return [];
-  const raw = [1, 2, 3, 4, 5, 6].map((i) => quantile(positive, i / 7));
-  const nice = (v: number) => (v >= 100 ? Math.round(v / 10) * 10 : v >= 10 ? Math.round(v) : Math.round(v * 10) / 10);
-  const out: number[] = [];
-  for (const v of raw.map(nice)) if (out.length === 0 || v > out[out.length - 1]) out.push(v);
-  return out;
-}
-
-export function activityColor(value: number, breaks: number[]): string {
-  if (value <= 0) return HEAT[0];
-  let cls = 0;
-  while (cls < breaks.length && value >= breaks[cls]) cls++;
-  // Les classes sont reparties sur les sept teintes, meme si certains seuils ont fusionne.
-  return HEAT[1 + Math.round((cls / Math.max(breaks.length, 1)) * 6)];
-}
-
-const DEVIATION_BREAKS = [-3.5, -2, -1, 1, 2, 3.5];
-
-export function deviationColor(z: number | null): string | null {
-  if (z === null) return null;
-  let cls = 0;
-  while (cls < DEVIATION_BREAKS.length && z >= DEVIATION_BREAKS[cls]) cls++;
-  return DIVERGING[cls];
-}
 
 export function ScaleLegend({ mode, breaks, unit }: { mode: HeatMode; breaks: number[]; unit: string }) {
   if (mode === "deviation") {
-    const labels = ["< −3,5", "−3,5", "−2", "−1 à +1", "+1", "+2", "> +3,5"];
+    const labels = ["< −3,5", "−3,5 à −2", "−2 à −1", "−1 à +1", "+1 à +2", "+2 à +3,5", "> +3,5"];
     return (
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11.5px] text-ink-3">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11.5px] text-ink-3">
         <span>Score robuste d'écart à la médiane du mois :</span>
-        <span className="flex items-end gap-px">
+        <ul className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
           {DIVERGING.map((color, i) => (
-            <span key={color} className="flex flex-col items-center gap-1">
-              <span className="h-3 w-9 first:rounded-l-[3px] last:rounded-r-[3px]" style={{ backgroundColor: color }} />
-              <span className="num text-[10.5px]">{labels[i]}</span>
-            </span>
+            <li key={color} className="flex items-center gap-1.5">
+              <span aria-hidden className="size-3 rounded-[3px]" style={{ backgroundColor: color }} />
+              <span className="num whitespace-nowrap text-[11px]">{labels[i]}</span>
+            </li>
           ))}
-        </span>
+        </ul>
         <span>bleu : inférieur, rouge : supérieur</span>
       </div>
     );

@@ -38,7 +38,7 @@ export const MAX_UNOBSERVED_SHARE = 0.1;
 
 /**
  * Ajustement du calage a la zone.
- * Les facteurs nationaux se transposent mal d'une province a l'autre (savane ou foret) : le
+ * Les facteurs nationaux se transposent mal d'une province a l'autre : le
  * rapport VIIRS / MODIS cale varie de 0,7 a 1,85 selon la province. Chaque zone recoit donc
  * une correction k = (R + w) / (P + w), ou R est la somme des cellules-jour Suomi-NPP de la
  * zone sur les jours communs, P la prediction par les facteurs nationaux, et w un poids
@@ -62,7 +62,7 @@ interface ZoneFactors {
 }
 
 function calibrateZone(zone: ZoneSpec, cellDays: Float64Array[], store: Store): ZoneFactors {
-  const { nDays, operating, configBits, nationalFactors, nationalRatioQ10, nationalRatioQ90, monthOfDay, yearOfDay } = store;
+  const { nDays, operating, configBits, nationalFactors, nationalRatioQ10, nationalRatioQ90, nationalAnnualMin, nationalAnnualMax, monthOfDay, yearOfDay } = store;
   const local = zone.kind !== "country";
   const k = new Array<number>(N_CONFIG).fill(1);
   const q10 = [...nationalRatioQ10];
@@ -104,11 +104,16 @@ function calibrateZone(zone: ZoneSpec, cellDays: Float64Array[], store: Store): 
 
     // Erreur annuelle en retirant une annee a la fois : k est recalcule sans l'annee testee.
     const errors: number[] = [];
+    const annualRatios: number[] = [];
     for (const { p, r } of byYear.values()) {
-      if (r < MIN_SCORED) continue;
+      if (r < MIN_SCORED || p <= 0) continue;
       const ky = local ? (sumR - r + w) / (sumP - p + w) : 1;
       errors.push(Math.abs(ky * p - r) / r);
+      annualRatios.push(r / (ky * p));
     }
+    // Pour le pays, l'etendue annuelle vient de la validation du pipeline ; pour une zone, des annees communes de la zone.
+    const annualMin = local && annualRatios.length >= 3 ? Math.min(...annualRatios) : nationalAnnualMin[c];
+    const annualMax = local && annualRatios.length >= 3 ? Math.max(...annualRatios) : nationalAnnualMax[c];
     const ratios: number[] = [];
     for (const { p, r } of byMonth.values()) if (r >= MIN_SCORED && p > 0) ratios.push(r / (kc * p));
     const verified = ratios.length >= MIN_MONTHS_VERIFIED;
@@ -124,6 +129,8 @@ function calibrateZone(zone: ZoneSpec, cellDays: Float64Array[], store: Store): 
       monthsScored: ratios.length,
       ratioQ10: q10[c],
       ratioQ90: q90[c],
+      annualRatioMin: annualMin,
+      annualRatioMax: annualMax,
       verified,
     };
   }
@@ -436,11 +443,15 @@ export function calendar(zone: ZoneSpec, store: Store = getStore()): CalendarRes
     const harmonized = rows.reduce((a, r) => a + r.harmonized, 0);
     const estimated = rows.reduce((a, r) => a + r.harmonized * r.estimatedShare, 0);
     const terra = rows.reduce((a, r) => a + r.harmonized * r.terraOnlyShare, 0);
+    // Intervalle annuel : la part estimee est encadree par l'etendue des rapports annuels observes en validation.
+    // (La dispersion mensuelle, plus large, surestimerait l'incertitude d'un total annuel.)
+    const entry = (harmonized > 0 && terra / harmonized > 0.5 ? daily.calibration.configs.T : daily.calibration.configs.TA) ?? null;
+    const observedPart = harmonized - estimated;
     years.push({
       year,
       harmonized,
-      low: rows.reduce((a, r) => a + r.low, 0),
-      high: rows.reduce((a, r) => a + r.high, 0),
+      low: observedPart + estimated * (entry ? entry.annualRatioMin : 1),
+      high: observedPart + estimated * (entry ? entry.annualRatioMax : 1),
       monthsWithData: rows.length,
       unobservedDays: rows.reduce((a, r) => a + r.unobservedDays, 0),
       estimatedShare: harmonized > 0 ? estimated / harmonized : 0,

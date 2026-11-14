@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import {
   Area,
   Bar,
@@ -18,7 +18,7 @@ import {
 } from "recharts";
 
 import { SensorMark, StatusBadge } from "@/components/ui";
-import { fmt1, fmtDelta, fmtInt, fmtPct, MONTHS, MONTHS_SHORT, monthLabel } from "@/lib/format";
+import { fmt1, fmtDelta, fmtInt, fmtPct, MONTHS, MONTHS_LETTER, MONTHS_SHORT, monthLabel } from "@/lib/format";
 import { KIND_LABEL, SENSOR_COLOR, UNIT_SHORT } from "@/lib/labels";
 import type { TrendResult } from "@/lib/science/stats";
 import type { CalendarResponse, MonthBaseline, MonthRecord, YearRecord } from "@/lib/types";
@@ -30,6 +30,22 @@ const INK = "var(--color-ink)";
 const MUTED = "var(--color-ink-3)";
 const SURFACE = "var(--color-surface)";
 const HEAT = "#e2861c";
+
+const NARROW = "(max-width: 640px)";
+/** Vrai sur un ecran etroit : les graphiques y abregent leurs etiquettes. */
+export function useNarrow(): boolean {
+  return useSyncExternalStore(
+    (notify) => {
+      const query = window.matchMedia(NARROW);
+      query.addEventListener("change", notify);
+      return () => query.removeEventListener("change", notify);
+    },
+    () => window.matchMedia(NARROW).matches,
+    () => false,
+  );
+}
+/** Etiquette d'axe d'un mois : abreviation, ou initiale sur ecran etroit. */
+export const monthTick = (narrow: boolean) => (name: string) => (narrow ? MONTHS_LETTER[MONTHS_SHORT.indexOf(name)] ?? name : name);
 
 const axisNumber = (value: number) => (Math.abs(value) >= 1000 ? `${fmt1(value / 1000).replace(",0", "")} k` : fmtInt(value));
 
@@ -93,6 +109,7 @@ export function SeasonalChart({
   height?: number;
   onSelect?: (month: number) => void;
 }) {
+  const narrow = useNarrow();
   const data = useMemo(
     () =>
       baselines.map((b) => {
@@ -131,7 +148,7 @@ export function SeasonalChart({
             style={onSelect ? { cursor: "pointer" } : undefined}
           >
             <CartesianGrid stroke={GRID} vertical={false} />
-            <XAxis dataKey="name" tick={AXIS} tickLine={false} axisLine={{ stroke: GRID }} interval={0} />
+            <XAxis dataKey="name" tick={AXIS} tickLine={false} axisLine={{ stroke: GRID }} interval={0} tickFormatter={monthTick(narrow)} />
             <YAxis tick={AXIS} tickLine={false} axisLine={false} width={46} tickFormatter={axisNumber} />
             <Tooltip
               cursor={{ stroke: "var(--color-line-strong)" }}
@@ -292,7 +309,7 @@ export function AnnualChart({
       years.map((y) => ({
         year: y.year,
         value: y.harmonized,
-        error: y.estimatedShare > 0.5 ? [y.harmonized - y.low, y.high - y.harmonized] : undefined,
+        error: y.complete && y.estimatedShare > 0.5 ? [Math.max(y.harmonized - y.low, 0), Math.max(y.high - y.harmonized, 0)] : undefined,
         estimated: y.estimatedShare > 0.5,
         complete: y.complete,
         trend: trend && y.year >= trend.firstYear && y.year <= trend.lastYear ? trend.intercept + trend.slope * y.year : null,
@@ -345,7 +362,7 @@ export function AnnualChart({
                 return (
                   <TooltipCard title={`Année ${y.year}`}>
                     <TooltipRow label="Indice harmonisé" value={fmtInt(y.harmonized)} />
-                    {row.estimated ? <TooltipRow label="Intervalle" value={`${fmtInt(y.low)} à ${fmtInt(y.high)}`} /> : null}
+                    {row.estimated && y.complete ? <TooltipRow label="Intervalle annuel" value={`${fmtInt(y.low)} à ${fmtInt(y.high)}`} /> : null}
                     {medianAll !== null && y.complete ? <TooltipRow label="Écart à la médiane" value={fmtDelta(y.harmonized, medianAll)} /> : null}
                     <TooltipRow label="Part estimée depuis MODIS" value={fmtPct(y.estimatedShare)} />
                     <p className="mt-1 text-[11.5px] text-ink-3">
@@ -496,6 +513,7 @@ export function SensorCompareChart({
 
 /** Activite mediane par mois calendaire : quels mois sont habituellement les plus actifs. */
 export function ClimatologyChart({ baselines, height = 220 }: { baselines: MonthBaseline[]; height?: number }) {
+  const narrow = useNarrow();
   const data = baselines.map((b) => ({
     name: MONTHS_SHORT[b.month - 1],
     month: b.month,
@@ -514,7 +532,7 @@ export function ClimatologyChart({ baselines, height = 220 }: { baselines: Month
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={data} margin={{ top: 12, right: 18, bottom: 0, left: 0 }} barCategoryGap="24%">
             <CartesianGrid stroke={GRID} vertical={false} />
-            <XAxis dataKey="name" tick={AXIS} tickLine={false} axisLine={{ stroke: GRID }} interval={0} />
+            <XAxis dataKey="name" tick={AXIS} tickLine={false} axisLine={{ stroke: GRID }} interval={0} tickFormatter={monthTick(narrow)} />
             <YAxis tick={AXIS} tickLine={false} axisLine={false} width={46} tickFormatter={axisNumber} />
             <Tooltip
               cursor={{ fill: "var(--color-surface-3)", fillOpacity: 0.6 }}
