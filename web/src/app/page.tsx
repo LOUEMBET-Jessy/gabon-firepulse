@@ -1,31 +1,31 @@
-import { ArrowRight, CalendarDots, ChartLineUp, FileText, Flask, MapTrifold, WarningDiamond } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight, CalendarDots, ChartLineUp, ChatCircleDots, Eye, Flask, GitDiff, Lightbulb, MapTrifold, Scales, ShieldCheck } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 
+import { AssistantMark, BRAND, BrandMark, Wordmark } from "@/components/brand";
+import { AssistantTeaser } from "@/components/landing/assistant-teaser";
 import { Reveal } from "@/components/landing/reveal";
-import { GabonGrid, HarmonizedYears, HeroCalendar, RawGapChart, SeasonBars } from "@/components/landing/visuals";
-import { Logo } from "@/components/shell/shell";
-import { StatusBadge } from "@/components/ui";
+import { GabonGrid, HarmonizedYears, HeroOrbit, MiniCalendar, RawGapChart } from "@/components/landing/visuals";
 import { buttonClass } from "@/lib/classes";
-import { fmt1, fmtDate, fmtDateShort, fmtDelta, fmtInt, fmtPct, MONTHS, monthLabel } from "@/lib/format";
+import { fmt1, fmtDate, fmtInt, fmtPct, MONTHS } from "@/lib/format";
 import { calendar } from "@/lib/server/engine";
 import { queryGrid, regions } from "@/lib/server/queries";
 import { dayToIso, getStore, isoToDay } from "@/lib/server/store";
 
-const CTA = "Ouvrir le tableau de bord";
+const PRIMARY = "Explorer la plateforme";
 
 function Section({ id, children, className }: { id?: string; children: React.ReactNode; className?: string }) {
   return (
-    <section id={id} className={`mx-auto w-full max-w-[1240px] scroll-mt-20 px-5 md:px-8 ${className ?? ""}`}>
+    <section id={id} className={`mx-auto w-full max-w-[1240px] scroll-mt-24 px-5 md:px-8 ${className ?? ""}`}>
       {children}
     </section>
   );
 }
 
-function Heading({ title, children }: { title: string; children?: React.ReactNode }) {
+function Heading({ title, children, center }: { title: string; children?: React.ReactNode; center?: boolean }) {
   return (
-    <div className="max-w-[720px]">
-      <h2 className="text-balance text-[28px] font-semibold leading-[1.12] tracking-[-0.025em] text-ink md:text-[36px]">{title}</h2>
-      {children ? <p className="mt-4 text-[16px] leading-relaxed text-ink-2">{children}</p> : null}
+    <div className={center ? "mx-auto max-w-[720px] text-center" : "max-w-[700px]"}>
+      <h2 className="text-balance text-[30px] font-semibold leading-[1.1] tracking-[-0.03em] text-ink md:text-[40px]">{title}</h2>
+      {children ? <p className="mt-4 text-[16.5px] leading-relaxed text-ink-2">{children}</p> : null}
     </div>
   );
 }
@@ -35,86 +35,174 @@ export default function LandingPage() {
   const national = calendar({ kind: "country" }, store);
   const lastIso = dayToIso(store, store.lastDay);
   const lastYear = Number(lastIso.slice(0, 4));
+  const firstYear = Number(dayToIso(store, store.firstDay).slice(0, 4));
   const yearFirst = isoToDay(store, `${lastYear}-01-01`);
   const grid = queryGrid({ kind: "country" }, yearFirst, store.lastDay, store);
   const byProvince = [...regions(yearFirst, store.lastDay, store).regions].sort((a, b) => b.harmonized - a.harmonized);
   const ta = store.harmonization.calibration.TA!;
   const unit = store.harmonization.diagnostics.unit_comparison;
-  const firstYear = Number(dayToIso(store, store.firstDay).slice(0, 4));
   const flagged = national.months.filter((m) => m.assessment.status === "strong_high" || m.assessment.status === "high");
-  const latestFlag = flagged[flagged.length - 1];
   const assessed = national.months.filter((m) => !["incomplete", "insufficient"].includes(m.assessment.status)).length;
-  const completeYears = national.years.filter((y) => y.complete);
-  const topYear = [...completeYears].sort((a, b) => b.harmonized - a.harmonized)[0];
   const critical = national.criticalMonths.map((m) => MONTHS[m - 1]);
+  const staticShare = 1 - store.meta.satellites.reduce((a, s) => a + (s.by_type["0"] ?? 0), 0) / store.n;
 
-  const figures: [string, string, string][] = [
-    [fmtInt(store.n), "détections NASA FIRMS lues", `${store.meta.sources.length} fichiers annuels, 4 satellites`],
-    [`${lastYear - firstYear + 1} ans`, "de série continue", `du ${fmtDateShort(dayToIso(store, store.firstDay))} au ${fmtDateShort(lastIso)}`],
-    [fmtPct(ta.validation.annual_mean_abs_pct_error, 1), "d'erreur annuelle du calage", "MODIS vers VIIRS, mesurée hors échantillon"],
-    [fmtInt(assessed), "mois évalués", `${flagged.length} au-dessus de leur référence saisonnière`],
+  const modules = [
+    {
+      href: "/map",
+      icon: MapTrifold,
+      title: "Carte interactive",
+      text: "Chaque détection à sa place, capteur par capteur, ou la grille harmonisée de 5 km. Dessinez votre zone, ouvrez la fiche d'un point.",
+      visual: <GabonGrid grid={grid} />,
+      className: "md:col-span-3 md:row-span-2",
+      tone: "bg-surface",
+    },
+    {
+      href: "/calendar",
+      icon: CalendarDots,
+      title: "Calendrier historique",
+      text: `Vingt-cinq ans, mois par mois.${critical.length ? ` La saison active va de ${critical[0]} à ${critical[critical.length - 1]}.` : ""}`,
+      visual: <MiniCalendar months={national.months} years={6} />,
+      className: "md:col-span-3",
+      tone: "bg-[linear-gradient(160deg,#1c2a3a,#10213a_70%)]",
+    },
+    {
+      href: "/trends",
+      icon: ChartLineUp,
+      title: "Analyses et tendances",
+      text: "Totaux annuels, pente robuste et test de significativité, comparaison de deux années.",
+      visual: <HarmonizedYears years={national.years} />,
+      className: "md:col-span-3",
+      tone: "bg-surface",
+    },
+    {
+      href: "/compare",
+      icon: GitDiff,
+      title: "Comparaison MODIS / VIIRS",
+      text: `Deux capteurs, deux échelles : VIIRS signale ${fmt1(unit.raw_detections.factor_global)} fois plus de détections. Voyez ce que l'harmonisation corrige.`,
+      visual: <RawGapChart months={national.months} />,
+      className: "md:col-span-4",
+      tone: "bg-[linear-gradient(160deg,#142b48,#10213a_65%)]",
+    },
+    {
+      href: "/methodology",
+      icon: Flask,
+      title: "Méthodologie et données",
+      text: "Chaque chiffre a sa source, sa date et ses limites.",
+      visual: (
+        <dl className="grid grid-cols-2 gap-3">
+          {(
+            [
+              [fmtPct(ta.validation.annual_mean_abs_pct_error, 1), "erreur annuelle du calage"],
+              [fmtInt(store.meta.sources.length), "fichiers NASA tracés"],
+              [fmtInt(store.metadata.rows.rejected), "ligne rejetée au contrôle"],
+              [String(store.harmonization.gaps.length), "pannes de capteur relayées"],
+            ] as const
+          ).map(([v, l]) => (
+            <div key={l} className="rounded-[12px] bg-bg/50 p-3">
+              <dd className="num text-[20px] font-semibold text-ink">{v}</dd>
+              <dt className="mt-0.5 text-[12px] leading-snug text-ink-3">{l}</dt>
+            </div>
+          ))}
+        </dl>
+      ),
+      className: "md:col-span-2",
+      tone: "bg-surface",
+    },
   ];
 
-  const steps: [string, string][] = [
-    ["Filtrer", `Seules les détections classées « feu de végétation présumé » et de confiance non faible entrent dans l'indice. Les sources statiques, par exemple des torchères, soit ${fmtPct(1 - store.meta.satellites.reduce((a, s) => a + (s.by_type["0"] ?? 0), 0) / store.n)} des détections, sont écartées.`],
-    ["Compter", "Une cellule de 0,05° compte une fois par jour où elle est active, quel que soit le nombre de pixels signalés. Un même feu ne pèse pas dix fois plus parce que le capteur est plus fin."],
-    ["Caler", `Sur les années communes ${ta.overlap_first_year} à ${ta.overlap_last_year}, MODIS est converti en équivalent VIIRS, mois par mois, puis le facteur est ajusté à chaque zone. L'erreur est mesurée en retirant une année à la fois.`],
-    ["Relayer", "Chaque jour est alimenté par un seul capteur : VIIRS dès qu'il observe, MODIS calé avant 2012. Aucun total MODIS plus VIIRS n'est calculé, donc aucune activité n'est comptée deux fois."],
+  const steps = [
+    {
+      icon: Eye,
+      verb: "Observer",
+      lead: "Collecter les détections satellitaires",
+      text: `${fmtInt(store.n)} détections lues dans ${store.meta.sources.length} fichiers NASA FIRMS, de ${firstYear} à ${lastYear}, par quatre satellites. Chaque ligne garde son capteur, sa date et sa source.`,
+    },
+    {
+      icon: Scales,
+      verb: "Harmoniser",
+      lead: "Rendre les observations comparables",
+      text: `Écarter les sources statiques (${fmtPct(staticShare)} des détections), compter les cellules de 5 km actives par jour, convertir MODIS dans l'unité de VIIRS, et n'utiliser qu'un capteur par jour. Aucune activité comptée deux fois.`,
+    },
+    {
+      icon: Lightbulb,
+      verb: "Comprendre",
+      lead: "Lire les tendances et les écarts",
+      text: `Un calendrier continu, des tendances testées, et ${fmtInt(assessed)} mois comparés à leur saison habituelle : ${flagged.length} sortent nettement au-dessus. Des signaux à vérifier, jamais des alertes.`,
+    },
   ];
 
   return (
     <div className="flex min-h-[100dvh] flex-col">
-      <header className="sticky top-0 z-10 border-b border-line bg-bg/85 backdrop-blur-md">
-        <div className="mx-auto flex h-16 w-full max-w-[1240px] items-center justify-between gap-4 px-5 md:px-8">
-          <Logo />
-          <nav aria-label="Sections" className="hidden items-center gap-6 text-[13.5px] text-ink-2 lg:flex">
-            <a href="#probleme" className="hover:text-ink">Le problème</a>
-            <a href="#methode" className="hover:text-ink">La méthode</a>
-            <a href="#plateforme" className="hover:text-ink">La plateforme</a>
+      <header className="sticky top-0 z-10 border-b border-line/60 bg-bg/85 backdrop-blur-md">
+        <div className="mx-auto flex h-[68px] w-full max-w-[1240px] items-center justify-between gap-4 px-5 md:px-8">
+          <Link href="/" className="flex items-center gap-2.5" aria-label={`${BRAND.name}, accueil`}>
+            <BrandMark size={34} />
+            <Wordmark className="text-[19px]" />
+          </Link>
+          <nav aria-label="Sections" className="hidden items-center gap-7 text-[14px] text-ink-2 lg:flex">
+            <a href="#decouvrir" className="hover:text-ink">Fonctionnalités</a>
+            <a href="#methode" className="hover:text-ink">Comment ça marche</a>
+            <a href="#assistant" className="hover:text-ink">Assistant IA</a>
             <a href="#gabon" className="hover:text-ink">Le Gabon</a>
-            <a href="#sources" className="hover:text-ink">Sources</a>
+            <Link href="/methodology" className="hover:text-ink">Méthode</Link>
           </nav>
-          <Link href="/dashboard" className={buttonClass("primary", "md")}>
-            {CTA}
+          <Link href="/dashboard" className={`${buttonClass("primary", "md")} hidden sm:inline-flex`}>
+            {PRIMARY}
           </Link>
         </div>
       </header>
 
-      <main className="flex flex-1 flex-col gap-24 pb-24 md:gap-32">
+      <main className="flex flex-1 flex-col gap-28 pb-24 md:gap-36">
         {/* Hero */}
-        <Section className="grid items-center gap-10 pt-12 md:pt-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14">
-          <div className="animate-fade-up">
-            <p className="text-[13px] font-medium text-accent">NASA Space Apps Challenge 2026 · Harmonisation MODIS et VIIRS</p>
-            <h1 className="mt-4 text-balance text-[38px] font-semibold leading-[1.05] tracking-[-0.035em] text-ink md:text-[54px]">Vingt-cinq ans de feux détectés, une seule mesure.</h1>
-            <p className="mt-5 max-w-[52ch] text-[17px] leading-relaxed text-ink-2">
-              Gabon FirePulse harmonise les détections MODIS et VIIRS de la NASA en un calendrier continu, de {firstYear} à {lastYear}.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link href="/dashboard" className={`${buttonClass("primary", "md")} h-11 px-5 text-[14.5px]`}>
-                {CTA}
-                <ArrowRight size={16} weight="bold" />
-              </Link>
-              <Link href="/methodology" className={`${buttonClass("secondary", "md")} h-11 px-5 text-[14.5px]`}>
-                Lire la méthode
-              </Link>
+        <div className="relative overflow-hidden">
+          <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[640px] bg-[radial-gradient(60%_60%_at_70%_20%,rgb(18_191_210/0.10),transparent_70%),radial-gradient(40%_40%_at_20%_80%,rgb(34_160_107/0.08),transparent_70%)]" />
+          <Section className="relative grid items-center gap-10 pt-12 md:pt-16 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-6">
+            <div className="animate-fade-up">
+              <p className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface/60 px-3 py-1 text-[12.5px] font-medium text-ink-2">
+                <span aria-hidden className="size-1.5 rounded-full bg-ember" />
+                Données NASA MODIS et VIIRS, Gabon, {firstYear} à {lastYear}
+              </p>
+              <h1 className="mt-6 text-[56px] font-semibold leading-[0.98] tracking-[-0.045em] text-ink md:text-[78px]">
+                Hot<span className="text-ember">-</span>Spot
+              </h1>
+              <p className="mt-4 text-[22px] font-medium tracking-[-0.015em] text-ink md:text-[26px]">
+                Observer. <span className="text-accent">Comprendre.</span> <span className="text-leaf-ink">Préserver.</span>
+              </p>
+              <p className="mt-5 max-w-[46ch] text-[17px] leading-relaxed text-ink-2">
+                Vingt-cinq ans d'observations satellitaires des feux, rendues comparables et lisibles, avec un assistant pour vous guider.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link href="/dashboard" className={`${buttonClass("primary", "md")} h-12 px-6 text-[15px]`}>
+                  {PRIMARY}
+                  <ArrowRight size={17} weight="bold" />
+                </Link>
+                <a href="#decouvrir" className={`${buttonClass("secondary", "md")} h-12 px-6 text-[15px]`}>
+                  Découvrir Hot-Spot
+                </a>
+              </div>
             </div>
-          </div>
-          <div className="animate-fade-up rounded-panel border border-line bg-surface p-4 [animation-delay:120ms] md:p-5">
-            <HeroCalendar months={national.months} />
-            <p className="mt-3 border-t border-line pt-3 text-[12px] leading-relaxed text-ink-3">
-              Indice harmonisé mensuel pour le Gabon, calculé sur les fichiers chargés. Plus clair : plus d'activité détectée. Hachures : valeur estimée depuis MODIS, avant l'arrivée de VIIRS.
-            </p>
-          </div>
-        </Section>
+            <div className="animate-fade-up [animation-delay:120ms]">
+              <HeroOrbit grid={grid} year={lastYear} />
+              <p className="-mt-2 text-center text-[12px] text-ink-3">Cellules de 5 km où une activité a été détectée en {lastYear}, calculées sur les fichiers chargés.</p>
+            </div>
+          </Section>
+        </div>
 
         {/* Chiffres verifies */}
         <Section>
           <Reveal>
-            <dl className="grid grid-cols-2 gap-y-8 border-y border-line py-8 lg:grid-cols-4 lg:divide-x lg:divide-line">
-              {figures.map(([value, label, detail]) => (
-                <div key={label} className="px-1 lg:px-6 lg:first:pl-0">
-                  <dd className="num text-[30px] font-semibold leading-none tracking-[-0.03em] text-ink md:text-[36px]">{value}</dd>
-                  <dt className="mt-2 text-[14px] text-ink">{label}</dt>
+            <dl className="grid grid-cols-2 gap-x-6 gap-y-8 lg:grid-cols-4">
+              {(
+                [
+                  [fmtInt(store.n), "détections NASA lues", `${store.meta.sources.length} fichiers, 4 satellites`],
+                  [`${lastYear - firstYear + 1} ans`, "de série continue", `jusqu'au ${fmtDate(lastIso)}`],
+                  [fmtPct(ta.validation.annual_mean_abs_pct_error, 1), "d'erreur annuelle du calage", "MODIS vers VIIRS, hors échantillon"],
+                  [fmtInt(assessed), "mois évalués", `${flagged.length} au-dessus de leur saison`],
+                ] as const
+              ).map(([value, label, detail]) => (
+                <div key={label} className="border-l-2 border-ember/70 pl-4">
+                  <dd className="num text-[30px] font-semibold leading-none tracking-[-0.03em] text-ink md:text-[38px]">{value}</dd>
+                  <dt className="mt-2 text-[14.5px] text-ink">{label}</dt>
                   <p className="mt-0.5 text-[12.5px] text-ink-3">{detail}</p>
                 </div>
               ))}
@@ -122,196 +210,194 @@ export default function LandingPage() {
           </Reveal>
         </Section>
 
-        {/* Probleme */}
-        <Section id="probleme" className="flex flex-col gap-10">
+        {/* Fonctionnalites */}
+        <Section id="decouvrir" className="flex flex-col gap-10">
           <Reveal>
-            <Heading title="Deux capteurs qui ne comptent pas la même chose">
-              MODIS observe depuis 2000 avec des pixels de 1 km. VIIRS a pris le relais en 2012 avec des pixels de 375 m, plus sensibles. Au Gabon, VIIRS signale environ {fmt1(unit.raw_detections.factor_global)} fois plus de détections pour la même activité. Lire les deux séries bout à bout ferait croire à une explosion des feux en 2012.
+            <Heading title="Tout ce qu'il faut pour lire l'activité des feux">
+              Cinq espaces qui partagent la même zone et la même période. Choisissez un territoire une fois, retrouvez-le partout.
             </Heading>
           </Reveal>
-          <div className="grid gap-5 lg:grid-cols-2">
-            <Reveal className="flex flex-col rounded-panel border border-line bg-surface p-5">
-              <h3 className="text-[15px] font-medium text-ink">Détections retenues par an, sans harmonisation</h3>
-              <p className="mt-1 text-[13px] text-ink-3">Carrés : MODIS. Disques : VIIRS Suomi-NPP. Mêmes années, même territoire.</p>
-              <div className="mt-4 flex-1">
-                <RawGapChart months={national.months} />
-              </div>
-            </Reveal>
-            <Reveal delay={0.08} className="flex flex-col rounded-panel border border-line bg-surface p-5">
-              <h3 className="text-[15px] font-medium text-ink">Indice harmonisé annuel</h3>
-              <p className="mt-1 text-[13px] text-ink-3">Cellules-jour actives, en équivalent VIIRS. Barres hachurées : estimées depuis MODIS.</p>
-              <div className="mt-4 flex flex-1 flex-col justify-end">
-                <HarmonizedYears years={national.years} />
-              </div>
-              <p className="mt-3 border-t border-line pt-3 text-[13px] leading-relaxed text-ink-2">
-                La série devient lisible d'un bout à l'autre{topYear ? ` : l'année complète la plus active est ${topYear.year}, avec ${fmtInt(topYear.harmonized)} cellules-jour` : ""}.
-                {national.trends.full ? ` Sur ${national.trends.full.n} années, le test de Mann-Kendall donne une valeur p de ${national.trends.full.pValue.toFixed(2).replace(".", ",")}.` : ""}
-              </p>
-            </Reveal>
+          <div className="grid gap-4 md:auto-rows-[minmax(250px,auto)] md:grid-cols-6">
+            {modules.map((m, i) => {
+              const Icon = m.icon;
+              return (
+                <Reveal key={m.href} delay={i * 0.05} className={m.className}>
+                  <Link href={m.href} className={`group flex h-full flex-col gap-5 rounded-[22px] p-6 transition-transform duration-300 hover:-translate-y-1 ${m.tone}`}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <span className="flex size-10 items-center justify-center rounded-[12px] bg-bg/60 text-accent">
+                          <Icon size={21} />
+                        </span>
+                        <h3 className="mt-4 text-[19px] font-semibold tracking-[-0.015em] text-ink">{m.title}</h3>
+                        <p className="mt-1.5 max-w-[48ch] text-[14px] leading-relaxed text-ink-2">{m.text}</p>
+                      </div>
+                      <ArrowRight size={18} className="mt-1 shrink-0 text-ink-3 transition-transform group-hover:translate-x-1 group-hover:text-accent" />
+                    </div>
+                    <div className="mt-auto">{m.visual}</div>
+                  </Link>
+                </Reveal>
+              );
+            })}
           </div>
         </Section>
 
-        {/* Methode */}
-        <Section id="methode" className="grid gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">
-          <Reveal className="lg:sticky lg:top-28 lg:self-start">
-            <Heading title="Une harmonisation que l'on peut vérifier">Quatre règles simples, appliquées de la même façon à tout le pays, à une province ou à une zone dessinée sur la carte.</Heading>
-            <Link href="/methodology" className="group mt-6 inline-flex items-center gap-1.5 text-[14px] font-medium text-accent hover:text-accent-strong">
-              Tous les chiffres de validation
+        {/* Pedagogie */}
+        <Section id="methode" className="flex flex-col gap-12">
+          <Reveal>
+            <Heading title="Des pixels satellitaires à une lecture fiable" center>
+              Les satellites ne voient pas des incendies : ils signalent des pixels anormalement chauds. Hot-Spot transforme ces signaux en information exploitable, en trois temps.
+            </Heading>
+          </Reveal>
+          <ol className="relative grid gap-5 md:grid-cols-3">
+            {steps.map((s, i) => {
+              const Icon = s.icon;
+              return (
+                <Reveal key={s.verb} delay={i * 0.08}>
+                  <li className="relative flex h-full flex-col items-start gap-4 rounded-[22px] bg-surface p-6">
+                    <span className={`flex size-[60px] items-center justify-center rounded-full border-2 bg-bg ${["border-accent text-accent", "border-ember text-ember", "border-leaf text-leaf-ink"][i]}`}>
+                      <Icon size={26} />
+                    </span>
+                    <div>
+                      <h3 className="text-[24px] font-semibold tracking-[-0.02em] text-ink">{s.verb}</h3>
+                      <p className="mt-1 text-[14.5px] font-medium text-ink">{s.lead}</p>
+                    </div>
+                    <p className="text-[14.5px] leading-relaxed text-ink-2">{s.text}</p>
+                  </li>
+                </Reveal>
+              );
+            })}
+          </ol>
+          <Reveal className="flex justify-center">
+            <Link href="/methodology" className="group inline-flex items-center gap-1.5 text-[14.5px] font-medium text-accent hover:text-accent-strong">
+              Voir tous les chiffres de validation
               <ArrowRight size={15} weight="bold" className="transition-transform group-hover:translate-x-0.5" />
             </Link>
           </Reveal>
-          <ol className="flex flex-col">
-            {steps.map(([verb, text], i) => (
-              <Reveal key={verb} delay={i * 0.05}>
-                <li className="grid grid-cols-[92px_minmax(0,1fr)] gap-4 border-t border-line py-6 first:border-t-0 first:pt-0 md:grid-cols-[130px_minmax(0,1fr)]">
-                  <h3 className="text-[20px] font-semibold tracking-[-0.02em] text-ink md:text-[22px]">{verb}</h3>
-                  <p className="text-[15px] leading-relaxed text-ink-2">{text}</p>
-                </li>
-              </Reveal>
-            ))}
-          </ol>
         </Section>
 
-        {/* Plateforme */}
-        <Section id="plateforme" className="flex flex-col gap-10">
-          <Reveal>
-            <Heading title="De la détection brute à une lecture exploitable">Choisissez une zone et une période. Chaque écran répond à une question, cite ses sources et affiche ses limites.</Heading>
-          </Reveal>
-          <div className="grid gap-5 md:grid-cols-6">
-            <Reveal className="md:col-span-4">
-              <Link href="/calendar" className="group flex h-full flex-col justify-between gap-6 rounded-panel border border-line bg-surface p-6 transition-colors hover:border-line-strong">
+        {/* Assistant */}
+        <Section id="assistant">
+          <Reveal className="grid gap-10 overflow-hidden rounded-[28px] bg-[linear-gradient(140deg,#163152,#10213a_55%,#0f2a2b)] p-7 md:p-12 lg:grid-cols-2 lg:gap-14">
+            <div>
+              <div className="flex items-center gap-3">
+                <AssistantMark size={48} />
                 <div>
-                  <CalendarDots size={22} className="text-accent" />
-                  <h3 className="mt-3 text-[18px] font-medium text-ink">Calendrier d'activité</h3>
-                  <p className="mt-1.5 max-w-[52ch] text-[14px] leading-relaxed text-ink-2">
-                    Par jour, semaine, mois ou année. {critical.length ? `Au Gabon, ${critical.join(", ")} concentrent 80 % de l'activité médiane.` : ""}
-                  </p>
-                </div>
-                <SeasonBars baselines={national.baselines} />
-              </Link>
-            </Reveal>
-            <Reveal delay={0.05} className="md:col-span-2">
-              <Link href="/anomalies" className="group flex h-full flex-col gap-4 rounded-panel border border-line bg-[linear-gradient(160deg,#1a1420,#0f1626_60%)] p-6 transition-colors hover:border-line-strong">
-                <WarningDiamond size={22} className="text-warning" />
-                <h3 className="text-[18px] font-medium text-ink">Périodes inhabituelles</h3>
-                <p className="text-[14px] leading-relaxed text-ink-2">Un écart à la saison habituelle, avec sa référence, son score et sa fiabilité. Jamais une prédiction.</p>
-                {latestFlag ? (
-                  <div className="mt-auto rounded-control border border-line bg-bg/50 p-3">
-                    <p className="text-[13px] font-medium capitalize text-ink">{monthLabel(latestFlag.month, latestFlag.year)}</p>
-                    <p className="num mt-1 text-[12.5px] text-ink-2">
-                      {fmtInt(latestFlag.harmonized)} pour une médiane de {fmtInt(latestFlag.assessment.median)} ({latestFlag.assessment.median ? fmtDelta(latestFlag.harmonized, latestFlag.assessment.median) : ""})
-                    </p>
-                    <div className="mt-2">
-                      <StatusBadge status={latestFlag.assessment.status} />
-                    </div>
-                  </div>
-                ) : null}
-              </Link>
-            </Reveal>
-            <Reveal className="md:col-span-2">
-              <Link href="/map" className="group flex h-full flex-col gap-3 rounded-panel border border-line bg-surface p-6 transition-colors hover:border-line-strong">
-                <MapTrifold size={22} className="text-accent" />
-                <h3 className="text-[18px] font-medium text-ink">Carte des détections</h3>
-                <p className="text-[14px] leading-relaxed text-ink-2">Points natifs par capteur ou grille harmonisée. Dessinez une zone, ouvrez la fiche d'une détection, remontez jusqu'à sa ligne dans le fichier NASA.</p>
-              </Link>
-            </Reveal>
-            <Reveal delay={0.05} className="md:col-span-2">
-              <Link href="/trends" className="group flex h-full flex-col gap-3 rounded-panel border border-line bg-surface p-6 transition-colors hover:border-line-strong">
-                <ChartLineUp size={22} className="text-accent" />
-                <h3 className="text-[18px] font-medium text-ink">Tendances</h3>
-                <p className="text-[14px] leading-relaxed text-ink-2">Série mensuelle depuis {firstYear}, pente robuste, comparaison de deux années, et la démonstration de ce que le calage corrige.</p>
-              </Link>
-            </Reveal>
-            <Reveal delay={0.1} className="md:col-span-2">
-              <div className="flex h-full flex-col gap-3 rounded-panel border border-line bg-surface p-6">
-                <FileText size={22} className="text-accent" />
-                <h3 className="text-[18px] font-medium text-ink">Rapports et méthode</h3>
-                <p className="text-[14px] leading-relaxed text-ink-2">Synthèse en PDF, exports CSV et GeoJSON fidèles aux filtres, et une page qui expose chaque hypothèse.</p>
-                <div className="mt-auto flex flex-wrap gap-x-5 gap-y-1 text-[13.5px] font-medium">
-                  <Link href="/reports" className="text-accent hover:text-accent-strong">
-                    Rapports
-                  </Link>
-                  <Link href="/methodology" className="inline-flex items-center gap-1 text-accent hover:text-accent-strong">
-                    <Flask size={15} />
-                    Méthode
-                  </Link>
+                  <p className="text-[20px] font-semibold tracking-[-0.02em] text-ink">{BRAND.assistant}</p>
+                  <p className="text-[13px] text-ink-3">Votre compagnon d'exploration</p>
                 </div>
               </div>
-            </Reveal>
-          </div>
+              <h2 className="mt-7 text-balance text-[30px] font-semibold leading-[1.1] tracking-[-0.03em] text-ink md:text-[38px]">Demandez. Il explique, et il agit.</h2>
+              <p className="mt-4 max-w-[52ch] text-[16px] leading-relaxed text-ink-2">
+                Pas besoin d'être spécialiste de la télédétection. Décrivez ce que vous cherchez : l'assistant règle la carte et la période à votre place, lit les vrais chiffres et vous dit ce qu'ils signifient, avec leurs limites.
+              </p>
+              <ul className="mt-7 grid gap-4 sm:grid-cols-3">
+                {(
+                  [
+                    [ChatCircleDots, "Expliquer", "Les écrans, les notions, la méthode."],
+                    [MapTrifold, "Agir", "Zone, période, carte, comparaison, export."],
+                    [ShieldCheck, "Interpréter", "Observé, interprétation, limites."],
+                  ] as const
+                ).map(([Icon, title, text]) => (
+                  <li key={title}>
+                    <Icon size={22} className="text-accent" />
+                    <p className="mt-2 text-[15px] font-medium text-ink">{title}</p>
+                    <p className="mt-0.5 text-[13px] leading-relaxed text-ink-3">{text}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="flex flex-col justify-center gap-3">
+              <p className="text-[13px] font-medium text-ink-3">Essayez par exemple</p>
+              <AssistantTeaser />
+              <p className="text-[12.5px] leading-relaxed text-ink-3">
+                Les actions sensibles, comme un export, attendent toujours votre confirmation. L'assistant ne présente jamais une détection comme un incendie confirmé, ni un écart comme une prédiction.
+              </p>
+            </div>
+          </Reveal>
         </Section>
 
         {/* Territoire */}
         <Section id="gabon" className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:gap-16">
-          <Reveal className="rounded-panel border border-line bg-surface p-4 md:p-6">
+          <Reveal className="rounded-[22px] bg-surface p-5 md:p-7">
             <GabonGrid grid={grid} />
-            <p className="mt-3 border-t border-line pt-3 text-[12px] leading-relaxed text-ink-3">
-              Cellules de 0,05° où une activité a été détectée en {lastYear}. Plus clair : plus de jours actifs. Limites des provinces : geoBoundaries.
-            </p>
+            <p className="mt-3 text-[12px] leading-relaxed text-ink-3">Cellules de 0,05° actives en {lastYear}. Plus clair : plus de jours actifs. Limites des provinces : geoBoundaries.</p>
           </Reveal>
           <Reveal delay={0.06}>
-            <Heading title="Le Gabon comme terrain d'essai">
-              L'activité détectée n'est pas répartie uniformément. En {lastYear}, {fmtInt(grid.cells.length)} cellules ont été actives au moins un jour, et {byProvince[0].name} porte à elle seule {fmtPct(byProvince[0].share)} de l'indice.
+            <Heading title="Le Gabon, territoire pilote">
+              En {lastYear}, {fmtInt(grid.cells.length)} cellules ont été actives au moins un jour. {byProvince[0].name} concentre à elle seule {fmtPct(byProvince[0].share)} de l'indice.
             </Heading>
             <ul className="mt-6 flex flex-col">
               {byProvince.slice(0, 4).map((r) => (
-                <li key={r.index} className="flex items-baseline justify-between gap-4 border-t border-line py-2.5 text-[14px]">
-                  <span className="text-ink">{r.name}</span>
-                  <span className="num text-ink-2">
-                    {fmtPct(r.share)} <span className="text-ink-3">de l'indice {lastYear}</span>
+                <li key={r.index} className="flex items-center gap-4 border-t border-line py-3 text-[14.5px]">
+                  <span className="w-[140px] shrink-0 text-ink">{r.name}</span>
+                  <span className="h-1.5 flex-1 overflow-hidden rounded-full">
+                    <span className="block h-full rounded-full bg-ember" style={{ width: `${(r.share / byProvince[0].share) * 100}%` }} />
                   </span>
+                  <span className="num w-[52px] text-right text-ink-2">{fmtPct(r.share)}</span>
                 </li>
               ))}
             </ul>
             <p className="mt-5 text-[14px] leading-relaxed text-ink-3">
-              Le choix du pays est un cas d'usage. La plateforme ne suppose pas que le feu cause la perte de forêt et n'attribue aucune cause. La même méthode s'applique à tout territoire couvert par FIRMS.
+              Le choix du pays est un cas d'usage. Hot-Spot n'attribue aucune cause aux feux, et la même méthode s'applique à tout territoire couvert par FIRMS.
             </p>
-          </Reveal>
-        </Section>
-
-        {/* Sources et limites */}
-        <Section id="sources" className="grid gap-10 border-t border-line pt-14 lg:grid-cols-2 lg:gap-16">
-          <Reveal>
-            <h2 className="text-[22px] font-semibold tracking-[-0.02em] text-ink">Sources</h2>
-            <div className="mt-4 flex flex-col gap-3 text-[14.5px] leading-relaxed text-ink-2">
-              <p>
-                Détections : NASA FIRMS, archives annuelles par pays, produits MODIS (Terra, Aqua) et VIIRS 375 m (Suomi-NPP, NOAA-20). Fichiers téléchargés le {fmtDate(store.metadata.firms.accessed_last.slice(0, 10))} et lus localement : l'application fonctionne sans connexion.
-              </p>
-              <p>Limites administratives : geoBoundaries. Fond de carte facultatif : NASA GIBS, Blue Marble.</p>
-              <p>Chaque fichier garde son adresse, sa date d'accès et son empreinte. Chaque détection exportée renvoie à sa ligne d'origine.</p>
-            </div>
-          </Reveal>
-          <Reveal delay={0.06}>
-            <h2 className="text-[22px] font-semibold tracking-[-0.02em] text-ink">Ce que ces données ne disent pas</h2>
-            <div className="mt-4 flex flex-col gap-3 text-[14.5px] leading-relaxed text-ink-2">
-              <p>Une détection est le centre d'un pixel signalé comme anomalie thermique. Ce n'est ni un incendie confirmé, ni une surface brûlée, ni une cause.</p>
-              <p>Les nuages cachent des feux : une valeur nulle signifie « aucune détection », pas « aucun feu ». Les valeurs d'avant 2012 sont des estimations, avec une incertitude affichée.</p>
-              <p>L'archive s'arrête au {fmtDate(lastIso)}. Ce n'est pas du temps réel, et ce n'est pas un système d'alerte.</p>
-            </div>
           </Reveal>
         </Section>
 
         {/* Appel final */}
         <Section>
-          <Reveal className="flex flex-col items-start justify-between gap-6 rounded-panel border border-line bg-[linear-gradient(120deg,#151e33,#0f1626)] p-8 md:flex-row md:items-center md:p-10">
+          <Reveal className="flex flex-col items-start justify-between gap-6 rounded-[28px] border border-line-strong p-8 md:flex-row md:items-center md:p-12">
             <div>
-              <h2 className="text-[24px] font-semibold tracking-[-0.02em] text-ink md:text-[28px]">Explorer les données</h2>
-              <p className="mt-2 max-w-[56ch] text-[15px] leading-relaxed text-ink-2">Commencez par l'année {lastYear} pour le pays entier, puis resserrez sur une province ou une saison.</p>
+              <h2 className="text-[28px] font-semibold tracking-[-0.025em] text-ink md:text-[34px]">Prêt à explorer ?</h2>
+              <p className="mt-2 max-w-[56ch] text-[15.5px] leading-relaxed text-ink-2">Commencez par l'année {lastYear} pour le pays entier. Une visite guidée vous attend à la première visite.</p>
             </div>
-            <Link href="/dashboard" className={`${buttonClass("primary", "md")} h-11 shrink-0 px-5 text-[14.5px]`}>
-              {CTA}
-              <ArrowRight size={16} weight="bold" />
+            <Link href="/dashboard" className={`${buttonClass("primary", "md")} h-12 shrink-0 px-6 text-[15px]`}>
+              {PRIMARY}
+              <ArrowRight size={17} weight="bold" />
             </Link>
           </Reveal>
         </Section>
       </main>
 
-      <footer className="border-t border-line">
-        <div className="mx-auto flex w-full max-w-[1240px] flex-col gap-3 px-5 py-8 text-[12.5px] leading-relaxed text-ink-3 md:flex-row md:items-start md:justify-between md:px-8">
-          <p className="max-w-[70ch]">
-            Projet étudiant indépendant réalisé pour le NASA Space Apps Challenge 2026, défi « Harmonization of MODIS and VIIRS Hot Spots ». Gabon FirePulse n'est ni un produit officiel de la NASA ni un service opérationnel d'alerte incendie.
-          </p>
-          <p className="shrink-0">Données : NASA FIRMS. Limites : geoBoundaries.</p>
+      <footer className="border-t border-line bg-bg-deep">
+        <div className="mx-auto grid w-full max-w-[1240px] gap-10 px-5 py-12 md:grid-cols-[1.4fr_1fr_1fr_1fr] md:px-8">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <BrandMark size={32} />
+              <Wordmark className="text-[18px]" />
+            </div>
+            <p className="mt-3 text-[14px] text-ink-2">{BRAND.signature}</p>
+            <p className="mt-3 max-w-[38ch] text-[12.5px] leading-relaxed text-ink-3">
+              Projet étudiant indépendant, NASA Space Apps Challenge 2026, défi « Harmonization of MODIS and VIIRS Hot Spots ». Ni produit officiel de la NASA, ni service d'alerte incendie.
+            </p>
+          </div>
+          {(
+            [
+              ["Explorer", [["Vue d'ensemble", "/dashboard"], ["Carte des détections", "/map"], ["Calendrier", "/calendar"], ["Périodes inhabituelles", "/anomalies"]]],
+              ["Comprendre", [["Analyses et tendances", "/trends"], ["Comparaison MODIS / VIIRS", "/compare"], ["Méthode et données", "/methodology"], ["Rapports et exports", "/reports"]]],
+            ] as const
+          ).map(([title, links]) => (
+            <nav key={title} aria-label={title}>
+              <p className="text-[13px] font-medium text-ink">{title}</p>
+              <ul className="mt-3 flex flex-col gap-2 text-[13.5px]">
+                {links.map(([label, href]) => (
+                  <li key={href}>
+                    <Link href={href} className="text-ink-3 hover:text-ink">
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+          <div>
+            <p className="text-[13px] font-medium text-ink">Crédits</p>
+            <ul className="mt-3 flex flex-col gap-2 text-[13px] leading-relaxed text-ink-3">
+              <li>Détections : NASA FIRMS (LANCE, ESDIS)</li>
+              <li>Limites : geoBoundaries, CC BY-SA 3.0</li>
+              <li>Fond de carte facultatif : NASA GIBS</li>
+              <li>Données consultées le {fmtDate(store.metadata.firms.accessed_last.slice(0, 10))}</li>
+            </ul>
+          </div>
         </div>
       </footer>
     </div>

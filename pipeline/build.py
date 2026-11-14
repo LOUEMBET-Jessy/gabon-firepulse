@@ -1,4 +1,4 @@
-"""Construit les donnees traitees de Gabon FirePulse a partir de data/raw/.
+"""Construit les donnees traitees de Hot-Spot a partir de data/raw/.
 
 Sorties (web/data/, lues cote serveur par l'application) :
   detections.bin + detections.meta.json  detections normalisees, format colonne
@@ -22,8 +22,8 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from firepulse import harmonize as hz  # noqa: E402
-from firepulse.config import (  # noqa: E402
+from hotspot import harmonize as hz  # noqa: E402
+from hotspot.config import (  # noqa: E402
     CONFIGS,
     CV_MIN_REFERENCE,
     ELIGIBLE_TYPE,
@@ -43,8 +43,8 @@ from firepulse.config import (  # noqa: E402
     WEB_DATA_DIR,
     WEB_GEO_DIR,
 )
-from firepulse.geo import assign_provinces, cell_index, load_provinces  # noqa: E402
-from firepulse.ingest import read_source, validate_and_normalize  # noqa: E402
+from hotspot.geo import assign_provinces, cell_index, load_provinces  # noqa: E402
+from hotspot.ingest import read_source, validate_and_normalize  # noqa: E402
 
 COLUMNS = [  # (nom, type numpy little-endian, type annonce au lecteur)
     ("lat", "<f4", "f32"), ("lon", "<f4", "f32"), ("frp", "<f4", "f32"), ("bright", "<f4", "f32"),

@@ -14,6 +14,7 @@ import { fmtDate, fmtInt, lastDayOfMonth, MONTHS, monthLabel, pad2 } from "@/lib
 import { CONFIG_LABEL, DEFINITIONS, UNIT } from "@/lib/labels";
 import { CONFIG_KEYS } from "@/lib/types";
 import { useFilters } from "@/state/filters";
+import { updateView, useView } from "@/state/view";
 
 type Granularity = "month" | "week" | "day" | "year";
 
@@ -29,11 +30,17 @@ export function CalendarView() {
   const router = useRouter();
   const meta = useMetadata();
   const calendar = useCalendar(zone);
-  const [granularity, setGranularity] = useState<Granularity>("month");
-  const [mode, setMode] = useState<HeatMode>("activity");
-  const [month, setMonth] = useState<{ year: number; month: number } | null>(null);
+  // Vue du calendrier dans le magasin partage : l'assistant peut changer le pas de temps ou ouvrir un mois.
+  const view = useView((v) => v.calendar);
+  const granularity = view.granularity;
+  const mode = view.mode;
+  const month = view.month;
+  const dayYear = view.dayYear ?? Number(to.slice(0, 4));
+  const setGranularity = (g: Granularity) => updateView("calendar", { granularity: g });
+  const setMode = (m: HeatMode) => updateView("calendar", { mode: m });
+  const setMonth = (m: { year: number; month: number } | null) => updateView("calendar", { month: m });
+  const setDayYear = (y: number) => updateView("calendar", { dayYear: y });
   const [span, setSpan] = useState<{ from: string; to: string } | null>(null);
-  const [dayYear, setDayYear] = useState<number>(Number(to.slice(0, 4)));
   const daily = useDaily(zone, granularity === "week" || granularity === "day");
   const data = calendar.data;
   const zoneName = zoneLabel(zone, meta.data?.provinces);
@@ -88,7 +95,7 @@ export function CalendarView() {
         }
       />
 
-      <Panel>
+      <Panel data-tour="calendar-grid">
         <PanelHeader
           title={
             granularity === "month"
@@ -123,6 +130,7 @@ export function CalendarView() {
                   ]}
                 />
               ) : null}
+              <span data-tour="calendar-granularity" className="inline-flex">
               <Segmented
                 label="Pas de temps"
                 value={granularity}
@@ -137,6 +145,7 @@ export function CalendarView() {
                   { value: "year", label: "Année" },
                 ]}
               />
+              </span>
             </div>
           }
         />

@@ -8,11 +8,13 @@ const out = process.argv[2] ?? "e2e/output";
 const width = Number(process.argv[3] ?? 1440);
 const height = Number(process.argv[4] ?? 900);
 const base = process.env.BASE_URL ?? "http://localhost:3210";
-const pages = ["/", "/dashboard", "/map", "/calendar", "/trends", "/anomalies", "/reports", "/methodology"];
+const pages = ["/", "/dashboard", "/map", "/calendar", "/trends", "/compare", "/anomalies", "/reports", "/methodology"];
 
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ channel: process.env.BROWSER_CHANNEL ?? "chrome" });
 const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 1, locale: "fr-FR" });
+// Accueil de premiere visite masque, sauf demande explicite (SHOW_WELCOME=1).
+if (!process.env.SHOW_WELCOME) await context.addInitScript(() => window.localStorage.setItem("hotspot.welcomed", "1"));
 let failures = 0;
 
 for (const route of pages) {

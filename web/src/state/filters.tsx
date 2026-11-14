@@ -34,7 +34,7 @@ export function defaultPeriod(coverage: Coverage): { from: string; to: string } 
   return { from: from < coverage.first ? coverage.first : from, to: `${year}-12-31` };
 }
 
-const STORAGE_KEY = "firepulse.filters.v1";
+const STORAGE_KEY = "hotspot.filters.v1";
 const Context = createContext<FiltersContext | null>(null);
 
 function isValid(value: unknown, coverage: Coverage): value is FiltersState {

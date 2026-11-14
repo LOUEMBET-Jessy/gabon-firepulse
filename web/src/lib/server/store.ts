@@ -326,13 +326,13 @@ function load(): Store {
 
 /** A incrementer quand la forme de Store change : evite de reutiliser un cache perime en developpement. */
 const STORE_SCHEMA = 3;
-const globalStore = globalThis as unknown as { __firepulseStore?: { schema: number; store: Store } };
+const globalStore = globalThis as unknown as { __hotspotStore?: { schema: number; store: Store } };
 
 export function getStore(): Store {
-  const cached = globalStore.__firepulseStore;
+  const cached = globalStore.__hotspotStore;
   if (cached && cached.schema === STORE_SCHEMA) return cached.store;
   const store = load();
-  globalStore.__firepulseStore = { schema: STORE_SCHEMA, store };
+  globalStore.__hotspotStore = { schema: STORE_SCHEMA, store };
   return store;
 }
 

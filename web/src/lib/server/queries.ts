@@ -15,7 +15,7 @@ import type {
   ZoneSpec,
 } from "../types";
 import { SATELLITE_KEYS } from "../types";
-import { assessWindow, provenance, summarizeRange, zoneDaily } from "./engine";
+import { assessWindow, provenance, sensorComparison, summarizeRange, zoneDaily } from "./engine";
 import { dayToIso, getStore, type Store } from "./store";
 import { zoneInfo, zoneMatcher } from "./zone";
 
@@ -310,6 +310,7 @@ export function overview(zone: ZoneSpec, first: number, last: number, store: Sto
     gaps,
     latest: latestRows.map((row) => toRow(store, row)),
     activeCells: activeCells.size,
+    sensors: sensorComparison(daily, first, last, store),
     provenance: provenance(store),
   };
 }

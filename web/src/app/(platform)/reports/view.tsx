@@ -56,6 +56,19 @@ export function ReportsView() {
   const error = overview.error ?? calendar.error;
   const ready = Boolean(o && c && meta.data);
 
+  // Export PDF confirme depuis l'assistant : la fenetre d'impression s'ouvre une fois le rapport pret.
+  useEffect(() => {
+    if (!ready) return;
+    try {
+      if (window.sessionStorage.getItem("hotspot.print") !== "1") return;
+      window.sessionStorage.removeItem("hotspot.print");
+    } catch {
+      return;
+    }
+    const timer = window.setTimeout(() => window.print(), 900);
+    return () => window.clearTimeout(timer);
+  }, [ready]);
+
   const print = () => {
     setGeneratedAt(new Date().toISOString());
     window.setTimeout(() => window.print(), 80);
@@ -93,7 +106,7 @@ export function ReportsView() {
               </div>
             </div>
           </Panel>
-          <Panel>
+          <Panel data-tour="export-files">
             <PanelHeader title="Fichiers de données" subtitle="Chaque ligne exportée garde son capteur, sa date et le renvoi à sa ligne dans le fichier NASA FIRMS d'origine." />
             <ul className="flex flex-col gap-2 px-5 py-4">
               {(
@@ -142,7 +155,7 @@ export function ReportsView() {
         ) : o && c && meta.data ? (
           <>
             <header className="border-b border-line pb-4">
-              <p className="text-[12px] font-medium text-ink-3">Gabon FirePulse · Rapport d'activité des feux détectée par satellite</p>
+              <p className="text-[12px] font-medium text-ink-3">Hot-Spot · Rapport d'activité des feux détectée par satellite</p>
               <h1 className="mt-1.5 text-[24px] font-semibold tracking-[-0.02em] text-ink">
                 {zoneName}, {fmtPeriod(from, to).toLowerCase()}
               </h1>

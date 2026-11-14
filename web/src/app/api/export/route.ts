@@ -56,7 +56,7 @@ export function GET(request: Request) {
       const filter = parseDetectionFilter(params, store);
       const span = `${dayToIso(store, filter.first)}_${dayToIso(store, filter.last)}`;
       if (format === "csv") {
-        return download(csv(DETECTION_HEADER, detectionRows(params, store)), "text/csv", `firepulse_detections_${zoneSlug}_${span}.csv`);
+        return download(csv(DETECTION_HEADER, detectionRows(params, store)), "text/csv", `hotspot_detections_${zoneSlug}_${span}.csv`);
       }
       if (format === "geojson") {
         const features = [];
@@ -84,7 +84,7 @@ export function GET(request: Request) {
           },
           features,
         });
-        return download(body, "application/geo+json", `firepulse_detections_${zoneSlug}_${span}.geojson`);
+        return download(body, "application/geo+json", `hotspot_detections_${zoneSlug}_${span}.geojson`);
       }
       throw new BadRequest("Format invalide : csv ou geojson.");
     }
@@ -106,7 +106,7 @@ export function GET(request: Request) {
         m.assessment.status, m.assessment.reliability, m.cellDays.T, m.cellDays.A, m.cellDays.TA, m.cellDays.S, m.cellDays.N,
         m.detections.terra, m.detections.aqua, m.detections.snpp, m.detections.noaa20, result.provenance.accessedAt,
       ]);
-      return download(csv(header, rows), "text/csv", `firepulse_calendrier_mensuel_${zoneSlug}.csv`);
+      return download(csv(header, rows), "text/csv", `hotspot_calendrier_mensuel_${zoneSlug}.csv`);
     }
 
     if (kind === "anomalies") {
@@ -124,7 +124,7 @@ export function GET(request: Request) {
             r2(a.classicZ), r2(a.percentile), r2(a.ratioToMedian), a.reliability, m.kind, a.caveats.join(" | "),
           ];
         });
-      return download(csv(header, rows), "text/csv", `firepulse_periodes_inhabituelles_${zoneSlug}.csv`);
+      return download(csv(header, rows), "text/csv", `hotspot_periodes_inhabituelles_${zoneSlug}.csv`);
     }
     throw new BadRequest("Jeu inconnu : detections, monthly ou anomalies.");
   });

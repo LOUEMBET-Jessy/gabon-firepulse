@@ -154,7 +154,7 @@ export function MonthHeatmap({
                 const isSelected = selected?.year === year && selected.month === month;
                 const deviation = deviationColor(a.robustZ);
                 const background = !m.complete ? "transparent" : mode === "activity" ? activityColor(m.harmonized, breaks) : (deviation ?? HEAT[0]);
-                const flag = a.status === "strong_high" ? "#e5484d" : a.status === "high" ? "#f5b025" : null;
+                const flag = a.status === "strong_high" ? "#ef5350" : a.status === "high" ? "#f5b025" : null;
                 return (
                   <button
                     key={month}
@@ -202,7 +202,7 @@ export function MonthHeatmap({
                 <span className="hidden items-center gap-2 pl-2 md:flex">
                   {yr ? (
                     <>
-                      <span className="h-2 rounded-[2px]" style={{ width: `${(yr.harmonized / maxYear) * 52}px`, backgroundColor: yr.complete ? "#e2861c" : "transparent", border: yr.complete ? undefined : "1px solid #7b8aa5" }} />
+                      <span className="h-2 rounded-[2px]" style={{ width: `${(yr.harmonized / maxYear) * 52}px`, backgroundColor: yr.complete ? "#e88c12" : "transparent", border: yr.complete ? undefined : "1px solid #8ea0b9" }} />
                       <span className={cx("num text-[11.5px]", yr.complete ? "text-ink-2" : "text-ink-3")}>
                         {fmtInt(yr.harmonized)}
                         {yr.complete ? "" : "*"}

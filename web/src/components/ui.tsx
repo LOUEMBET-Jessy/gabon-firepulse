@@ -16,7 +16,7 @@ export { buttonClass, cx };
 
 export function Panel({ className, children, ...rest }: React.HTMLAttributes<HTMLElement>) {
   return (
-    <section className={cx("rounded-panel border border-line bg-surface", className)} {...rest}>
+    <section className={cx("rounded-panel bg-surface shadow-[inset_0_0_0_1px_rgb(255_255_255/0.035)]", className)} {...rest}>
       {children}
     </section>
   );
@@ -34,9 +34,9 @@ export function PanelHeader({
   actions?: React.ReactNode;
 }) {
   return (
-    <header className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2 px-5 pt-4">
+    <header className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2 px-5 pt-5">
       <div className="min-w-0">
-        <h2 className="flex items-center gap-1.5 text-[15px] font-medium leading-snug text-ink">
+        <h2 className="flex items-center gap-1.5 text-[16px] font-semibold leading-snug tracking-[-0.01em] text-ink">
           <span className="text-balance">{title}</span>
           {help ? <InfoTip text={help} /> : null}
         </h2>
@@ -51,7 +51,7 @@ export function PanelHeader({
 export function SourceNote({ provenance, extra }: { provenance: Provenance | undefined; extra?: string }) {
   if (!provenance) return null;
   return (
-    <footer className="border-t border-line px-5 py-2.5 text-[11.5px] leading-relaxed text-ink-3">
+    <footer className="mt-1 border-t border-line/70 px-5 py-3 text-[11.5px] leading-relaxed text-ink-3">
       <span className="text-ink-2">Source :</span> {provenance.source}, MODIS (Terra, Aqua) et VIIRS (Suomi-NPP, NOAA-20). Données du{" "}
       {fmtDateShort(provenance.dataFirstDate)} au {fmtDateShort(provenance.dataLastDate)}, consultées le {fmtDateTimeUtc(provenance.accessedAt)}.
       {extra ? ` ${extra}` : ""}
@@ -230,13 +230,14 @@ export function InfoTip({ text, label = "Définition" }: { text: string; label?:
   );
 }
 
-export function SelectButton({ open, onClick, icon, children, label }: { open: boolean; onClick: () => void; icon: React.ReactNode; children: React.ReactNode; label: string }) {
+export function SelectButton({ open, onClick, icon, children, label, tour }: { open: boolean; onClick: () => void; icon: React.ReactNode; children: React.ReactNode; label: string; tour?: string }) {
   return (
     <button
       type="button"
       aria-haspopup="dialog"
       aria-expanded={open}
       aria-label={label}
+      data-tour={tour}
       onClick={onClick}
       className={cx(
         "flex h-9 max-w-full items-center gap-2 rounded-control border bg-surface-2 pl-2.5 pr-2 text-[13px] font-medium text-ink transition-colors",
@@ -385,8 +386,8 @@ export function PageHeader({ title, lead, actions }: { title: string; lead?: Rea
   return (
     <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
       <div className="min-w-0">
-        <h1 className="text-[22px] font-semibold tracking-[-0.02em] text-ink md:text-[26px]">{title}</h1>
-        {lead ? <p className="mt-1.5 max-w-[72ch] text-[14px] leading-relaxed text-ink-2">{lead}</p> : null}
+        <h1 className="text-[26px] font-semibold tracking-[-0.03em] text-ink md:text-[34px]">{title}</h1>
+        {lead ? <p className="mt-2 max-w-[72ch] text-[15px] leading-relaxed text-ink-2">{lead}</p> : null}
       </div>
       {actions ? <div className="no-print flex flex-wrap items-center gap-2">{actions}</div> : null}
     </div>

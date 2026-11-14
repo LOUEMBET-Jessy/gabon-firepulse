@@ -29,7 +29,7 @@ const GRID = "var(--color-line)";
 const INK = "var(--color-ink)";
 const MUTED = "var(--color-ink-3)";
 const SURFACE = "var(--color-surface)";
-const HEAT = "#e2861c";
+const HEAT = "#e88c12";
 
 const NARROW = "(max-width: 640px)";
 /** Vrai sur un ecran etroit : les graphiques y abregent leurs etiquettes. */
@@ -192,7 +192,7 @@ export function SeasonalChart({
                 const status = row?.record?.assessment.status;
                 if (props.cx === undefined || props.cy === undefined || row?.value === null) return <g key={props.index} />;
                 const flagged = status === "strong_high" || status === "high" || status === "low";
-                const ring = status === "strong_high" ? "#e5484d" : status === "high" ? "#f5b025" : "#8ea2c9";
+                const ring = status === "strong_high" ? "#ef5350" : status === "high" ? "#f5b025" : "#95a9cc";
                 return (
                   <g key={props.index}>
                     {flagged ? <circle cx={props.cx} cy={props.cy} r={8} fill="none" stroke={ring} strokeWidth={2} /> : null}
@@ -261,7 +261,7 @@ export function HistoryChart({ months, selection, height = 280 }: { months: Mont
             <XAxis dataKey="i" type="number" domain={[0, data.length - 1]} ticks={ticks} tick={AXIS} tickLine={false} axisLine={{ stroke: GRID }} tickFormatter={(i: number) => String(data[i]?.year ?? "")} />
             <YAxis tick={AXIS} tickLine={false} axisLine={false} width={46} tickFormatter={axisNumber} />
             {eraEnd >= 0 ? <ReferenceArea x1={0} x2={eraEnd + 0.5} fill="url(#era-hatch)" stroke="none" ifOverflow="hidden" /> : null}
-            {selected ? <ReferenceArea x1={selected.x1} x2={selected.x2} fill="#56c8ee" fillOpacity={0.12} stroke="#56c8ee" strokeOpacity={0.6} ifOverflow="hidden" /> : null}
+            {selected ? <ReferenceArea x1={selected.x1} x2={selected.x2} fill="#12bfd2" fillOpacity={0.12} stroke="#12bfd2" strokeOpacity={0.6} ifOverflow="hidden" /> : null}
             <Tooltip
               cursor={{ stroke: "var(--color-line-strong)" }}
               isAnimationActive={false}
@@ -553,7 +553,7 @@ export function ClimatologyChart({ baselines, height = 220 }: { baselines: Month
             />
             <Bar dataKey="median" radius={[4, 4, 0, 0]} isAnimationActive={false} maxBarSize={38}>
               {data.map((d) => (
-                <Cell key={d.month} fill={d.b.critical ? HEAT : "#55627c"} />
+                <Cell key={d.month} fill={d.b.critical ? HEAT : "#4a6283"} />
               ))}
               <ErrorBar dataKey="spread" width={4} strokeWidth={1.25} stroke={INK} opacity={0.8} />
             </Bar>

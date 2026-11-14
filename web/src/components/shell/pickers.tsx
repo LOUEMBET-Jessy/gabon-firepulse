@@ -10,8 +10,8 @@ import { fmtCoord, fmtDateShort, fmtDateTimeUtc, fmtInt, fmtPeriod, lastDayOfMon
 import type { ZoneSpec } from "@/lib/types";
 import { useFilters } from "@/state/filters";
 
-export const DRAW_FLAG = "firepulse.draw";
-export const DRAW_EVENT = "firepulse:draw";
+export const DRAW_FLAG = "hotspot.draw";
+export const DRAW_EVENT = "hotspot:draw";
 
 export function zoneLabel(zone: ZoneSpec, provinces: { index: number; name: string }[] | undefined): string {
   if (zone.kind === "country") return "Gabon";
@@ -74,7 +74,7 @@ export function ZonePicker() {
       label="Choisir la zone d'analyse"
       width={340}
       trigger={({ open, toggle }) => (
-        <SelectButton open={open} onClick={toggle} icon={<MapPinArea size={16} />} label="Zone d'analyse">
+        <SelectButton open={open} onClick={toggle} icon={<MapPinArea size={16} />} label="Zone d'analyse" tour="zone-picker">
           {zoneLabel(zone, meta?.provinces)}
         </SelectButton>
       )}
@@ -193,7 +193,7 @@ export function PeriodPicker() {
       label="Choisir la période"
       width={330}
       trigger={({ open, toggle }) => (
-        <SelectButton open={open} onClick={toggle} icon={<CalendarBlank size={16} />} label="Période">
+        <SelectButton open={open} onClick={toggle} icon={<CalendarBlank size={16} />} label="Période" tour="period-picker">
           {fmtPeriod(from, to)}
         </SelectButton>
       )}
@@ -272,6 +272,7 @@ export function DataBadge() {
           type="button"
           onClick={toggle}
           aria-expanded={open}
+          data-tour="data-badge"
           className={cx(
             "flex h-9 items-center gap-2 rounded-control border px-2.5 text-[12.5px] font-medium transition-colors",
             error ? "border-critical/50 text-critical" : simulated ? "border-warning/50 bg-warning/10 text-warning" : "border-line-strong bg-surface-2 text-ink-2 hover:border-ink-3",

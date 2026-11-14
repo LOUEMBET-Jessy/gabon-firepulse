@@ -13,13 +13,8 @@ import { CONF_LABEL, DEFINITIONS, SATELLITES } from "@/lib/labels";
 import type { DetectionDetail, GridCell } from "@/lib/types";
 import { SATELLITE_KEYS } from "@/lib/types";
 import { useFilters } from "@/state/filters";
+import { updateView, useView, type MapMode } from "@/state/view";
 
-const DEFAULT_FILTERS: MapFilters = {
-  sats: { terra: true, aqua: true, snpp: true, noaa20: true },
-  conf: { low: true, nominal: true, high: true },
-  types: "all",
-  dayNight: "all",
-};
 
 function Group({ title, children, hint }: { title: string; children: React.ReactNode; hint?: string }) {
   return (
@@ -149,14 +144,16 @@ function CellCard({ cell, step, onClose }: { cell: GridCell; step: number; onClo
 export function MapView() {
   const { zone, from, to, setZone } = useFilters();
   const meta = useMetadata();
-  const [mode, setMode] = useState<"points" | "grid">("points");
-  const [filters, setFilters] = useState<MapFilters>(DEFAULT_FILTERS);
+  // Mode, filtres et couches vivent dans le magasin partage : l'assistant les lit et les modifie.
+  const { mode, filters, basemap, showProvinces } = useView((v) => v.map);
+  const setMode = (value: MapMode) => updateView("map", { mode: value });
+  const setFilters = (fn: (f: MapFilters) => MapFilters) => updateView("map", { filters: fn(filters) });
+  const setBasemap = (value: boolean) => updateView("map", { basemap: value });
+  const setShowProvinces = (value: boolean) => updateView("map", { showProvinces: value });
   const [selected, setSelected] = useState<number | null>(null);
   const [cell, setCell] = useState<GridCell | null>(null);
   const [drawing, setDrawing] = useState(false);
-  const [basemap, setBasemap] = useState(false);
   const [basemapError, setBasemapError] = useState(false);
-  const [showProvinces, setShowProvinces] = useState(true);
   const [panelOpen, setPanelOpen] = useState(false);
 
   const detections = useDetections(zone, from, to, filters, mode === "points");
@@ -314,7 +311,7 @@ export function MapView() {
   return (
     <div className="relative flex h-full">
       {/* Panneau de filtres (ordinateur) */}
-      <aside aria-label="Filtres de la carte" className="hidden w-[304px] shrink-0 overflow-y-auto border-r border-line bg-surface lg:block">
+      <aside aria-label="Filtres de la carte" data-tour="map-filters" className="hidden w-[304px] shrink-0 overflow-y-auto border-r border-line bg-surface lg:block">
         {controls}
       </aside>
 
@@ -398,7 +395,7 @@ export function MapView() {
 
         {/* Legende */}
         <div className="pointer-events-none absolute bottom-9 left-3 right-3 flex justify-start lg:bottom-10">
-          <div className="pointer-events-auto max-w-full rounded-control border border-line-strong bg-surface/95 px-3 py-2 backdrop-blur">
+          <div data-tour="map-legend" className="pointer-events-auto max-w-full rounded-control border border-line-strong bg-surface/95 px-3 py-2 backdrop-blur">
             {mode === "points" ? (
               <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-ink-2">
                 <li className="flex items-center gap-1.5">

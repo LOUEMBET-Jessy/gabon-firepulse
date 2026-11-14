@@ -1,0 +1,12 @@
+# Fichiers d'outils et de travail locaux
+.playwright-mcp/
+__pycache__/
+*.pyc
+web/.dev.log
+web/.start.log
+web/tsconfig.tsbuildinfo
+web/public/vendor/
+# Secrets : la cle du fournisseur IA reste dans web/.env.local, jamais dans le depot
+.env
+.env.local
+web/.env.local

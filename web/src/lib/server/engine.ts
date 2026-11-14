@@ -13,6 +13,7 @@ import { quantile, theilSenMannKendall } from "../science/stats";
 import type {
   CalendarResponse,
   ConfigKey,
+  SensorComparisonEntry,
   ZoneCalibration,
   ZoneCalibrationEntry,
   MonthBaseline,
@@ -149,6 +150,8 @@ export interface ZoneDaily {
   high: Float64Array;
   /** Facteur applique chaque jour a la configuration qui l'alimente (0 si aucun capteur). */
   factor: Float64Array;
+  /** Correction de zone appliquee aux facteurs nationaux, par configuration (ordre de CONFIG_KEYS). */
+  k: number[];
   calibration: ZoneCalibration;
 }
 
@@ -215,7 +218,7 @@ export function zoneDaily(zone: ZoneSpec, store: Store = getStore()): ZoneDaily 
     high[d] = f * zoneFactors.q90[source] * value;
   }
   return remember(dailyCache, key, {
-    key, cellDays, detections, eligible: eligibleCount, staticSources, harmonized, low, high, factor, calibration: zoneFactors.calibration,
+    key, cellDays, detections, eligible: eligibleCount, staticSources, harmonized, low, high, factor, k: zoneFactors.k, calibration: zoneFactors.calibration,
   });
 }
 
@@ -327,6 +330,25 @@ function monthKind(sourceDays: Partial<PerConfig>): MonthKind {
   if (modis && viirs) return "mixed";
   if (modis) return "estimated";
   return keys.includes("N") ? "relayed" : "observed";
+}
+
+/**
+ * Mesure de chaque configuration sur [first, last], independamment du relais :
+ * sert a comparer les capteurs sur leurs jours communs, jamais a les additionner.
+ */
+export function sensorComparison(daily: ZoneDaily, first: number, last: number, store: Store = getStore()): SensorComparisonEntry[] {
+  const { operating, configBits, nationalFactors, monthOfDay } = store;
+  return CONFIG_KEYS.map((config, c) => {
+    const sats = [0, 1, 2, 3].filter((sat) => configBits[c] & (1 << sat));
+    let daysObserved = 0, cellDays = 0, equivalent = 0;
+    for (let d = first; d <= last; d++) {
+      if (!sats.every((sat) => operating[sat][d] === 1)) continue;
+      daysObserved++;
+      cellDays += daily.cellDays[c][d];
+      equivalent += nationalFactors[c][monthOfDay[d] - 1] * daily.k[c] * daily.cellDays[c][d];
+    }
+    return { config, daysObserved, cellDays, equivalent, factor: cellDays > 0 ? equivalent / cellDays : null };
+  });
 }
 
 export function provenance(store: Store = getStore()): Provenance {

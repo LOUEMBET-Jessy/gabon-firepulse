@@ -1,23 +1,31 @@
 @import "tailwindcss";
 
 /*
- * Gabon FirePulse - jetons de design.
- * Theme unique, sombre. Rayons : 8 px (controles), 12 px (panneaux).
- * Couleurs de capteurs validees pour les daltonismes (script validate_palette, surface #0f1626).
+ * Hot-Spot - jetons de design.
+ * Univers : la Terre vue d'orbite (bleus nuit), le signal thermique (orange detection),
+ * la foret (vert), l'instrument (cyan). Theme unique, sombre.
+ * Rayons : 10 px (controles), 18 px (panneaux), pilule (etiquettes).
+ * Contrastes verifies : ink-3 >= 4,6:1 sur toutes les surfaces ; couleurs de capteurs validees
+ * pour les daltonismes sur #0B1830, #10213A et #142B48 (script validate_palette).
  */
 @theme {
-  --color-bg: #080d18;
-  --color-surface: #0f1626;
-  --color-surface-2: #151e33;
-  --color-surface-3: #1d2842;
-  --color-line: #1e2a42;
-  --color-line-strong: #2f3f61;
-  --color-ink: #e9edf5;
-  --color-ink-2: #a9b4c8;
-  --color-ink-3: #7b8aa5;
-  --color-accent: #56c8ee;
-  --color-accent-strong: #8adcf5;
-  --color-accent-ink: #04202c;
+  --color-bg: #0b1830;
+  --color-bg-deep: #081226;
+  --color-surface: #10213a;
+  --color-surface-2: #142b48;
+  --color-surface-3: #1b3557;
+  --color-line: #1e3352;
+  --color-line-strong: #2c4a70;
+  --color-ink: #f4f7fa;
+  --color-ink-2: #b9c6d8;
+  --color-ink-3: #8ea0b9;
+  --color-accent: #12bfd2;
+  --color-accent-strong: #5ad8e6;
+  --color-accent-ink: #04262b;
+  /* Marque : orange detection et vert environnement. */
+  --color-ember: #f59e0b;
+  --color-leaf: #22a06b;
+  --color-leaf-ink: #2fbf7e;
 
   /* Identite des capteurs (categoriel, ordre fixe). */
   --color-modis: #d95926;
@@ -25,35 +33,35 @@
   --color-noaa20: #199e70;
 
   /* Etats (toujours accompagnes d'une icone et d'un libelle). */
-  --color-critical: #e5484d;
+  --color-critical: #ef5350;
   --color-warning: #f5b025;
-  --color-good: #2fb344;
-  --color-info: #8ea2c9;
+  --color-good: #2fbf7e;
+  --color-info: #95a9cc;
 
   /* Rampe sequentielle "activite thermique" : une seule teinte, du sombre au clair. */
-  --color-heat-0: #131b2e;
-  --color-heat-1: #3a2412;
-  --color-heat-2: #5f3611;
-  --color-heat-3: #8a4b10;
-  --color-heat-4: #b96412;
-  --color-heat-5: #e2861c;
+  --color-heat-0: #12243e;
+  --color-heat-1: #3a2a1a;
+  --color-heat-2: #5f3a14;
+  --color-heat-3: #8a5010;
+  --color-heat-4: #b96a0f;
+  --color-heat-5: #e88c12;
   --color-heat-6: #f6b547;
   --color-heat-7: #fde2a2;
 
   /* Rampe divergente (ecart a la reference) : bleu, gris neutre, rouge. */
   --color-div-n3: #2f6fd0;
   --color-div-n2: #4d7fbd;
-  --color-div-n1: #47597c;
-  --color-div-0: #2b3447;
+  --color-div-n1: #46608a;
+  --color-div-0: #22385a;
   --color-div-p1: #7c4a4a;
   --color-div-p2: #b84a48;
-  --color-div-p3: #e5484d;
+  --color-div-p3: #ef5350;
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
 
-  --radius-control: 8px;
-  --radius-panel: 12px;
+  --radius-control: 10px;
+  --radius-panel: 18px;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
@@ -123,6 +131,26 @@ body {
   animation: var(--animate-shimmer);
 }
 
+/* Satellites de la page d'accueil : se deplacent sur leur orbite, immobiles si l'utilisateur limite les animations. */
+.hero-sat {
+  offset-rotate: 0deg;
+  animation: hero-orbit linear infinite;
+}
+@keyframes hero-orbit {
+  from {
+    offset-distance: 0%;
+  }
+  to {
+    offset-distance: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-sat {
+    animation: none;
+    offset-distance: 55%;
+  }
+}
+
 /* Case a cocher : la coche est dessinee, l'etat ne repose pas sur la seule couleur. */
 .check {
   appearance: none;
@@ -146,7 +174,7 @@ body {
 
 /* Motif "estimation MODIS" : hachures, pour ne pas reposer sur la seule couleur. */
 .hatch {
-  background-image: repeating-linear-gradient(135deg, rgb(8 13 24 / 0.55) 0 1.5px, transparent 1.5px 5px);
+  background-image: repeating-linear-gradient(135deg, rgb(11 24 48 / 0.55) 0 1.5px, transparent 1.5px 5px);
 }
 .hatch-missing {
   background-image: repeating-linear-gradient(45deg, var(--color-line-strong) 0 1px, transparent 1px 5px);
@@ -174,7 +202,7 @@ body {
   filter: invert(0.9);
 }
 .maplibregl-ctrl-attrib {
-  background: rgb(8 13 24 / 0.7) !important;
+  background: rgb(11 24 48 / 0.7) !important;
   color: var(--color-ink-3);
   font-size: 10px;
 }
@@ -182,7 +210,7 @@ body {
   color: var(--color-ink-2);
 }
 .maplibregl-ctrl-scale {
-  background: rgb(8 13 24 / 0.7) !important;
+  background: rgb(11 24 48 / 0.7) !important;
   border-color: var(--color-ink-3) !important;
   color: var(--color-ink-2) !important;
   font-family: var(--font-mono);
@@ -227,7 +255,7 @@ body {
     --color-bg: #ffffff;
     --color-surface: #ffffff;
     --color-surface-2: #f4f6fa;
-    --color-surface-3: #e9edf5;
+    --color-surface-3: #f4f7fa;
     --color-line: #d5dbe7;
     --color-line-strong: #b4bdd0;
     --color-ink: #10151f;

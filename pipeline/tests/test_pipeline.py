@@ -17,10 +17,10 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from firepulse import harmonize as hz  # noqa: E402
-from firepulse.config import EPOCH, GRID, SATELLITES  # noqa: E402
-from firepulse.geo import cell_index, points_in_geometry  # noqa: E402
-from firepulse.ingest import validate_and_normalize  # noqa: E402
+from hotspot import harmonize as hz  # noqa: E402
+from hotspot.config import EPOCH, GRID, SATELLITES  # noqa: E402
+from hotspot.geo import cell_index, points_in_geometry  # noqa: E402
+from hotspot.ingest import validate_and_normalize  # noqa: E402
 
 MODIS_HEADER = "latitude,longitude,brightness,scan,track,acq_date,acq_time,satellite,instrument,confidence,version,bright_t31,frp,daynight,type"
 VIIRS_HEADER = "latitude,longitude,bright_ti4,scan,track,acq_date,acq_time,satellite,instrument,confidence,version,bright_ti5,frp,daynight,type"
@@ -99,7 +99,7 @@ class ImportTests(unittest.TestCase):
             validate_and_normalize(df, "MODIS", 0, "incomplet.csv")
 
     def test_classes_de_confiance_modis(self):
-        from firepulse.ingest import confidence_class_modis
+        from hotspot.ingest import confidence_class_modis
 
         self.assertEqual(list(confidence_class_modis(np.array([0, 29, 30, 79, 80, 100]))), [0, 0, 1, 1, 2, 2])
 

@@ -11,9 +11,9 @@ import { fmtCoord, fmtDateShort, fmtDelta, fmtInt, fmtPct, fmtPeriod, MONTHS } f
 import { CONF_LABEL, DEFINITIONS, SATELLITES } from "@/lib/labels";
 import { useFilters } from "@/state/filters";
 
-function Tile({ label, help, children, className }: { label: string; help?: string; children: React.ReactNode; className?: string }) {
+function Tile({ label, help, children, className, tour }: { label: string; help?: string; children: React.ReactNode; className?: string; tour?: string }) {
   return (
-    <Panel className={`flex flex-col gap-3 p-5 ${className ?? ""}`}>
+    <Panel className={`flex flex-col gap-3 p-5 ${className ?? ""}`} data-tour={tour}>
       <p className="flex items-center gap-1 text-[12.5px] font-medium text-ink-2">
         {label}
         {help ? <InfoTip text={help} /> : null}
@@ -43,7 +43,7 @@ export function DashboardView() {
   return (
     <>
       <PageHeader
-        title="Tableau de bord"
+        title="Vue d'ensemble"
         lead={
           <>
             Activité des feux détectée par satellite pour <span className="text-ink">{zoneName}</span>, {fmtPeriod(from, to).toLowerCase()}. Tous les chiffres sont calculés à partir des fichiers NASA FIRMS chargés.
@@ -59,7 +59,7 @@ export function DashboardView() {
 
       {/* Indicateurs cles */}
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-12">
-        <Tile label="Indice harmonisé d'activité" help={DEFINITIONS.index} className="xl:col-span-5">
+        <Tile label="Indice harmonisé d'activité" help={DEFINITIONS.index} className="xl:col-span-5" tour="kpi-index">
           {o ? (
             <div className="flex flex-col gap-3">
               <p className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">

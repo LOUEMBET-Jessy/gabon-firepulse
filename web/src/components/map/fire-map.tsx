@@ -68,7 +68,7 @@ function squareIcon(): ImageData {
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = size;
   const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-  ctx.fillStyle = "#080d18";
+  ctx.fillStyle = "#0b1830";
   ctx.fillRect(1, 1, size - 2, size - 2);
   ctx.fillStyle = SENSOR_COLOR.modis;
   ctx.fillRect(3, 3, size - 6, size - 6);
@@ -94,7 +94,7 @@ const style: StyleSpecification = {
     draw: { type: "geojson", data: empty },
   },
   layers: [
-    { id: "background", type: "background", paint: { "background-color": "#070b14" } },
+    { id: "background", type: "background", paint: { "background-color": "#081226" } },
     {
       id: "basemap",
       type: "raster",
@@ -102,19 +102,19 @@ const style: StyleSpecification = {
       layout: { visibility: "none" },
       paint: { "raster-brightness-max": 0.5, "raster-saturation": -0.45, "raster-contrast": 0.1, "raster-fade-duration": 200 },
     },
-    { id: "country-fill", type: "fill", source: "country", paint: { "fill-color": "#111a2d", "fill-opacity": 1 } },
+    { id: "country-fill", type: "fill", source: "country", paint: { "fill-color": "#12284a", "fill-opacity": 1 } },
     { id: "grid-fill", type: "fill", source: "grid", paint: { "fill-color": HEAT[1], "fill-opacity": 0.92 } },
-    { id: "grid-line", type: "line", source: "grid", minzoom: 8.5, paint: { "line-color": "#070b14", "line-width": 0.6 } },
-    { id: "provinces-line", type: "line", source: "provinces", paint: { "line-color": "#3a4b6e", "line-width": 0.8 } },
-    { id: "country-line", type: "line", source: "country", paint: { "line-color": "#6a7ea6", "line-width": 1.2 } },
+    { id: "grid-line", type: "line", source: "grid", minzoom: 8.5, paint: { "line-color": "#081226", "line-width": 0.6 } },
+    { id: "provinces-line", type: "line", source: "provinces", paint: { "line-color": "#36557d", "line-width": 0.8 } },
+    { id: "country-line", type: "line", source: "country", paint: { "line-color": "#7c95bc", "line-width": 1.2 } },
     {
       id: "province-active",
       type: "line",
       source: "provinces",
       filter: ["==", ["get", "index"], -1],
-      paint: { "line-color": "#56c8ee", "line-width": 2 },
+      paint: { "line-color": "#12bfd2", "line-width": 2 },
     },
-    { id: "zone-line", type: "line", source: "zone", paint: { "line-color": "#56c8ee", "line-width": 2 } },
+    { id: "zone-line", type: "line", source: "zone", paint: { "line-color": "#12bfd2", "line-width": 2 } },
     {
       id: "points-viirs",
       type: "circle",
@@ -124,13 +124,13 @@ const style: StyleSpecification = {
         "circle-color": ["case", ["==", ["get", "s"], 2], SENSOR_COLOR.snpp, SENSOR_COLOR.noaa20],
         "circle-radius": ["interpolate", ["linear"], ["zoom"], 5, 1.3, 7, 2, 9, 3.4, 12, 6],
         "circle-opacity": ["interpolate", ["linear"], ["zoom"], 5, 0.75, 9, 0.9],
-        "circle-stroke-color": "#070b14",
+        "circle-stroke-color": "#081226",
         "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 7, 0, 9, 1],
       },
     },
-    { id: "selected-ring", type: "circle", source: "selected", paint: { "circle-radius": 11, "circle-color": "transparent", "circle-stroke-color": "#e9edf5", "circle-stroke-width": 2 } },
-    { id: "draw-fill", type: "fill", source: "draw", paint: { "fill-color": "#56c8ee", "fill-opacity": 0.12 } },
-    { id: "draw-line", type: "line", source: "draw", paint: { "line-color": "#56c8ee", "line-width": 1.5, "line-dasharray": [3, 2] } },
+    { id: "selected-ring", type: "circle", source: "selected", paint: { "circle-radius": 11, "circle-color": "transparent", "circle-stroke-color": "#f4f7fa", "circle-stroke-width": 2 } },
+    { id: "draw-fill", type: "fill", source: "draw", paint: { "fill-color": "#12bfd2", "fill-opacity": 0.12 } },
+    { id: "draw-line", type: "line", source: "draw", paint: { "line-color": "#12bfd2", "line-width": 1.5, "line-dasharray": [3, 2] } },
   ],
 };
 
@@ -225,7 +225,7 @@ export default function FireMap(props: FireMapProps) {
           const [w, s, e, n] = ringBounds(outerRing(feature.geometry));
           const el = document.createElement("div");
           el.textContent = feature.properties.name;
-          el.className = "pointer-events-none select-none whitespace-nowrap text-[10.5px] font-medium tracking-wide text-ink-2/80 [text-shadow:0_1px_3px_#070b14,0_0_2px_#070b14]";
+          el.className = "pointer-events-none select-none whitespace-nowrap text-[10.5px] font-medium tracking-wide text-ink-2/80 [text-shadow:0_1px_3px_#081226,0_0_2px_#081226]";
           return new Marker({ element: el, anchor: "center" }).setLngLat([(w + e) / 2, (s + n) / 2]).addTo(map);
         });
       })

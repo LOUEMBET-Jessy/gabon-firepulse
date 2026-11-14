@@ -15,6 +15,7 @@ import { DEFINITIONS, KIND_LABEL } from "@/lib/labels";
 import { ANOMALY_SETTINGS } from "@/lib/science/anomaly";
 import type { MonthRecord } from "@/lib/types";
 import { useFilters } from "@/state/filters";
+import { updateView, useView } from "@/state/view";
 
 type Direction = "all" | "high" | "low";
 type Sort = "date" | "score";
@@ -25,14 +26,17 @@ export function AnomaliesView() {
   const params = useSearchParams();
   const meta = useMetadata();
   const calendar = useCalendar(zone);
-  const [direction, setDirection] = useState<Direction>("all");
+  const direction = useView((v) => v.anomalies.direction);
+  const setDirection = (d: Direction) => updateView("anomalies", { direction: d });
   const [sort, setSort] = useState<Sort>("date");
   const [observedOnly, setObservedOnly] = useState(false);
   const initial = useMemo(() => {
     const match = /^(\d{4})-(\d{1,2})$/.exec(params.get("m") ?? "");
     return match ? { year: Number(match[1]), month: Number(match[2]) } : null;
   }, [params]);
-  const [picked, setPicked] = useState<{ year: number; month: number } | null>(null);
+  // Mois examine : partage avec l'assistant, qui peut ouvrir un mois precis.
+  const picked = useView((v) => v.anomalies.month);
+  const setPicked = (m: { year: number; month: number } | null) => updateView("anomalies", { month: m });
   const data = calendar.data;
   const zoneName = zoneLabel(zone, meta.data?.provinces);
 
@@ -97,7 +101,7 @@ export function AnomaliesView() {
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
         {/* Liste */}
-        <Panel className="flex flex-col xl:col-span-5">
+        <Panel className="flex flex-col xl:col-span-5" data-tour="anomaly-list">
           <PanelHeader
             title="Mois signalés"
             subtitle={
@@ -174,7 +178,7 @@ export function AnomaliesView() {
         </Panel>
 
         {/* Detail */}
-        <Panel className="xl:col-span-7">
+        <Panel className="xl:col-span-7" data-tour="anomaly-detail">
           {record && data ? (
             <>
               <PanelHeader

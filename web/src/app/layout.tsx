@@ -5,12 +5,12 @@ import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Gabon FirePulse", template: "%s · Gabon FirePulse" },
+  title: { default: "Hot-Spot · Observer. Comprendre. Préserver.", template: "%s · Hot-Spot" },
   description:
-    "Calendrier harmonisé de l'activité des feux au Gabon, de 2000 à 2025, à partir des détections MODIS et VIIRS de NASA FIRMS. Projet NASA Space Apps Challenge 2026.",
+    "Hot-Spot rend lisibles 25 ans de détections de feux des satellites MODIS et VIIRS de la NASA au Gabon : carte, calendrier harmonisé, tendances, périodes inhabituelles, et un assistant IA pour guider l'exploration.",
 };
 
-export const viewport: Viewport = { themeColor: "#080d18", colorScheme: "dark" };
+export const viewport: Viewport = { themeColor: "#0b1830", colorScheme: "dark" };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

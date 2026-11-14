@@ -38,7 +38,7 @@ export const STATUS: Record<AnomalyStatus, { label: string; short: string; tone:
   incomplete: { label: "Observation incomplète", short: "Incomplet", tone: "muted" },
 };
 
-export const TONE_COLOR = { critical: "#e5484d", warning: "#f5b025", info: "#8ea2c9", muted: "#7b8aa5", neutral: "#a9b4c8", good: "#2fb344" } as const;
+export const TONE_COLOR = { critical: "#ef5350", warning: "#f5b025", info: "#95a9cc", muted: "#8ea0b9", neutral: "#b9c6d8", good: "#2fbf7e" } as const;
 
 export const RELIABILITY: Record<Reliability, { label: string; detail: string }> = {
   high: { label: "Fiabilité élevée", detail: "Valeur observée par VIIRS, référence d'au moins dix années, niveau d'activité suffisant." },
@@ -48,8 +48,8 @@ export const RELIABILITY: Record<Reliability, { label: string; detail: string }>
 
 export const CONF_LABEL = { low: "Faible", nominal: "Nominale", high: "Élevée" } as const;
 
-export const HEAT = ["#131b2e", "#3a2412", "#5f3611", "#8a4b10", "#b96412", "#e2861c", "#f6b547", "#fde2a2"];
-export const DIVERGING = ["#2f6fd0", "#4d7fbd", "#47597c", "#2b3447", "#7c4a4a", "#b84a48", "#e5484d"];
+export const HEAT = ["#12243e", "#3a2a1a", "#5f3a14", "#8a5010", "#b96a0f", "#e88c12", "#f6b547", "#fde2a2"];
+export const DIVERGING = ["#2f6fd0", "#4d7fbd", "#46608a", "#22385a", "#7c4a4a", "#b84a48", "#ef5350"];
 
 export const UNIT = "cellules-jour actives, équivalent Suomi-NPP";
 export const UNIT_SHORT = "cellules-jour";

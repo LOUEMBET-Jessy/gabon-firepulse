@@ -46,6 +46,15 @@ const api = async (path) => (await fetch(base + path)).json();
 const mapReady = (page) => page.waitForFunction(() => document.querySelector("canvas.maplibregl-canvas")?.clientHeight > 100, null, { timeout: 30_000 });
 
 browser = await chromium.launch({ channel: process.env.BROWSER_CHANNEL ?? "chrome" });
+// Chaque contexte demarre comme un visiteur deja accueilli : l'accueil de premiere visite a ses propres tests (e2e/assistant.mjs).
+{
+  const newContext = browser.newContext.bind(browser);
+  browser.newContext = async (options) => {
+    const context = await newContext(options);
+    await context.addInitScript(() => window.localStorage.setItem("hotspot.welcomed", "1"));
+    return context;
+  };
+}
 
 await test("T-04a", "Changer la période met à jour les indicateurs", async () => {
   const { page, context, errors } = await open("/dashboard");
@@ -168,7 +177,7 @@ await test("F-05", "La grille harmonisée s'affiche et une cellule s'ouvre", asy
 });
 
 await test("T-06", "MODIS et VIIRS restent des séries séparées", async () => {
-  const { page, context } = await open("/trends");
+  const { page, context } = await open("/compare");
   const text = await page.locator("main").innerText();
   expect(text.includes("MODIS Terra + Aqua") && text.includes("VIIRS Suomi-NPP") && text.includes("VIIRS NOAA-20"), "légende par capteur absente");
   await page.getByRole("radio", { name: "Après calage" }).click();
@@ -288,7 +297,7 @@ await test("T-10b", "Le fond de carte en ligne coupé n'empêche pas la carte", 
 await test("T-11", "Tablette et téléphone : pas de débordement, navigation utilisable", async () => {
   const notes = [];
   for (const viewport of [{ width: 820, height: 1180 }, { width: 390, height: 844 }]) {
-    for (const route of ["/", "/dashboard", "/map", "/calendar", "/trends", "/anomalies", "/reports", "/methodology"]) {
+    for (const route of ["/", "/dashboard", "/map", "/calendar", "/trends", "/compare", "/anomalies", "/reports", "/methodology"]) {
       const { page, context } = await open(route, viewport);
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
       expect(overflow <= 1, `${route} à ${viewport.width}px : débordement de ${overflow}px`);
@@ -300,7 +309,7 @@ await test("T-11", "Tablette et téléphone : pas de débordement, navigation ut
     }
     notes.push(`${viewport.width}px`);
   }
-  return `8 écrans vérifiés à ${notes.join(" et ")}`;
+  return `9 écrans vérifiés à ${notes.join(" et ")}`;
 });
 
 await test("F-12", "L'export CSV contient exactement les détections filtrées", async () => {
@@ -328,7 +337,7 @@ await test("F-12b", "Le bouton d'export de la carte télécharge un fichier", as
   const download = page.waitForEvent("download");
   await page.getByRole("complementary", { name: "Filtres de la carte" }).getByRole("link", { name: "CSV" }).click();
   const file = await download;
-  expect(/firepulse_detections_country_2025-01-01_2025-12-31\.csv/.test(file.suggestedFilename()), `nom inattendu : ${file.suggestedFilename()}`);
+  expect(/hotspot_detections_country_2025-01-01_2025-12-31\.csv/.test(file.suggestedFilename()), `nom inattendu : ${file.suggestedFilename()}`);
   await context.close();
   return file.suggestedFilename();
 });

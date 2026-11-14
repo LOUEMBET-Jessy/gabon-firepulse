@@ -162,6 +162,19 @@ export interface DistributionSummary {
   max: number | null;
 }
 
+/** Ce que chaque configuration de capteurs a mesure sur la periode, sur ses seuls jours d'observation. */
+export interface SensorComparisonEntry {
+  config: ConfigKey;
+  /** Jours de la periode ou tous les satellites de la configuration etaient en service. */
+  daysObserved: number;
+  /** Cellules-jour actives brutes, sans calage. */
+  cellDays: number;
+  /** Les memes cellules-jour converties en equivalent Suomi-NPP (facteurs nationaux x correction de zone). */
+  equivalent: number;
+  /** Facteur moyen applique (equivalent / cellDays). Null sans activite. */
+  factor: number | null;
+}
+
 export interface OverviewResponse {
   zone: ZoneInfo;
   from: string;
@@ -184,6 +197,8 @@ export interface OverviewResponse {
   gaps: GapRecord[];
   latest: DetectionRow[];
   activeCells: number;
+  /** Comparaison des capteurs sur la periode : une entree par configuration. */
+  sensors: SensorComparisonEntry[];
   provenance: Provenance;
 }
 

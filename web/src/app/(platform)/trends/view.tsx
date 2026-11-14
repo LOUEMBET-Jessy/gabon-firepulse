@@ -4,11 +4,11 @@ import { useMemo, useState } from "react";
 import { CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import { MoreLink, RegionBars } from "@/components/blocks";
-import { AnnualChart, HistoryChart, Legend, SensorCompareChart, TooltipCard, TooltipRow, monthTick, useNarrow, type CompareUnit } from "@/components/charts";
+import { AnnualChart, HistoryChart, Legend, TooltipCard, TooltipRow, monthTick, useNarrow } from "@/components/charts";
 import { zoneLabel } from "@/components/shell/pickers";
 import { ChartSkeleton, ErrorState, Notice, PageHeader, Panel, PanelHeader, Segmented, SourceNote, cx, inputClass } from "@/components/ui";
 import { useCalendar, useMetadata, useRegions } from "@/lib/api";
-import { fmt1, fmt2, fmtDelta, fmtInt, fmtPct, fmtPeriod, MONTHS, MONTHS_SHORT } from "@/lib/format";
+import { fmt2, fmtDelta, fmtInt, fmtPct, fmtPeriod, MONTHS, MONTHS_SHORT } from "@/lib/format";
 import { DEFINITIONS, UNIT } from "@/lib/labels";
 import type { TrendResult } from "@/lib/science/stats";
 import type { CalendarResponse } from "@/lib/types";
@@ -45,21 +45,21 @@ function CompareYears({ calendar, a, b }: { calendar: CalendarResponse; a: numbe
     <>
       <Legend>
         <span className="flex items-center gap-1.5 text-[12px] text-ink-2">
-          {swatch("#e9edf5")} {a}
+          {swatch("#f4f7fa")} {a}
         </span>
         <span className="flex items-center gap-1.5 text-[12px] text-ink-2">
-          {swatch("#56c8ee")} {b}
+          {swatch("#12bfd2")} {b}
         </span>
-        <span className="flex items-center gap-1.5 text-[12px] text-ink-2">{swatch("#7b8aa5", true)} Médiane de toutes les années</span>
+        <span className="flex items-center gap-1.5 text-[12px] text-ink-2">{swatch("#8ea0b9", true)} Médiane de toutes les années</span>
       </Legend>
       <div style={{ height: 260 }} className="px-2 pb-2">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={data} margin={{ top: 12, right: 18, bottom: 0, left: 0 }}>
-            <CartesianGrid stroke="#1e2a42" vertical={false} />
-            <XAxis dataKey="name" tick={{ fill: "#7b8aa5", fontSize: 11.5, fontFamily: "var(--font-mono)" }} tickLine={false} axisLine={{ stroke: "#1e2a42" }} interval={0} tickFormatter={monthTick(narrow)} />
-            <YAxis tick={{ fill: "#7b8aa5", fontSize: 11.5, fontFamily: "var(--font-mono)" }} tickLine={false} axisLine={false} width={46} tickFormatter={(v: number) => fmtInt(v)} />
+            <CartesianGrid stroke="#1e3352" vertical={false} />
+            <XAxis dataKey="name" tick={{ fill: "#8ea0b9", fontSize: 11.5, fontFamily: "var(--font-mono)" }} tickLine={false} axisLine={{ stroke: "#1e3352" }} interval={0} tickFormatter={monthTick(narrow)} />
+            <YAxis tick={{ fill: "#8ea0b9", fontSize: 11.5, fontFamily: "var(--font-mono)" }} tickLine={false} axisLine={false} width={46} tickFormatter={(v: number) => fmtInt(v)} />
             <Tooltip
-              cursor={{ stroke: "#2f3f61" }}
+              cursor={{ stroke: "#2c4a70" }}
               isAnimationActive={false}
               content={({ active, payload }) => {
                 const row = payload?.[0]?.payload as (typeof data)[number] | undefined;
@@ -74,9 +74,9 @@ function CompareYears({ calendar, a, b }: { calendar: CalendarResponse; a: numbe
                 );
               }}
             />
-            <Line dataKey="median" stroke="#7b8aa5" strokeWidth={1.5} strokeDasharray="4 3" dot={false} isAnimationActive={false} activeDot={false} />
-            <Line dataKey="a" stroke="#e9edf5" strokeWidth={2} dot={{ r: 3, fill: "#e9edf5", stroke: "#0f1626", strokeWidth: 1.5 }} isAnimationActive={false} connectNulls={false} />
-            <Line dataKey="b" stroke="#56c8ee" strokeWidth={2} dot={{ r: 3, fill: "#56c8ee", stroke: "#0f1626", strokeWidth: 1.5 }} isAnimationActive={false} connectNulls={false} />
+            <Line dataKey="median" stroke="#8ea0b9" strokeWidth={1.5} strokeDasharray="4 3" dot={false} isAnimationActive={false} activeDot={false} />
+            <Line dataKey="a" stroke="#f4f7fa" strokeWidth={2} dot={{ r: 3, fill: "#f4f7fa", stroke: "#10213a", strokeWidth: 1.5 }} isAnimationActive={false} connectNulls={false} />
+            <Line dataKey="b" stroke="#12bfd2" strokeWidth={2} dot={{ r: 3, fill: "#12bfd2", stroke: "#10213a", strokeWidth: 1.5 }} isAnimationActive={false} connectNulls={false} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
@@ -90,7 +90,6 @@ export function TrendsView() {
   const calendar = useCalendar(zone);
   const regions = useRegions(from, to);
   const [trendScope, setTrendScope] = useState<"full" | "viirs">("full");
-  const [unit, setUnit] = useState<CompareUnit>("detections");
   const lastYear = Number(to.slice(0, 4));
   const [yearA, setYearA] = useState<number | null>(null);
   const [yearB, setYearB] = useState<number | null>(null);
@@ -100,22 +99,11 @@ export function TrendsView() {
   const b = yearB ?? lastYear;
   const a = yearA ?? (completeYears.includes(b - 1) ? b - 1 : (completeYears[completeYears.length - 2] ?? b));
   const trend = data ? (trendScope === "full" ? data.trends.full : data.trends.viirsOnly) : null;
-  const cal = meta.data?.harmonization.calibration;
-  const factors = cal?.TA && cal?.N ? { TA: cal.TA.factors_by_month, N: cal.N.factors_by_month } : null;
-  const unitComparison = meta.data?.harmonization.diagnostics.unit_comparison;
   const yearTotals = (y: number) => data?.years.find((r) => r.year === y);
   const zoneCal = data?.calibration.configs.TA ?? null;
   // Calage juge fragile : non verifiable, ou plus de 20 % d'erreur annuelle en validation.
   const weakCalibration = Boolean(data?.calibration.local && zoneCal && (!zoneCal.verified || zoneCal.annualErrorLoyo === null || zoneCal.annualErrorLoyo > 0.2));
 
-  const unitText: Record<CompareUnit, string> = {
-    detections:
-      "Comparaison brute : VIIRS signale plusieurs fois plus de détections que MODIS pour la même activité, parce que ses pixels sont plus petits et plus sensibles. Additionner ou comparer ces nombres tels quels est trompeur.",
-    celldays:
-      "Première étape : compter les cellules actives par jour plutôt que les pixels. L'effet de la taille de pixel disparaît en grande partie, mais MODIS détecte toujours moins de cellules que VIIRS.",
-    calibrated:
-      "Seconde étape : MODIS est converti en équivalent Suomi-NPP par un facteur estimé sur les années communes. Les courbes se superposent : c'est ce qui autorise une série continue de 2000 à 2025.",
-  };
 
   return (
     <>
@@ -140,7 +128,7 @@ export function TrendsView() {
       </Panel>
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
-        <Panel className="xl:col-span-7">
+        <Panel className="xl:col-span-7" data-tour="trend-chart">
           <PanelHeader
             title="Totaux annuels et tendance"
             subtitle={data ? trendSentence(trend) : "Calcul de la tendance."}
@@ -200,56 +188,14 @@ export function TrendsView() {
         </Panel>
       </div>
 
-      <Panel>
-        <PanelHeader
-          title="Ce que l'harmonisation corrige"
-          subtitle="MODIS et VIIRS sur leurs années communes, dans trois unités successives."
-          actions={
-            <Segmented
-              label="Unité de comparaison"
-              value={unit}
-              onChange={setUnit}
-              options={[
-                { value: "detections", label: "Détections brutes" },
-                { value: "celldays", label: "Cellules-jour" },
-                { value: "calibrated", label: "Après calage" },
-              ]}
-            />
-          }
-        />
-        <div className="grid grid-cols-1 gap-x-6 xl:grid-cols-12">
-          <div className="xl:col-span-8">{calendar.error ? <ErrorState error={calendar.error} compact /> : data ? <SensorCompareChart calendar={data} factors={factors} unit={unit} /> : <ChartSkeleton height={280} />}</div>
-          <div className="flex flex-col gap-3 px-5 pb-4 pt-4 xl:col-span-4 xl:pl-0">
-            <p className="text-[13.5px] leading-relaxed text-ink-2">{unitText[unit]}</p>
-            {cal?.TA && cal.N ? (
-              <dl className="flex flex-col text-[13px]">
-                {(
-                  [
-                    ["Facteur MODIS vers VIIRS", `${fmt2(Math.min(...cal.TA.factors_by_month))} à ${fmt2(Math.max(...cal.TA.factors_by_month))} selon le mois`],
-                    ["Erreur mensuelle médiane, hors échantillon", fmtPct(cal.TA.validation.monthly_median_abs_pct_error, 1)],
-                    ["Erreur annuelle moyenne, hors échantillon", fmtPct(cal.TA.validation.annual_mean_abs_pct_error, 1)],
-                    ["Corrélation mensuelle", fmt2(cal.TA.validation.monthly_correlation)],
-                    ["Facteur NOAA-20 vers Suomi-NPP", fmt2(cal.N.factors_by_month[0])],
-                    ["Années communes", `${cal.TA.overlap_first_year} à ${cal.TA.overlap_last_year}`],
-                  ] as const
-                ).map(([label, value]) => (
-                  <div key={label} className="flex items-baseline justify-between gap-3 border-b border-line py-1.5 last:border-b-0">
-                    <dt className="text-ink-3">{label}</dt>
-                    <dd className="num shrink-0 text-right text-ink">{value}</dd>
-                  </div>
-                ))}
-              </dl>
-            ) : null}
-            {unitComparison ? (
-              <p className="text-[12.5px] leading-relaxed text-ink-3">
-                En détections brutes, le rapport VIIRS sur MODIS est de {fmt1(unitComparison.raw_detections.factor_global)} ; en cellules-jour il tombe à {fmt1(unitComparison.cell_days.factor_global)}. Le gain de précision reste modeste : l'erreur mensuelle médiane passe de{" "}
-                {fmtPct(unitComparison.raw_detections.monthly_median_abs_pct_error, 1)} à {fmtPct(unitComparison.cell_days.monthly_median_abs_pct_error, 1)}, et l'erreur annuelle ne s'améliore pas ({fmtPct(unitComparison.raw_detections.annual_mean_abs_pct_error, 1)} contre{" "}
-                {fmtPct(unitComparison.cell_days.annual_mean_abs_pct_error, 1)}). L'intérêt principal de la cellule-jour est d'empêcher qu'une même activité soit comptée plusieurs fois.
-              </p>
-            ) : null}
-          </div>
+      <Panel className="flex flex-col items-start justify-between gap-4 p-5 md:flex-row md:items-center">
+        <div>
+          <p className="text-[15px] font-medium text-ink">MODIS et VIIRS ne comptent pas la même chose</p>
+          <p className="mt-1 max-w-[70ch] text-[13.5px] leading-relaxed text-ink-2">
+            La page de comparaison montre, capteur par capteur, ce que l'harmonisation corrige et ce qu'elle ne corrige pas.
+          </p>
         </div>
-        <SourceNote provenance={data?.provenance} extra="Les chiffres de validation ci-contre sont nationaux ; le facteur est ensuite ajusté à chaque zone. Détections retenues uniquement (feu de végétation présumé, confiance non faible)." />
+        <MoreLink href="/compare">Comparer les capteurs</MoreLink>
       </Panel>
 
       {zoneCal && data?.calibration.local ? (

@@ -1,0 +1,50 @@
+/**
+ * Identite Hot-Spot : symbole et logotype.
+ * Le symbole reprend ce que fait le produit : une orbite de satellite (cyan) qui croise
+ * un point de detection (orange) pose sur une cellule de grille. Composant serveur, sans etat.
+ */
+
+import { cx } from "@/lib/classes";
+
+export const BRAND = {
+  name: "Hot-Spot",
+  signature: "Observer. Comprendre. Préserver.",
+  assistant: "Hot-Spot AI",
+} as const;
+
+export function BrandMark({ size = 32, className }: { size?: number; className?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden className={className}>
+      <rect x="0.5" y="0.5" width="31" height="31" rx="9" fill="#142b48" stroke="#2c4a70" />
+      {/* Cellule de grille */}
+      <rect x="11" y="11" width="10" height="10" rx="2" fill="#f59e0b" fillOpacity="0.16" stroke="#f59e0b" strokeOpacity="0.55" />
+      {/* Orbite */}
+      <ellipse cx="16" cy="16" rx="12.5" ry="5.2" transform="rotate(-28 16 16)" fill="none" stroke="#12bfd2" strokeWidth="1.6" />
+      {/* Point detecte */}
+      <circle cx="16" cy="16" r="3.1" fill="#f59e0b" />
+      {/* Satellite */}
+      <circle cx="26.2" cy="10.6" r="1.9" fill="#f4f7fa" />
+    </svg>
+  );
+}
+
+/** Logotype : le trait d'union porte la couleur de la detection. */
+export function Wordmark({ className }: { className?: string }) {
+  return (
+    <span className={cx("font-semibold tracking-[-0.03em] text-ink", className)}>
+      Hot<span className="text-ember">-</span>Spot
+    </span>
+  );
+}
+
+/** Symbole de l'assistant : le meme point, entoure d'un halo de dialogue. */
+export function AssistantMark({ size = 28, className }: { size?: number; className?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 28 28" aria-hidden className={className}>
+      <circle cx="14" cy="14" r="13.5" fill="#0b1830" stroke="#12bfd2" strokeOpacity="0.7" />
+      <circle cx="14" cy="14" r="8.5" fill="none" stroke="#12bfd2" strokeOpacity="0.35" strokeDasharray="2.2 2.6" />
+      <circle cx="14" cy="14" r="3.6" fill="#f59e0b" />
+      <circle cx="21.4" cy="7.4" r="1.7" fill="#2fbf7e" />
+    </svg>
+  );
+}
