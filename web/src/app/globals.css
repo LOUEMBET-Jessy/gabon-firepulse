@@ -151,6 +151,36 @@ body {
   }
 }
 
+/* Conversation vocale : pulsation pendant la parole, rotation pendant le traitement. */
+.voice-pulse {
+  animation: voice-pulse 1.4s ease-in-out infinite;
+}
+@keyframes voice-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 0.6;
+  }
+}
+.voice-spin {
+  animation: voice-spin 1s linear infinite;
+}
+@keyframes voice-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .voice-pulse,
+  .voice-spin {
+    animation: none;
+  }
+}
+
 /* Case a cocher : la coche est dessinee, l'etat ne repose pas sur la seule couleur. */
 .check {
   appearance: none;

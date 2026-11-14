@@ -5,7 +5,7 @@
  * Non modal sur ordinateur (la page reste visible et utilisable pendant l'echange), plein ecran sur telephone.
  */
 
-import { ArrowCounterClockwise, ArrowUp, CaretDown, Check, CompassTool, DownloadSimple, Info, Stop, Trash, WarningCircle, X } from "@phosphor-icons/react/dist/ssr";
+import { ArrowCounterClockwise, ArrowUp, CaretDown, Check, CompassTool, DownloadSimple, Info, Microphone, SpeakerHigh, SpeakerSimpleSlash, Stop, Trash, WarningCircle, X } from "@phosphor-icons/react/dist/ssr";
 import { usePathname } from "next/navigation";
 import { Fragment, useEffect, useRef, useState } from "react";
 
@@ -27,7 +27,10 @@ import {
   type UiMessage,
 } from "@/state/assistant";
 
+import { canSpeak, speak, stopSpeaking } from "@/lib/voice/speak";
+
 import { describeAction, useActionRunner, useAssistantContext } from "./runtime";
+import { VoiceConversation, voiceSupport } from "./voice";
 
 /* ------------------------------------------------------------------ Rendu du texte */
 
@@ -180,6 +183,9 @@ export function AssistantPanel() {
   const [resumeStep, setResumeStep] = useState<number | null>(null);
   const abort = useRef<AbortController | null>(null);
   const scroller = useRef<HTMLDivElement>(null);
+  const [voiceMode, setVoiceMode] = useState(false);
+  const [reading, setReading] = useState<string | null>(null);
+  const [voiceEngine, setVoiceEngine] = useState<ReturnType<typeof voiceSupport>>(null);
   const input = useRef<HTMLTextAreaElement>(null);
   const available = status?.available === true;
 
@@ -245,9 +251,10 @@ export function AssistantPanel() {
     if (actions.some((a) => a.type === "start_tour")) setAssistant({ open: false });
   };
 
-  const send = async (text: string) => {
+  /** Envoie une question ; renvoie la reponse (ou l'erreur) pour la conversation vocale. */
+  const send = async (text: string, voice = false): Promise<{ text: string; error?: boolean } | null> => {
     const question = text.trim().slice(0, LIMITS.userMessageChars);
-    if (!question || getAssistant().busy) return;
+    if (!question || getAssistant().busy) return null;
     if (welcome) dismissWelcome();
     setDraft("");
     pushMessage({ id: uid("u"), role: "user", text: question });
@@ -261,14 +268,15 @@ export function AssistantPanel() {
       const response = await fetch("/api/assistant", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: history, context: getContext() }),
+        body: JSON.stringify({ messages: history, context: getContext(), mode: voice ? "voice" : "text" }),
         signal: controller.signal,
       });
       const body = (await response.json().catch(() => ({}))) as Partial<AssistantReply> & { error?: string; unavailable?: boolean };
       if (!response.ok || typeof body.text !== "string") {
         if (body.unavailable) setAssistant({ status: { available: false, reason: body.error ?? null, model: null } });
-        pushMessage({ id: uid("e"), role: "assistant", text: body.error ?? `Le service a répondu par une erreur (${response.status}).`, error: true });
-        return;
+        const message = body.error ?? `Le service a répondu par une erreur (${response.status}).`;
+        pushMessage({ id: uid("e"), role: "assistant", text: message, error: true });
+        return { text: message, error: true };
       }
       const id = uid("a");
       const receipts: ActionReceipt[] = (body.actions ?? []).map((action) => {
@@ -283,9 +291,12 @@ export function AssistantPanel() {
       });
       pushMessage({ id, role: "assistant", text: body.text, receipts, sources: body.sources ?? [], fallbackModel: body.fallback ? body.model : undefined });
       if (receipts.some((r) => r.action.type === "start_tour")) setAssistant({ open: false });
+      return { text: body.text };
     } catch (error) {
       const aborted = error instanceof DOMException && error.name === "AbortError";
-      pushMessage({ id: uid("e"), role: "assistant", text: aborted ? "Demande interrompue." : "Le serveur Hot-Spot ne répond pas. Vérifiez votre connexion.", error: true });
+      const message = aborted ? "Demande interrompue." : "Le serveur Hot-Spot ne répond pas. Vérifiez votre connexion.";
+      pushMessage({ id: uid("e"), role: "assistant", text: message, error: true });
+      return { text: message, error: true };
     } finally {
       abort.current = null;
       setAssistant({ busy: false });
@@ -295,6 +306,33 @@ export function AssistantPanel() {
   const confirmExport = (message: UiMessage, receipt: ActionReceipt) => {
     const ok = run(receipt.action);
     updateReceipt(message.id, receipt.id, ok ? "confirmed" : "failed");
+  };
+
+  // Moteur vocal disponible : depend du navigateur et de la transcription serveur (mesure apres le montage).
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- capacites du navigateur, connues seulement cote client
+    setVoiceEngine(voiceSupport(status?.transcription === true));
+  }, [status]);
+
+  // Panneau ferme : on arrete toute lecture a voix haute.
+  useEffect(() => {
+    if (!open) {
+      stopSpeaking();
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- arret de la conversation vocale a la fermeture du panneau
+      setVoiceMode(false);
+      setReading(null);
+    }
+  }, [open]);
+
+  const readAloud = async (m: UiMessage) => {
+    if (reading === m.id) {
+      stopSpeaking();
+      setReading(null);
+      return;
+    }
+    setReading(m.id);
+    await speak(m.text).done;
+    setReading((current) => (current === m.id ? null : current));
   };
 
   if (!open) return null;
@@ -399,6 +437,17 @@ export function AssistantPanel() {
                       <RichText text={m.text} />
                       <Receipts message={m} onConfirm={(r) => confirmExport(m, r)} />
                       {m.sources?.length ? <p className="mt-2.5 text-[11.5px] text-ink-3">Chiffres lus dans : {m.sources.join(" · ")}</p> : null}
+                      {!m.error && canSpeak() && !voiceMode ? (
+                        <button
+                          type="button"
+                          onClick={() => void readAloud(m)}
+                          aria-label={reading === m.id ? "Arrêter la lecture" : "Écouter cette réponse"}
+                          className="mt-2 inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[12px] text-ink-3 transition-colors hover:bg-surface-2 hover:text-ink"
+                        >
+                          {reading === m.id ? <SpeakerSimpleSlash size={14} /> : <SpeakerHigh size={14} />}
+                          {reading === m.id ? "Arrêter" : "Écouter"}
+                        </button>
+                      ) : null}
                       {m.fallbackModel ? <p className="mt-1 text-[11.5px] text-ink-3">Réponse du modèle de secours {m.fallbackModel} : le modèle principal était surchargé.</p> : null}
                     </div>
                   </div>
@@ -422,7 +471,15 @@ export function AssistantPanel() {
 
         {/* Suggestions et saisie */}
         <footer className="border-t border-line px-4 pb-4 pt-3">
-          {available && !busy ? (
+          {voiceMode ? (
+            <VoiceConversation
+              serverTranscription={status?.transcription === true}
+              ask={(text) => send(text, true)}
+              cancelAsk={() => abort.current?.abort()}
+              onClose={() => setVoiceMode(false)}
+            />
+          ) : null}
+          {!voiceMode && available && !busy ? (
             <div className="mb-3 flex gap-1.5 overflow-x-auto pb-1" aria-label="Suggestions">
               {SUGGESTIONS[page].map((s) => (
                 <button key={s} type="button" onClick={() => send(s)} className="shrink-0 rounded-full border border-line-strong px-3 py-1.5 text-[12.5px] text-ink-2 transition-colors hover:border-accent hover:text-ink">
@@ -432,6 +489,7 @@ export function AssistantPanel() {
             </div>
           ) : null}
           <form
+            hidden={voiceMode}
             onSubmit={(e) => {
               e.preventDefault();
               void send(draft);
@@ -458,6 +516,21 @@ export function AssistantPanel() {
               placeholder={available ? "Posez une question ou demandez une action" : "Assistant IA non configuré sur ce serveur"}
               className="max-h-32 min-h-[36px] flex-1 resize-none bg-transparent py-2 text-[14px] text-ink placeholder:text-ink-3 focus:outline-none disabled:cursor-not-allowed"
             />
+            {available && !busy && voiceEngine ? (
+              <button
+                type="button"
+                onClick={() => {
+                  stopSpeaking();
+                  setReading(null);
+                  setVoiceMode(true);
+                }}
+                aria-label="Démarrer une conversation vocale"
+                title="Conversation vocale"
+                className="flex size-9 shrink-0 items-center justify-center rounded-[12px] text-ink-2 transition-colors hover:bg-surface-3 hover:text-ink"
+              >
+                <Microphone size={18} />
+              </button>
+            ) : null}
             {busy ? (
               <button type="button" onClick={() => abort.current?.abort()} aria-label="Interrompre" className="flex size-9 shrink-0 items-center justify-center rounded-[12px] bg-surface-3 text-ink hover:bg-line-strong">
                 <Stop size={16} weight="fill" />

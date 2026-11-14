@@ -31,12 +31,12 @@ export async function POST(request: Request) {
   } catch {
     return Response.json({ error: "Corps de requête invalide." }, { status: 400 });
   }
-  const { messages, context } = (body ?? {}) as { messages?: unknown; context?: unknown };
+  const { messages, context, mode } = (body ?? {}) as { messages?: unknown; context?: unknown; mode?: unknown };
   const history = sanitizeHistory(messages);
   if (!history.length) return Response.json({ error: "Message vide." }, { status: 400 });
 
   try {
-    const reply = await runAssistant(history, validateContext(context), { config, signal: request.signal });
+    const reply = await runAssistant(history, validateContext(context), { config, signal: request.signal, voice: mode === "voice" });
     return Response.json(reply, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     if (error instanceof AssistantUnavailable) {

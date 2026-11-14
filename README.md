@@ -58,7 +58,17 @@ Hot-Spot AI fonctionne avec **Google Gemini** ou **Anthropic Claude**, appelés 
 - **Préparer un export** : le téléchargement attend toujours la confirmation de l'utilisateur.
 - **Interpréter** : il lit les vrais chiffres par des outils serveur (synthèse d'une période, historique, détail d'un mois, classement des provinces, faits de méthode) et structure sa réponse en « Observé, Interprétation, Limites ».
 
+- **Converser à voix haute** : le bouton micro du panneau ouvre une conversation vocale. Vous parlez, l'assistant applique les actions demandées, répond en 1 à 3 phrases lues à voix haute, puis vous écoute de nouveau. Chaque échange reste écrit dans la conversation, et chaque réponse écrite a aussi un bouton « Écouter ».
+
 Il ne peut ni modifier les données ni changer un paramètre scientifique. Ses règles (pas d'incendie confirmé, pas de prédiction, pas de total MODIS plus VIIRS, aucun chiffre inventé) sont dans `web/src/lib/ai/prompt.ts`.
+
+### Conversation vocale
+
+- **Reconnaissance de la parole.** Dans Chrome et Edge, la dictée intégrée du navigateur transcrit en direct (`fr-FR`). Si elle manque ou échoue (Firefox, Safari, service de dictée injoignable), le navigateur enregistre la question, détecte la fin de la parole (1,3 s de silence), puis l'envoie à `/api/assistant/transcribe`, qui la fait transcrire par Gemini. Ce repli n'existe qu'avec le fournisseur Gemini. Pour le forcer, exécutez `localStorage.setItem("hotspot.voice.engine", "server")` dans la console du navigateur.
+- **Réponse parlée.** Elle passe par la synthèse vocale du navigateur, avec une voix française si le système en a une. En mode vocal, l'assistant reçoit une consigne de réponse courte, sans mise en forme.
+- **Contrôles.** « J'ai fini » pour envoyer sans attendre le silence, « Couper la parole », « Pause », « Reprendre », « Terminer » (ou la touche Échap). Après deux silences de suite, la conversation se met en pause.
+- **Confidentialité.** Le micro n'est ouvert que pendant l'écoute. L'audio n'est ni conservé ni journalisé. Une transcription compte dans les mêmes limites de requêtes que les questions. Les envois sont limités à 2 Mo, au format webm, ogg, mp4, mpeg, aac ou wav.
+- **Prérequis.** Le micro exige une page sécurisée : HTTPS, ou `localhost` en développement.
 
 ### Sécurité
 
@@ -87,11 +97,12 @@ web/e2e/             parcours de test dans un vrai navigateur
 ```bash
 python -m unittest discover -s pipeline/tests   # 13 tests du pipeline
 cd web
-pnpm test                                       # 54 tests : statistiques, moteur, cohérence avec le pipeline, assistant (Claude et Gemini)
+pnpm test                                       # 59 tests : statistiques, moteur, cohérence avec le pipeline, assistant (Claude, Gemini, voix)
 pnpm dev                                        # puis, dans un autre terminal :
 node e2e/flows.mjs                              # 20 parcours d'acceptation (Chrome installé requis)
 node e2e/assistant.mjs                          # 9 parcours de l'assistant
 node e2e/assistant-live.mjs                     # 8 essais avec le vrai fournisseur IA (clé requise, requêtes facturées)
+node e2e/voice-live.mjs question.wav            # conversation vocale complète : un fichier WAV sert de micro (clé requise)
 ```
 
 Les tests unitaires et navigateur de l'assistant n'appellent pas le fournisseur IA : un client simulé rejoue des réponses du modèle, ou la réponse réseau de `/api/assistant` est remplacée. Ils vérifient la boucle d'outils, la validation, l'exécution des actions et les confirmations. Le comportement du vrai modèle (refus d'une suppression, résistance à une injection, export non annoncé comme téléchargé, données 2026 absentes) est vérifié par `e2e/assistant-live.mjs`.

@@ -13,7 +13,7 @@ import { ApiError, GoogleGenAI, ThinkingLevel, type Content, type FunctionCall, 
 import type { AssistantAction, AssistantContext, AssistantReply, ChatTurn } from "../assistant/protocol";
 import { getStore } from "../server/store";
 import type { AiConfig } from "./config";
-import { SYSTEM_PROMPT } from "./prompt";
+import { SYSTEM_PROMPT, VOICE_PROMPT } from "./prompt";
 import { TOOL_DEFINITIONS, describeContext, runTool } from "./tools";
 import { AssistantUnavailable } from "./errors";
 
@@ -45,24 +45,32 @@ export async function runGemini(
   history: ChatTurn[],
   context: AssistantContext,
   config: AiConfig,
-  options: { generate?: GenerateContent; signal?: AbortSignal } = {},
+  options: { generate?: GenerateContent; signal?: AbortSignal; voice?: boolean } = {},
 ): Promise<AssistantReply> {
   const generate = options.generate ?? defaultGenerateContent();
-  // Modele principal puis modeles de secours. Si un modele est surcharge ou trop lent a n'importe quelle etape,
-  // le tour entier est rejoue avec le suivant, a partir de l'etat initial : les lectures sont sans effet,
-  // et seules les actions du passage reussi sont renvoyees a l'interface.
-  // Un modele qui vient d'echouer est mis de cote quelques minutes, pour ne pas faire attendre chaque question.
+  // Si un modele echoue a n'importe quelle etape, le tour entier est rejoue avec le suivant, a partir de
+  // l'etat initial : les lectures sont sans effet, et seules les actions du passage reussi sont renvoyees.
+  const { value, model } = await withGeminiFallback(config, options.signal, (m) => runTurn(m, history, context, config, generate, options.signal, options.voice === true));
+  return { ...value, model, fallback: model !== config.model };
+}
+
+/**
+ * Execute une operation avec le modele principal puis les modeles de secours.
+ * Un modele qui vient d'echouer (surcharge, quota, delai) est mis de cote quelques minutes,
+ * pour ne pas faire attendre chaque demande.
+ */
+export async function withGeminiFallback<T>(config: AiConfig, signal: AbortSignal | undefined, run: (model: string) => Promise<T>): Promise<{ value: T; model: string }> {
   const now = Date.now();
   const all = [config.model, ...config.fallbackModels];
   const ready = all.filter((m) => (resting.get(m) ?? 0) <= now);
   const models = ready.length ? ready : all;
   for (let index = 0; ; index++) {
     try {
-      const reply = await runTurn(models[index], history, context, config, generate, options.signal);
+      const value = await run(models[index]);
       resting.delete(models[index]);
-      return { ...reply, model: models[index], fallback: models[index] !== config.model };
+      return { value, model: models[index] };
     } catch (error) {
-      const transient = isTransient(error) && !options.signal?.aborted;
+      const transient = isTransient(error) && !signal?.aborted;
       if (transient) resting.set(models[index], Date.now() + REST_MS);
       if (!transient || index >= models.length - 1) throw geminiError(error);
       console.warn(`[assistant] ${models[index]} indisponible (${error instanceof ApiError ? error.status : "délai"}), essai avec ${models[index + 1]}`);
@@ -87,6 +95,7 @@ async function runTurn(
   config: AiConfig,
   generate: GenerateContent,
   signal: AbortSignal | undefined,
+  voice: boolean,
 ): Promise<AssistantReply> {
   const store = getStore();
   const ctx: AssistantContext = structuredClone(context);
@@ -102,7 +111,7 @@ async function runTurn(
       contents,
       config: {
         // Instructions figees, puis contexte du tour : l'etat de l'application peut avoir change entre deux appels.
-        systemInstruction: `${SYSTEM_PROMPT}\n\n${describeContext(ctx, store)}`,
+        systemInstruction: `${SYSTEM_PROMPT}${voice ? `\n\n${VOICE_PROMPT}` : ""}\n\n${describeContext(ctx, store)}`,
         tools: [{ functionDeclarations: GEMINI_FUNCTIONS }],
         maxOutputTokens: config.maxTokens,
         thinkingConfig: { thinkingLevel: THINKING[config.effort] },
