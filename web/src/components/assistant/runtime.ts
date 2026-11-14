@@ -9,6 +9,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCallback } from "react";
 
 import { exportUrl } from "@/lib/api";
+import { CONF_LABEL, SATELLITES } from "@/lib/labels";
 import { fmtPeriod } from "@/lib/format";
 import { PAGES, pageFromPath, type AssistantAction, type AssistantContext } from "@/lib/assistant/protocol";
 import { setAssistant } from "@/state/assistant";
@@ -53,8 +54,8 @@ export function describeAction(action: AssistantAction): string {
       return `Période : ${fmtPeriod(action.from, action.to)}`;
     case "set_map_view": {
       const parts = [action.mode === "grid" ? "grille harmonisée" : action.mode === "points" ? "détections natives" : null];
-      if (action.sensors) parts.push(`satellites : ${action.sensors.join(", ")}`);
-      if (action.confidence) parts.push(`confiance : ${action.confidence.join(", ")}`);
+      if (action.sensors) parts.push(`satellites : ${action.sensors.map((k) => SATELLITES[k].name).join(", ")}`);
+      if (action.confidence) parts.push(`confiance : ${action.confidence.map((k) => CONF_LABEL[k].toLowerCase()).join(", ")}`);
       if (action.sourceType && action.sourceType !== "all") parts.push(action.sourceType === "veg" ? "végétation" : "sources statiques");
       if (action.dayNight && action.dayNight !== "all") parts.push(action.dayNight === "day" ? "jour" : "nuit");
       return `Carte : ${parts.filter(Boolean).join(", ") || "ouverte"}`;

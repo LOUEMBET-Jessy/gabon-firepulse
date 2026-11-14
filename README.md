@@ -27,22 +27,29 @@ L'application lit une copie locale des données : elle fonctionne sans connexion
 
 ## Activer l'assistant IA
 
-Hot-Spot AI utilise l'API Claude d'Anthropic, appelée **uniquement côté serveur**. Sans clé, l'application reste entièrement utilisable : l'assistant l'indique clairement et propose la visite guidée, des questions fréquentes et des raccourcis, sans prétendre répondre.
+Hot-Spot AI fonctionne avec **Google Gemini** ou **Anthropic Claude**, appelés **uniquement côté serveur**. Sans clé, l'application reste entièrement utilisable : l'assistant l'indique clairement et propose la visite guidée, des questions fréquentes et des raccourcis, sans prétendre répondre.
 
 1. Copiez `web/.env.example` en `web/.env.local`.
-2. Renseignez `ANTHROPIC_API_KEY`.
-3. Redémarrez le serveur.
+2. Renseignez `GEMINI_API_KEY` (ou `ANTHROPIC_API_KEY`).
+3. Reconstruisez si besoin et redémarrez le serveur (`pnpm build` puis `pnpm start`, ou `pnpm dev`).
 
 | Variable | Rôle | Défaut |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | Clé de l'API Claude (ou `ANTHROPIC_AUTH_TOKEN`) | absente : assistant hors ligne |
-| `HOTSPOT_AI_MODEL` | Modèle utilisé | `claude-opus-5-5` |
+| `GEMINI_API_KEY` | Clé de l'API Gemini (Google AI Studio) | absente |
+| `GEMINI_MODEL` | Modèle Gemini principal | `gemini-3.8-flash` |
+| `GEMINI_FALLBACK_MODELS` | Modèles de secours, séparés par des virgules | `gemini-3.5-flash,gemini-3.1-flash-lite` |
+| `ANTHROPIC_API_KEY` | Clé de l'API Claude (ou `ANTHROPIC_AUTH_TOKEN`) | absente |
+| `HOTSPOT_AI_MODEL` | Modèle Claude | `claude-opus-5-5` |
+| `HOTSPOT_AI_PROVIDER` | `gemini` ou `anthropic` pour forcer le choix | Gemini si sa clé est présente |
 | `HOTSPOT_AI_EFFORT` | Profondeur de réflexion : `low`, `medium` ou `high` | `low` |
+| `HOTSPOT_AI_TIMEOUT_MS` | Délai maximal d'un appel au fournisseur | 25 000 |
 | `HOTSPOT_AI_RATE_LIMIT` | Requêtes par visiteur et par fenêtre de 10 minutes | 30 |
 | `HOTSPOT_AI_DAILY_LIMIT` | Requêtes par jour pour tout le serveur (garde-fou de coût) | 1000 |
 | `HOTSPOT_AI_DISABLED` | `1` pour couper l'assistant sans retirer la clé | non défini |
 
-Les requêtes activent le repli serveur en cas de refus de sécurité (`server-side-fallback-2026-07-01`, mode `default`) : une demande refusée par les filtres du modèle principal est rejouée sur un modèle de repli choisi par l'API. Retirez `betas` et `fallbacks` dans `web/src/lib/ai/service.ts` pour le désactiver.
+**Gemini et la surcharge.** Les modèles Gemini récents sont parfois saturés (erreurs 503 ou 504). Chaque appel est limité à 25 secondes, sans nouvel essai sur le même modèle. Si le modèle principal échoue à n'importe quelle étape, le tour entier est rejoué avec le premier modèle de secours disponible, puis le suivant. Un modèle qui vient d'échouer est mis de côté 5 minutes. L'assistant indique sous sa réponse quand un modèle de secours a répondu.
+
+**Claude.** Les requêtes activent le repli serveur en cas de refus de sécurité (`server-side-fallback-2026-07-01`, mode `default`). Retirez `betas` et `fallbacks` dans `web/src/lib/ai/service.ts` pour le désactiver.
 
 ### Ce que l'assistant peut faire
 
@@ -55,7 +62,7 @@ Il ne peut ni modifier les données ni changer un paramètre scientifique. Ses r
 
 ### Sécurité
 
-- La clé reste dans l'environnement du serveur ; le navigateur n'appelle que `/api/assistant`.
+- Les clés restent dans l'environnement du serveur (`web/.env.local`, ignoré par git) ; le navigateur n'appelle que `/api/assistant`.
 - Chaque paramètre d'action proposé par le modèle est validé côté serveur (zone connue, dates dans la couverture, valeurs autorisées) ; un paramètre invalide ne produit aucune action.
 - Le contexte envoyé par le navigateur est revalidé. Les messages utilisateur et les résultats d'outils sont traités comme des données, jamais comme des instructions.
 - Limitation par visiteur (empreinte de l'adresse, l'adresse elle-même n'est pas conservée) et quota quotidien global. Le contenu des conversations n'est pas journalisé ; la conversation n'est gardée que dans l'onglet du navigateur.
@@ -68,7 +75,7 @@ data/raw/            fichiers sources NASA FIRMS et geoBoundaries, avec manifest
 web/data/            données traitées lues par l'application
 web/src/lib/server/  moteur d'agrégation par zone, requêtes, API internes
 web/src/lib/science/ statistiques robustes et évaluation des périodes inhabituelles
-web/src/lib/ai/      service de l'assistant : configuration, instructions, outils, limitation
+web/src/lib/ai/      service de l'assistant : configuration, instructions, outils, fournisseurs Claude et Gemini, limitation
 web/src/lib/assistant/ protocole navigateur-serveur, visite guidée, aide hors ligne
 web/src/components/  interface : marque, graphiques, carte, assistant
 web/src/app/         pages (accueil, vue d'ensemble, carte, calendrier, tendances, comparaison, périodes inhabituelles, rapports, méthode) et routes d'API
@@ -80,13 +87,14 @@ web/e2e/             parcours de test dans un vrai navigateur
 ```bash
 python -m unittest discover -s pipeline/tests   # 13 tests du pipeline
 cd web
-pnpm test                                       # 46 tests : statistiques, moteur, cohérence avec le pipeline, assistant
+pnpm test                                       # 54 tests : statistiques, moteur, cohérence avec le pipeline, assistant (Claude et Gemini)
 pnpm dev                                        # puis, dans un autre terminal :
 node e2e/flows.mjs                              # 20 parcours d'acceptation (Chrome installé requis)
 node e2e/assistant.mjs                          # 9 parcours de l'assistant
+node e2e/assistant-live.mjs                     # 8 essais avec le vrai fournisseur IA (clé requise, requêtes facturées)
 ```
 
-Les tests de l'assistant n'appellent jamais le fournisseur IA : un client simulé rejoue des réponses du modèle (tests unitaires) ou la réponse réseau de `/api/assistant` est remplacée (tests navigateur). Ils vérifient la boucle d'outils, la validation, l'exécution des actions et les confirmations, **pas la qualité des réponses du modèle**, qui demande une clé.
+Les tests unitaires et navigateur de l'assistant n'appellent pas le fournisseur IA : un client simulé rejoue des réponses du modèle, ou la réponse réseau de `/api/assistant` est remplacée. Ils vérifient la boucle d'outils, la validation, l'exécution des actions et les confirmations. Le comportement du vrai modèle (refus d'une suppression, résistance à une injection, export non annoncé comme téléchargé, données 2026 absentes) est vérifié par `e2e/assistant-live.mjs`.
 
 ## Méthode en bref
 

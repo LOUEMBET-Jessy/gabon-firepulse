@@ -31,7 +31,8 @@ async function open(route, { welcomed = true, viewport = { width: 1440, height: 
   page.setDefaultTimeout(15_000);
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e).slice(0, 200)));
-  if (available) await page.route("**/api/assistant/status", (r) => r.fulfill({ json: { available: true, reason: null, model: "claude-opus-5-5" } }));
+  if (available === true) await page.route("**/api/assistant/status", (r) => r.fulfill({ json: { available: true, reason: null, model: "gemini-3.8-flash" } }));
+  if (available === false) await page.route("**/api/assistant/status", (r) => r.fulfill({ json: { available: false, reason: "Aucun fournisseur IA n'est configuré sur ce serveur (clé GEMINI_API_KEY absente).", model: null } }));
   await page.goto(base + route, { waitUntil: "load" });
   return { page, context, errors };
 }
@@ -59,7 +60,7 @@ await test("A-01", "Première visite : accueil et proposition de visite guidée"
 });
 
 await test("A-02", "Sans fournisseur IA : état honnête et aide hors ligne utilisable", async () => {
-  const { page, context } = await open("/dashboard");
+  const { page, context } = await open("/dashboard", { available: false });
   await page.getByRole("button", { name: "Ouvrir Hot-Spot AI" }).click();
   await panel(page).getByText("Assistant IA indisponible").waitFor();
   expect(await page.locator("#assistant-input").isDisabled(), "la saisie reste active sans service");
