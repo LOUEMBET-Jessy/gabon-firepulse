@@ -3,7 +3,7 @@
 /**
  * Etat de l'assistant cote navigateur : conversation, ouverture du panneau, visite guidee.
  * La conversation est gardee pour la session de l'onglet (sessionStorage), jamais envoyee ailleurs
- * qu'au serveur Hot-Spot lors d'une question.
+ * qu'au serveur Hot-Spots lors d'une question.
  */
 
 import { useSyncExternalStore } from "react";

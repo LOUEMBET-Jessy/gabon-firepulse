@@ -78,16 +78,35 @@ def map_key() -> str | None:
 
 def fetch(url: str, timeout: int = 120) -> str:
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    for attempt in range(4):
+    attempts = 7
+    for attempt in range(attempts):
         try:
             with urllib.request.urlopen(req, timeout=timeout) as resp:
                 return resp.read().decode("utf-8")
-        except (urllib.error.URLError, TimeoutError) as err:
-            if attempt == 3:
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as err:
+            if attempt == attempts - 1:
                 raise
-            time.sleep(5 * (attempt + 1))
-            print(f"    nouvel essai apres erreur : {err}")
+            wait = min(10 * 2**attempt, 180)
+            print(f"    nouvel essai dans {wait} s apres erreur : {err}", flush=True)
+            time.sleep(wait)
     raise RuntimeError("inaccessible")
+
+
+# Fenetres deja recues : un telechargement interrompu reprend la ou il s'est arrete. Les fenetres recentes
+# (moins de 10 jours) sont toujours redemandees, car la NASA les complete encore.
+CACHE = RAW_DIR / "firms" / "_api" / PROFILE.iso
+
+
+def fetch_window(key: str, source: str, day: date, url: str) -> str:
+    path = CACHE / source / f"{day.isoformat()}.csv"
+    recent = (date.today() - day).days < 10
+    if path.exists() and not recent:
+        return path.read_text("utf-8")
+    text = fetch(url)
+    if not (text.lower().startswith("invalid") or "error" in text[:80].lower()):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, "utf-8")
+    return text
 
 
 def now_utc() -> str:
@@ -191,7 +210,7 @@ def download(key: str, source: str, first: date, last: date) -> pd.DataFrame:
     frames = []
     day = first
     while day <= last:
-        text = fetch(f"{FIRMS}/api/area/csv/{key}/{source}/{w},{s},{e},{n}/{DAY_RANGE}/{day.isoformat()}")
+        text = fetch_window(key, source, day, f"{FIRMS}/api/area/csv/{key}/{source}/{w},{s},{e},{n}/{DAY_RANGE}/{day.isoformat()}")
         if text.lower().startswith("invalid") or "error" in text[:80].lower():
             raise RuntimeError(f"{source} {day} : {text[:160]}")
         df = pd.read_csv(io.StringIO(text), dtype=str, keep_default_na=False)
@@ -220,14 +239,42 @@ def to_archive_format(df: pd.DataFrame, sensor: str, mask: set[int], land: dict,
     out["satellite"] = out["satellite"].str.strip().str.upper().map(SATELLITE_NAMES).fillna(out["satellite"].str.strip())
     if sensor == "VIIRS":
         out["confidence"] = out["confidence"].str.strip().str.lower().str[0]
-    inferred = 0
-    if "type" not in out.columns or (out["type"].astype(str).str.strip() == "").all():
-        out["type"] = infer_type(lon, lat, mask, land).astype(str)
-        inferred = len(out)
+    # L'API ecrit l'heure sans zero initial (121 pour 01:21) ; les archives annuelles l'ecrivent sur 4 chiffres.
+    out["acq_time"] = out["acq_time"].astype(str).str.strip().str.zfill(4)
+    # Type de source : garde tel quel quand la NASA le fournit (SP), deduit seulement pour les lignes NRT sans type.
+    if "type" not in out.columns:
+        out["type"] = ""
+    # Valeur absente : chaine vide (fichier relu) ou NaN (concatenation de lignes SP avec type et NRT sans type).
+    out["type"] = out["type"].fillna("").astype(str).str.strip().replace({"nan": ""})
+    missing = (out["type"] == "").to_numpy()
+    if missing.any():
+        guessed = infer_type(lon, lat, mask, land).astype(str)
+        out["type"] = np.where(missing, guessed, out["type"].astype(str).str.strip())
+    inferred = int(missing.sum())
     for col in ARCHIVE_COLUMNS[sensor]:
         if col not in out.columns:
             out[col] = ""
     return out[ARCHIVE_COLUMNS[sensor]], {"kept": int(len(out)), "outside": int((~keep).sum()), "type_inferred": inferred}
+
+
+def reformat(archive: pd.DataFrame, land: dict) -> int:
+    """Reapplique la mise au format (idempotente) aux fichiers de l'API deja ecrits, et met le manifeste a jour."""
+    manifest = json.loads(MANIFEST.read_text("utf-8"))
+    year = int(archive["year"].max())
+    mask, cells = static_mask(archive, year), footprint(archive)
+    for f in manifest["firms_files"]:
+        if not f.get("api"):
+            continue
+        sensor = DATASETS[f["dataset"]][0]
+        path = ROOT / f["path"]
+        table, stats = to_archive_format(pd.read_csv(path, dtype=str, keep_default_na=False), sensor, mask, land, cells)
+        payload = table.to_csv(index=False).encode("utf-8")
+        path.write_bytes(payload)
+        f.update({"bytes": len(payload), "sha256": hashlib.sha256(payload).hexdigest(), "rows": stats["kept"]})
+        manifest.get("recent", {}).get("datasets", {}).get(f["dataset"], {})["type_inferred"] = stats["type_inferred"]
+        print(f"  {f['path']} : {stats['kept']} lignes, type deduit pour {stats['type_inferred']}")
+    MANIFEST.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), "utf-8")
+    return 0
 
 
 # ------------------------------------------------------------------ Programme
@@ -236,6 +283,7 @@ def to_archive_format(df: pd.DataFrame, sensor: str, mask: set[int], land: dict,
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true", help="valider seulement le masque de sources statiques, sans reseau")
+    parser.add_argument("--reformat", action="store_true", help="reappliquer la mise au format aux fichiers deja telecharges, sans reseau")
     args = parser.parse_args()
 
     archive = load_archive()
@@ -246,6 +294,8 @@ def main() -> int:
     print(f"  detections classees vegetation qui le sont vraiment : {quality['vegetation_precision']:.1%} ; accord global {quality['agreement']:.1%}")
     if args.check:
         return 0
+    if args.reformat:
+        return reformat(archive, land)
 
     key = map_key()
     if not key:

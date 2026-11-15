@@ -1,5 +1,5 @@
 /**
- * Service de l'assistant Hot-Spot AI : boucle d'outils cote serveur.
+ * Service de l'assistant Hot-Spots AI : boucle d'outils cote serveur.
  *
  * - Les outils de lecture s'executent ici, sur les donnees reelles.
  * - Les actions d'interface sont validees ici puis renvoyees au navigateur, qui les applique

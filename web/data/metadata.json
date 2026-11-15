@@ -1,24 +1,24 @@
 {
- "built_at": "2026-11-15T08:38:05Z",
+ "built_at": "2026-11-15T08:41:22Z",
  "data_kind": "real",
  "data_kind_label": "Donnees NASA FIRMS reelles (archives annuelles par pays), figees a la date d'acces indiquee",
  "country": "Gabon",
  "coverage": {
   "first_date": "2000-11-01",
-  "last_date": "2026-11-14"
+  "last_date": "2026-11-15"
  },
  "rows": {
   "read": 316285,
-  "kept": 309233,
-  "rejected": 7052,
-  "eligible": 235544,
-  "outside_provinces": 8953
+  "kept": 316285,
+  "rejected": 0,
+  "eligible": 243455,
+  "outside_provinces": 9507
  },
  "by_satellite": {
-  "terra": 24453,
-  "aqua": 37343,
-  "snpp": 154456,
-  "noaa20": 92981
+  "terra": 24678,
+  "aqua": 37429,
+  "snpp": 157845,
+  "noaa20": 96333
  },
  "envelope": {
   "lon_min": 8.0,
@@ -51,7 +51,7 @@
     },
     "kept": 2825,
     "outside": 11801,
-    "type_inferred": 0
+    "type_inferred": 752
    },
    "viirs-snpp": {
     "ranges": {
@@ -66,7 +66,7 @@
     },
     "kept": 10100,
     "outside": 37882,
-    "type_inferred": 0
+    "type_inferred": 3339
    },
    "viirs-jpss1": {
     "ranges": {
@@ -81,7 +81,7 @@
     },
     "kept": 10771,
     "outside": 40908,
-    "type_inferred": 0
+    "type_inferred": 3481
    }
   },
   "provisional_from": "2026-08-01"

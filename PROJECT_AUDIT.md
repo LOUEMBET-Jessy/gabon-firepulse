@@ -50,7 +50,7 @@ Particularité de la machine : le certificat de `spaceappschallenge.org` est ref
 
 ## 2. Ce que demande réellement la NASA
 
-L'énoncé officiel a été lu sur la page du défi (`/2026/challenges/modis-and-viirs-hot-spots/`). Le guide de présélection de l'équipe en est un résumé fidèle mais incomplet. Points de l'énoncé qui pèsent sur la conception :
+L'énoncé officiel a été lu sur la page du défi (`/2026/challenges/modis-and-viirs-Hot-Spotss/`). Le guide de présélection de l'équipe en est un résumé fidèle mais incomplet. Points de l'énoncé qui pèsent sur la conception :
 
 1. **Une série unique et cohérente.** « …so that by the end of that phase the sensor of origin no longer matters and the patterns, trends, and anomalies become the focus. » L'objectif est « a consistent time series of hotspot activity » qui combine la longue série MODIS et la continuité de VIIRS.
 2. **Un calendrier du début des années 2000 à aujourd'hui.** Il doit montrer quels mois et quelles années ont été les plus actifs.

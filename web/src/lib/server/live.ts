@@ -314,7 +314,7 @@ async function refreshFeed(feed: FeedSpec, territory: LiveTerritory, fetcher: ty
   const id = `${feed.key}_${territory}_${liveMode().mode}`;
   const previous = load(id);
   const { url, shown } = feedUrl(feed, territory);
-  const headers: Record<string, string> = { "User-Agent": "Hot-Spot (NASA Space Apps 2026)" };
+  const headers: Record<string, string> = { "User-Agent": "Hot-Spots (NASA Space Apps 2026)" };
   if (previous?.lastModified && previous.url === shown && !previous.failed) headers["If-Modified-Since"] = previous.lastModified;
   if (previous?.etag && previous.url === shown && !previous.failed) headers["If-None-Match"] = previous.etag;
   const now = Date.now();

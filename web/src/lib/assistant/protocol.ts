@@ -1,5 +1,5 @@
 /**
- * Protocole entre l'interface et l'assistant Hot-Spot AI.
+ * Protocole entre l'interface et l'assistant Hot-Spots AI.
  * Module partage (navigateur et serveur) : aucune dependance serveur ici.
  */
 

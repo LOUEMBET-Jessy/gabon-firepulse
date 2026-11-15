@@ -10,7 +10,7 @@ import { ScaleLegend, activityBreaks } from "@/components/heatmaps";
 import { DRAW_EVENT, DRAW_FLAG, zoneLabel } from "@/components/shell/pickers";
 import { Button, Checkbox, ErrorState, Notice, Segmented, SensorMark, Skeleton, buttonClass, cx } from "@/components/ui";
 import { exportUrl, useHydrated, useDetection, useDetections, useGrid, useLive, useMetadata, type MapFilters } from "@/lib/api";
-import { fmtCoord, fmtDateTimeUtc, fmtInt, fmtPeriod } from "@/lib/format";
+import { fmtCoord, fmtDateShort, fmtDateTimeUtc, fmtInt, fmtPeriod } from "@/lib/format";
 import { CONF_LABEL, DEFINITIONS, LIVE_SATELLITE_INFO, SATELLITES } from "@/lib/labels";
 import type { DetectionDetail, GridCell, LiveTerritory, ZoneSpec } from "@/lib/types";
 import { SATELLITE_KEYS } from "@/lib/types";
@@ -345,14 +345,14 @@ export function MapView() {
         value={source}
         onChange={switchSource}
         options={[
-          { value: "archive", label: "Archive 2000-2025" },
+          { value: "archive", label: `Archive 2000-${meta.data?.coverage.lastDate.slice(0, 4) ?? "…"}` },
           { value: "live", label: "Temps réel" },
         ]}
       />
       <p className="mt-1 text-[11.5px] leading-relaxed text-ink-3">
         {isLive
           ? "Dernières détections NASA FIRMS pour le Gabon et la France, actualisées automatiquement. Non harmonisées, non définitives."
-          : `Archive NASA FIRMS 2000-2025 ${country === "FRA" ? "de la France métropolitaine" : "du Gabon"}, contrôlée et harmonisée : la base de tous les calculs de la plateforme.`}
+          : `Archive NASA FIRMS ${country === "FRA" ? "de la France métropolitaine" : "du Gabon"}, de 2000 au ${meta.data ? fmtDateShort(meta.data.coverage.lastDate) : "…"}, contrôlée et harmonisée : la base de tous les calculs de la plateforme.${meta.data?.recent?.provisionalFrom ? ` Provisoire depuis le ${fmtDateShort(meta.data.recent.provisionalFrom)}.` : ""}`}
       </p>
     </Group>
   );

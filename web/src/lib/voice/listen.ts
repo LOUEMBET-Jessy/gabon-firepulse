@@ -213,7 +213,7 @@ function listenServer(events: ListenEvents): Listener {
           if (body.text) events.onFinal(body.text);
           else events.onSilence();
         } catch {
-          if (!aborted) events.onError("Le serveur Hot-Spot ne répond pas.");
+          if (!aborted) events.onError("Le serveur Hot-Spots ne répond pas.");
         }
       };
       recorder.stop();

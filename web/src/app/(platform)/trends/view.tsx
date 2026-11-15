@@ -203,7 +203,7 @@ export function TrendsView() {
 
       <Panel>
         <PanelHeader
-          title="Vingt-cinq ans, mois par mois"
+          title="Depuis 2000, mois par mois"
           subtitle="Indice harmonisé mensuel. Avant 2012, la valeur est estimée depuis MODIS : la bande montre l'incertitude du calage."
           help={DEFINITIONS.index}
           actions={<MoreLink href="/methodology">Comment c'est calculé</MoreLink>}

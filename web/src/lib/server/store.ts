@@ -395,18 +395,18 @@ function stamp(country: CountryCode): number {
   }
 }
 
-/** Archive d'un pays, gardee en memoire et rechargee si le pipeline l'a reecrite (verifie au plus toutes les 5 s). */
+/**
+ * Archive d'un pays, gardee en memoire et rechargee si le pipeline l'a reecrite (date des fichiers).
+ * Aucune lecture de l'horloge : le rendu serveur reste reproductible.
+ */
 export function getStore(country: CountryCode = "GAB"): Store {
   let cached = globalStore.__hotspotStores;
   if (!cached || cached.schema !== STORE_SCHEMA) cached = globalStore.__hotspotStores = { schema: STORE_SCHEMA, stores: {} };
   const hit = cached.stores[country];
-  const now = Date.now();
-  if (hit && (now - hit.checked < 5000 || stamp(country) === hit.stamp)) {
-    hit.checked = now;
-    return hit.store;
-  }
+  const current = stamp(country);
+  if (hit && hit.stamp === current) return hit.store;
   const store = load(country);
-  cached.stores[country] = { store, stamp: stamp(country), checked: now };
+  cached.stores[country] = { store, stamp: current, checked: 0 };
   return store;
 }
 

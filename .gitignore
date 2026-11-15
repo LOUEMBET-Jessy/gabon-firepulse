@@ -10,3 +10,6 @@ web/public/vendor/
 .env
 .env.local
 web/.env.local
+
+# Fenetres brutes de l'API FIRMS (cache de reprise, regenerables)
+data/raw/firms/_api/

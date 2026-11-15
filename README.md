@@ -1,8 +1,8 @@
-# Hot-Spot
+# Hot-Spots
 
 **Observer. Comprendre. Préserver.**
 
-Hot-Spot rend lisibles 25 ans de détections de feux actifs observées par les satellites MODIS et VIIRS de la NASA (archives NASA FIRMS), avec le Gabon pour territoire pilote. La plateforme harmonise les deux familles de capteurs en une série continue de novembre 2000 à décembre 2025, puis propose une carte, un calendrier historique, des tendances, une comparaison des capteurs, la détection des périodes inhabituelles et un assistant IA, Hot-Spot AI.
+Hot-Spots rend lisibles 25 ans de détections de feux actifs observées par les satellites MODIS et VIIRS de la NASA (archives NASA FIRMS), avec le Gabon pour territoire pilote. La plateforme harmonise les deux familles de capteurs en une série continue de novembre 2000 à décembre 2025, puis propose une carte, un calendrier historique, des tendances, une comparaison des capteurs, la détection des périodes inhabituelles et un assistant IA, Hot-Spots AI.
 
 Projet étudiant indépendant réalisé pour le NASA Space Apps Challenge 2026, défi « Harmonization of MODIS and VIIRS Hot Spots ». Ce n'est ni un produit officiel de la NASA ni un service d'alerte incendie.
 
@@ -83,7 +83,7 @@ Limites de la France : geoBoundaries (régions et départements, Licence Ouverte
 
 ## Activer l'assistant IA
 
-Hot-Spot AI fonctionne avec **Google Gemini** ou **Anthropic Claude**, appelés **uniquement côté serveur**. Sans clé, l'application reste entièrement utilisable : l'assistant l'indique clairement et propose la visite guidée, des questions fréquentes et des raccourcis, sans prétendre répondre.
+Hot-Spots AI fonctionne avec **Google Gemini** ou **Anthropic Claude**, appelés **uniquement côté serveur**. Sans clé, l'application reste entièrement utilisable : l'assistant l'indique clairement et propose la visite guidée, des questions fréquentes et des raccourcis, sans prétendre répondre.
 
 1. Copiez `web/.env.example` en `web/.env.local`.
 2. Renseignez `GEMINI_API_KEY` (ou `ANTHROPIC_API_KEY`).
@@ -151,7 +151,7 @@ web/e2e/             parcours de test dans un vrai navigateur
 ## Tests
 
 ```bash
-python -m unittest discover -s pipeline/tests   # 16 tests du pipeline
+python -m unittest discover -s pipeline/tests   # 18 tests du pipeline
 cd web
 pnpm test                                       # 75 tests : statistiques, moteur, cohérence avec le pipeline, géographie, France, temps réel, assistant (Claude, Gemini, voix)
 pnpm dev                                        # puis, dans un autre terminal :
@@ -161,6 +161,7 @@ node e2e/assistant-live.mjs                     # 8 essais avec le vrai fourniss
 node e2e/voice-live.mjs question.wav            # conversation vocale complète : un fichier WAV sert de micro (clé requise)
 node e2e/globe.mjs                              # 4 parcours du globe : anneaux par capteur, département, localité, arrivée depuis l'espace
 node e2e/france.mjs                             # 3 parcours de l'archive France : bascule, chiffres, région
+node e2e/history.mjs                            # 6 parcours 2000 à aujourd'hui (Gabon et France), archive prolongée requise
 node e2e/live.mjs                               # 3 parcours de l'observatoire temps réel (réseau requis : données NASA FIRMS réelles)
 ```
 

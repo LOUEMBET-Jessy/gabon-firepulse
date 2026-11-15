@@ -1,129 +1,129 @@
 {
- "built_at": "2026-11-15T08:38:05Z",
- "count": 309233,
+ "built_at": "2026-11-15T08:41:22Z",
+ "count": 316285,
  "epoch": "2000-01-01",
  "first_day": 305,
- "last_day": 9814,
+ "last_day": 9815,
  "columns": [
   {
    "name": "lat",
    "dtype": "f32",
    "offset": 0,
-   "bytes": 1236932
+   "bytes": 1265140
   },
   {
    "name": "lon",
    "dtype": "f32",
-   "offset": 1236932,
-   "bytes": 1236932
+   "offset": 1265140,
+   "bytes": 1265140
   },
   {
    "name": "frp",
    "dtype": "f32",
-   "offset": 2473864,
-   "bytes": 1236932
+   "offset": 2530280,
+   "bytes": 1265140
   },
   {
    "name": "bright",
    "dtype": "f32",
-   "offset": 3710796,
-   "bytes": 1236932
+   "offset": 3795420,
+   "bytes": 1265140
   },
   {
    "name": "bright2",
    "dtype": "f32",
-   "offset": 4947728,
-   "bytes": 1236932
+   "offset": 5060560,
+   "bytes": 1265140
   },
   {
    "name": "scan",
    "dtype": "f32",
-   "offset": 6184660,
-   "bytes": 1236932
+   "offset": 6325700,
+   "bytes": 1265140
   },
   {
    "name": "track",
    "dtype": "f32",
-   "offset": 7421592,
-   "bytes": 1236932
+   "offset": 7590840,
+   "bytes": 1265140
   },
   {
    "name": "cell",
    "dtype": "i32",
-   "offset": 8658524,
-   "bytes": 1236932
+   "offset": 8855980,
+   "bytes": 1265140
   },
   {
    "name": "line",
    "dtype": "u32",
-   "offset": 9895456,
-   "bytes": 1236932
+   "offset": 10121120,
+   "bytes": 1265140
   },
   {
    "name": "day",
    "dtype": "u16",
-   "offset": 11132388,
-   "bytes": 618466
+   "offset": 11386260,
+   "bytes": 632570
   },
   {
    "name": "time",
    "dtype": "u16",
-   "offset": 11750854,
-   "bytes": 618466
+   "offset": 12018830,
+   "bytes": 632570
   },
   {
    "name": "sat",
    "dtype": "u8",
-   "offset": 12369320,
-   "bytes": 309233
+   "offset": 12651400,
+   "bytes": 316285
   },
   {
    "name": "conf_class",
    "dtype": "u8",
-   "offset": 12678553,
-   "bytes": 309233
+   "offset": 12967685,
+   "bytes": 316285
   },
   {
    "name": "conf_native",
    "dtype": "u8",
-   "offset": 12987786,
-   "bytes": 309233
+   "offset": 13283970,
+   "bytes": 316285
   },
   {
    "name": "night",
    "dtype": "u8",
-   "offset": 13297019,
-   "bytes": 309233
+   "offset": 13600255,
+   "bytes": 316285
   },
   {
    "name": "type",
    "dtype": "u8",
-   "offset": 13606252,
-   "bytes": 309233
+   "offset": 13916540,
+   "bytes": 316285
   },
   {
    "name": "version",
    "dtype": "u8",
-   "offset": 13915485,
-   "bytes": 309233
+   "offset": 14232825,
+   "bytes": 316285
   },
   {
    "name": "src",
    "dtype": "u8",
-   "offset": 14224718,
-   "bytes": 309233
+   "offset": 14549110,
+   "bytes": 316285
   },
   {
    "name": "province",
    "dtype": "i8",
-   "offset": 14533951,
-   "bytes": 309233
+   "offset": 14865395,
+   "bytes": 316285
   },
   {
    "name": "eligible",
    "dtype": "u8",
-   "offset": 14843184,
-   "bytes": 309233
+   "offset": 15181680,
+   "bytes": 316285
   }
  ],
  "versions": [
@@ -143,18 +143,18 @@
    "dataset": "modis",
    "file_value": "Terra",
    "first_date": "2000-11-01",
-   "last_date": "2026-11-02",
-   "detections": 24453,
-   "eligible": 18774,
+   "last_date": "2026-11-13",
+   "detections": 24678,
+   "eligible": 19063,
    "by_type": {
-    "0": 20202,
-    "2": 4102,
-    "255": 149
+    "0": 20520,
+    "2": 4152,
+    "3": 6
    },
    "by_confidence_class": {
-    "low": 1698,
-    "nominal": 17836,
-    "high": 4919
+    "low": 1712,
+    "nominal": 18028,
+    "high": 4938
    },
    "night": 9705
   },
@@ -166,20 +166,20 @@
    "dataset": "modis",
    "file_value": "Aqua",
    "first_date": "2002-07-04",
-   "last_date": "2026-11-13",
-   "detections": 37343,
-   "eligible": 32144,
+   "last_date": "2026-11-14",
+   "detections": 37429,
+   "eligible": 32670,
    "by_type": {
-    "0": 34202,
-    "2": 2600,
-    "255": 541
+    "0": 34755,
+    "2": 2663,
+    "3": 11
    },
    "by_confidence_class": {
-    "low": 2227,
-    "nominal": 28187,
-    "high": 6929
+    "low": 2232,
+    "nominal": 28247,
+    "high": 6950
    },
-   "night": 3747
+   "night": 3833
   },
   {
    "code": 2,
@@ -190,20 +190,19 @@
    "file_value": "N",
    "first_date": "2012-01-20",
    "last_date": "2026-11-02",
-   "detections": 154456,
-   "eligible": 116819,
+   "detections": 157845,
+   "eligible": 120396,
    "by_type": {
-    "0": 120522,
-    "2": 31227,
-    "3": 455,
-    "255": 2252
+    "0": 124174,
+    "2": 32916,
+    "3": 755
    },
    "by_confidence_class": {
     "low": 3894,
-    "nominal": 146388,
-    "high": 4174
+    "nominal": 149763,
+    "high": 4188
    },
-   "night": 52736
+   "night": 56125
   },
   {
    "code": 3,
@@ -213,21 +212,20 @@
    "dataset": "viirs-jpss1",
    "file_value": "N20",
    "first_date": "2018-04-01",
-   "last_date": "2026-11-14",
-   "detections": 92981,
-   "eligible": 67807,
+   "last_date": "2026-11-15",
+   "detections": 96333,
+   "eligible": 71326,
    "by_type": {
-    "0": 69933,
-    "2": 20514,
-    "3": 233,
-    "255": 2301
+    "0": 73516,
+    "2": 22321,
+    "3": 496
    },
    "by_confidence_class": {
     "low": 2271,
-    "nominal": 88705,
-    "high": 2005
+    "nominal": 92048,
+    "high": 2014
    },
-   "night": 31888
+   "night": 35240
   }
  ],
  "provinces": [
@@ -595,12 +593,12 @@
    "dataset": "modis",
    "year": 2026,
    "url": "https://firms.modaps.eosdis.nasa.gov/api/area/csv/CLE_MASQUEE/{source}/{'lon_min': 8.0, 'lon_max': 15.0, 'lat_min': -4.5, 'lat_max': 3.0}/5/{date}",
-   "sha256": "e0a4c17a11c10fb12eb14ef83084046c32c11aba99f2689381581a451b4feed6",
-   "bytes": 230332,
+   "sha256": "cb98e3dbb4cf5de01c3b384a163df8f104cdee4a653b46a264a1046763ae08c1",
+   "bytes": 231395,
    "accessed_at": "2026-11-15T08:25:38Z",
    "rows_read": 2825,
-   "rows_kept": 2514,
-   "rows_rejected": 311
+   "rows_kept": 2825,
+   "rows_rejected": 0
   },
   {
    "file": "viirs-jpss1_2018_Gabon.csv",
@@ -703,12 +701,12 @@
    "dataset": "viirs-jpss1",
    "year": 2026,
    "url": "https://firms.modaps.eosdis.nasa.gov/api/area/csv/CLE_MASQUEE/{source}/{'lon_min': 8.0, 'lon_max': 15.0, 'lat_min': -4.5, 'lat_max': 3.0}/5/{date}",
-   "sha256": "fba38e6979c2c054dc7813c821a733c8caf41eb0262da61916e4107328a10ffd",
-   "bytes": 880776,
+   "sha256": "6299adbdd07e4e0c3b72ab9bc4e188579928655fb43408ddc6cab16c7d29fc03",
+   "bytes": 890367,
    "accessed_at": "2026-11-15T08:36:38Z",
    "rows_read": 10771,
-   "rows_kept": 7419,
-   "rows_rejected": 3352
+   "rows_kept": 10771,
+   "rows_rejected": 0
   },
   {
    "file": "viirs-snpp_2012_Gabon.csv",
@@ -883,12 +881,12 @@
    "dataset": "viirs-snpp",
    "year": 2026,
    "url": "https://firms.modaps.eosdis.nasa.gov/api/area/csv/CLE_MASQUEE/{source}/{'lon_min': 8.0, 'lon_max': 15.0, 'lat_min': -4.5, 'lat_max': 3.0}/5/{date}",
-   "sha256": "63ffe11ea5d40bb68a493c23aaa42d45ca976fc9337a9ab8e83a6cc28c143b8e",
-   "bytes": 805881,
+   "sha256": "c87ab44dc88683c0867f8417b4c154ec95a61a171b113fa005c60f1176a8223e",
+   "bytes": 815109,
    "accessed_at": "2026-11-15T08:27:34Z",
    "rows_read": 10100,
-   "rows_kept": 6711,
-   "rows_rejected": 3389
+   "rows_kept": 10100,
+   "rows_rejected": 0
   }
  ]
 }

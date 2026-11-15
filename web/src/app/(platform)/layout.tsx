@@ -2,12 +2,12 @@ import { cookies } from "next/headers";
 import { Suspense } from "react";
 
 import { Shell } from "@/components/shell/shell";
-import { FILTERS_COOKIE } from "@/lib/filters-shared";
+import { FILTERS_COOKIE, type Coverages } from "@/lib/filters-shared";
 import { dayToIso, getStore } from "@/lib/server/store";
 import { FiltersProvider } from "@/state/filters";
 
 /** Selection de la session (pays, zone, periode), lue dans le cookie : le serveur rend directement le bon ecran. */
-async function WithFilters({ coverage, children }: { coverage: { first: string; last: string }; children: React.ReactNode }) {
+async function WithFilters({ coverages, children }: { coverages: Coverages; children: React.ReactNode }) {
   const raw = (await cookies()).get(FILTERS_COOKIE)?.value;
   let initial: unknown = null;
   try {
@@ -16,7 +16,7 @@ async function WithFilters({ coverage, children }: { coverage: { first: string; 
     initial = null;
   }
   return (
-    <FiltersProvider coverage={coverage} initial={initial}>
+    <FiltersProvider coverages={coverages} initial={initial}>
       <Shell>{children}</Shell>
     </FiltersProvider>
   );
@@ -24,11 +24,14 @@ async function WithFilters({ coverage, children }: { coverage: { first: string; 
 
 /** Espace d'analyse : la couverture des donnees est lue une fois cote serveur et borne les selecteurs. */
 export default function PlatformLayout({ children }: { children: React.ReactNode }) {
-  const store = getStore();
-  const coverage = { first: dayToIso(store, store.firstDay), last: dayToIso(store, store.lastDay) };
+  const coverageOf = (country: "GAB" | "FRA") => {
+    const store = getStore(country);
+    return { first: dayToIso(store, store.firstDay), last: dayToIso(store, store.lastDay) };
+  };
+  const coverages: Coverages = { GAB: coverageOf("GAB"), FRA: coverageOf("FRA") };
   return (
     <Suspense fallback={<div className="min-h-[100dvh] bg-bg" aria-busy="true" />}>
-      <WithFilters coverage={coverage}>{children}</WithFilters>
+      <WithFilters coverages={coverages}>{children}</WithFilters>
     </Suspense>
   );
 }

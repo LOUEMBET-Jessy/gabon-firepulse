@@ -1,5 +1,5 @@
 /**
- * Outils de Hot-Spot AI.
+ * Outils de Hot-Spots AI.
  *
  * Deux familles :
  * - lecture (executes ici, sur le serveur) : interrogent les memes fonctions que l'API de l'application ;
@@ -177,7 +177,7 @@ export function validateContext(raw: unknown, given?: Store): AssistantContext {
 export function describeContext(ctx: AssistantContext, store: Store = getStore()): string {
   const zone = zoneInfo(ctx.zone, store);
   const lines = [
-    "Contexte applicatif actuel (fourni par l'interface Hot-Spot, à jour) :",
+    "Contexte applicatif actuel (fourni par l'interface Hot-Spots, à jour) :",
     `- page ouverte : ${ctx.page}`,
     `- pays de l'archive : ${store.countryName}`,
     `- zone d'analyse : ${zone.label} (${zoneKey(ctx.zone)})`,
@@ -217,14 +217,14 @@ export const TOOL_DEFINITIONS: Tool[] = [
   {
     name: "get_history",
     description:
-      "Lecture. Historique 2000-2025 d'une zone : totaux annuels harmonisés (avec part estimée depuis MODIS et complétude), mois habituellement critiques, médiane par mois calendaire, tendances (Theil-Sen et Mann-Kendall, série harmonisée et VIIRS seul), mois signalés comme inhabituels, calage ajusté à la zone.",
+      "Lecture. Historique depuis 2000 d'une zone : totaux annuels harmonisés (avec part estimée depuis MODIS et complétude), mois habituellement critiques, médiane par mois calendaire, tendances (Theil-Sen et Mann-Kendall, série harmonisée et VIIRS seul), mois signalés comme inhabituels, calage ajusté à la zone.",
     input_schema: schema({ zone: { type: "string", description: ZONE_DESC } }),
   },
   {
     name: "get_month_detail",
     description: "Lecture. Détail d'un mois pour une zone : valeur harmonisée, origine (VIIRS observé ou MODIS estimé), complétude, référence saisonnière, score robuste, rang, fiabilité, réserves, détections natives par satellite.",
     input_schema: schema(
-      { year: { type: "integer", description: "Année, 2000 à 2025." }, month: { type: "integer", description: "Mois, 1 à 12." }, zone: { type: "string", description: ZONE_DESC } },
+      { year: { type: "integer", description: "Année, depuis 2000 (voir les données disponibles dans le contexte)." }, month: { type: "integer", description: "Mois, 1 à 12." }, zone: { type: "string", description: ZONE_DESC } },
       ["year", "month"],
     ),
   },
@@ -296,7 +296,7 @@ export const TOOL_DEFINITIONS: Tool[] = [
   },
   {
     name: "start_guided_tour",
-    description: "Action. Lance la visite guidée pas à pas de Hot-Spot (choisir une période, la carte, les capteurs, le calendrier, les tendances).",
+    description: "Action. Lance la visite guidée pas à pas de Hot-Spots (choisir une période, la carte, les capteurs, le calendrier, les tendances).",
     input_schema: schema({}),
   },
   {
@@ -424,11 +424,12 @@ export function runTool(name: string, rawInput: unknown, ctx: AssistantContext, 
       }
       case "get_month_detail": {
         const zone = zoneFrom(input, ctx, store);
-        const year = intIn(input.year, 2000, 2025, "year");
+        const lastYear = Number(dayToIso(store, store.lastDay).slice(0, 4));
+        const year = intIn(input.year, 2000, lastYear, "year");
         const month = intIn(input.month, 1, 12, "month");
         const c = calendar(zone, store);
         const m = c.months.find((x) => x.year === year && x.month === month);
-        if (!m) return { content: `Aucune donnée pour ${year}-${month} : hors de la couverture (novembre 2000 à décembre 2025).`, isError: true };
+        if (!m) return { content: `Aucune donnée pour ${year}-${month} : hors de la couverture (du ${dayToIso(store, store.firstDay)} au ${dayToIso(store, store.lastDay)}).`, isError: true };
         const a = m.assessment;
         return {
           source: `Mois ${year}-${String(month).padStart(2, "0")}, ${c.zone.label}`,
@@ -507,7 +508,7 @@ export function runTool(name: string, rawInput: unknown, ctx: AssistantContext, 
         return { action, content: "Carte ouverte et réglée." };
       }
       case "set_calendar_view": {
-        const year = input.year === undefined || input.year === null ? undefined : intIn(input.year, 2000, 2025, "year");
+        const year = input.year === undefined || input.year === null ? undefined : intIn(input.year, 2000, Number(dayToIso(store, store.lastDay).slice(0, 4)), "year");
         const month = input.month === undefined || input.month === null ? undefined : intIn(input.month, 1, 12, "month");
         if (month !== undefined && year === undefined) throw new ToolInputError("month exige year");
         ctx.page = "calendar";
@@ -528,7 +529,7 @@ export function runTool(name: string, rawInput: unknown, ctx: AssistantContext, 
         return { action: { type: "set_compare_unit", unit }, content: `Comparaison des capteurs ouverte, unité : ${unit}.` };
       }
       case "show_unusual_periods": {
-        const year = input.year === undefined || input.year === null ? undefined : intIn(input.year, 2000, 2025, "year");
+        const year = input.year === undefined || input.year === null ? undefined : intIn(input.year, 2000, Number(dayToIso(store, store.lastDay).slice(0, 4)), "year");
         const month = input.month === undefined || input.month === null ? undefined : intIn(input.month, 1, 12, "month");
         if ((year === undefined) !== (month === undefined)) throw new ToolInputError("year et month vont ensemble");
         ctx.page = "anomalies";
@@ -553,7 +554,7 @@ export function runTool(name: string, rawInput: unknown, ctx: AssistantContext, 
           kind === "detections"
             ? `Détections ${format === "csv" ? "CSV" : "GeoJSON"}, ${zoneLabel}, du ${ctx.from} au ${ctx.to}`
             : kind === "monthly"
-              ? `Calendrier mensuel harmonisé CSV, ${zoneLabel}, 2000 à 2025`
+              ? `Calendrier mensuel harmonisé CSV, ${zoneLabel}, depuis 2000`
               : kind === "anomalies"
                 ? `Périodes inhabituelles CSV, ${zoneLabel}`
                 : `Rapport de synthèse PDF, ${zoneLabel}, du ${ctx.from} au ${ctx.to}`;
@@ -635,7 +636,7 @@ function methodFacts(topic: "donnees" | "capteurs" | "harmonisation" | "calage" 
         "Petites zones : écarts relatifs instables, fiabilité abaissée.",
         "Grille de 0,05° : deux feux dans la même cellule le même jour comptent pour un.",
         "Limites administratives simplifiées (2005).",
-        "Archive figée au 31 décembre 2025 : pas de temps réel.",
+        `Archive du ${dayToIso(store, store.firstDay)} au ${dayToIso(store, store.lastDay)}${store.metadata.recent?.provisional_from ? `, provisoire depuis le ${store.metadata.recent.provisional_from} (flux NRT, type de source déduit)` : ""}.`,
       ]);
   }
 }

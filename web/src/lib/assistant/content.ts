@@ -8,7 +8,7 @@ import type { AssistantAction, PageKey, TargetKey } from "./protocol";
 
 /** Questions proposees selon la page ouverte. */
 export const SUGGESTIONS: Record<PageKey, string[]> = {
-  home: ["À quoi sert Hot-Spot ?", "Par où commencer ?", "Quelle est la différence entre MODIS et VIIRS ?"],
+  home: ["À quoi sert Hot-Spots ?", "Par où commencer ?", "Quelle est la différence entre MODIS et VIIRS ?"],
   dashboard: ["Résume l'activité de la période sélectionnée", "Cette période est-elle inhabituelle ?", "Que signifie l'indice harmonisé ?"],
   map: ["Affiche uniquement les détections VIIRS", "Passe en grille harmonisée", "Pourquoi certaines zones n'ont aucune détection ?"],
   calendar: ["Quels sont les mois habituellement les plus actifs ?", "Montre les écarts à la référence", "Comment lire ce calendrier ?"],
@@ -33,8 +33,8 @@ export const TOUR: TourStep[] = [
   {
     page: "dashboard",
     target: null,
-    title: "Bienvenue dans Hot-Spot",
-    body: "Hot-Spot rassemble 25 ans de détections de feux vues par les satellites de la NASA, et les rend comparables. Je vous montre l'essentiel en quelques étapes. Vous pouvez quitter à tout moment et reprendre plus tard.",
+    title: "Bienvenue dans Hot-Spots",
+    body: "Hot-Spots rassemble plus de 25 ans de détections de feux vues par les satellites de la NASA, et les rend comparables. Je vous montre l'essentiel en quelques étapes. Vous pouvez quitter à tout moment et reprendre plus tard.",
   },
   {
     page: "dashboard",
@@ -47,7 +47,7 @@ export const TOUR: TourStep[] = [
     page: "dashboard",
     target: "period-picker",
     title: "Choisir une période",
-    body: "Les données couvrent novembre 2000 à décembre 2025. Prenons la grande saison sèche 2025, de juin à septembre, quand l'activité est la plus forte.",
+    body: "Les données couvrent novembre 2000 à aujourd'hui ; les mois les plus récents sont provisoires. Prenons la grande saison sèche 2025, de juin à septembre, quand l'activité est la plus forte.",
     offer: { label: "Juin à septembre 2025", actions: [{ type: "set_period", from: "2025-06-01", to: "2025-09-30" }] },
   },
   {
@@ -90,7 +90,7 @@ export const TOUR: TourStep[] = [
     page: "anomalies",
     target: "assistant-launcher",
     title: "À vous d'explorer",
-    body: "Posez vos questions ou demandez une action à Hot-Spot AI : « Montre le Haut-Ogooué en 2024 », « Compare MODIS et VIIRS », « Exporte les résultats ». Bonne exploration.",
+    body: "Posez vos questions ou demandez une action à Hot-Spots AI : « Montre le Haut-Ogooué en 2024 », « Compare MODIS et VIIRS », « Exporte les résultats ». Bonne exploration.",
   },
 ];
 
@@ -103,9 +103,9 @@ export interface FaqEntry {
 /** Aide hors ligne : disponible meme sans fournisseur IA. */
 export const FAQ: FaqEntry[] = [
   {
-    question: "À quoi sert Hot-Spot ?",
+    question: "À quoi sert Hot-Spots ?",
     answer:
-      "Hot-Spot rend comparables les détections de feux des satellites MODIS (depuis 2000) et VIIRS (depuis 2012) pour suivre l'activité des feux au Gabon : carte, calendrier historique, tendances et périodes inhabituelles, avec la méthode et les limites de chaque chiffre.",
+      "Hot-Spots rend comparables les détections de feux des satellites MODIS (depuis 2000) et VIIRS (depuis 2012) pour suivre l'activité des feux au Gabon : carte, calendrier historique, tendances et périodes inhabituelles, avec la méthode et les limites de chaque chiffre.",
     action: { label: "Lancer la visite guidée", actions: [{ type: "start_tour" }] },
   },
   {
@@ -117,7 +117,7 @@ export const FAQ: FaqEntry[] = [
   {
     question: "Quelle est la différence entre MODIS et VIIRS ?",
     answer:
-      "MODIS (satellites Terra et Aqua) a des pixels de 1 km et observe depuis 2000. VIIRS (Suomi-NPP depuis 2012, NOAA-20 depuis 2018) a des pixels de 375 m, plus sensibles : il signale environ quatre fois plus de détections pour la même activité. On ne les additionne donc pas : Hot-Spot convertit MODIS dans l'unité de VIIRS.",
+      "MODIS (satellites Terra et Aqua) a des pixels de 1 km et observe depuis 2000. VIIRS (Suomi-NPP depuis 2012, NOAA-20 depuis 2018) a des pixels de 375 m, plus sensibles : il signale environ quatre fois plus de détections pour la même activité. On ne les additionne donc pas : Hot-Spots convertit MODIS dans l'unité de VIIRS.",
     action: { label: "Voir la comparaison", actions: [{ type: "navigate", page: "compare" }] },
   },
   {
@@ -135,7 +135,7 @@ export const FAQ: FaqEntry[] = [
   {
     question: "Pourquoi certaines zones ne présentent-elles aucune détection ?",
     answer:
-      "Aucune détection ne veut pas dire aucun feu : les nuages et la fumée masquent les feux, et les satellites ne passent que deux fois par jour. Hot-Spot signale les jours où aucun capteur n'était en service.",
+      "Aucune détection ne veut pas dire aucun feu : les nuages et la fumée masquent les feux, et les satellites ne passent que deux fois par jour. Hot-Spots signale les jours où aucun capteur n'était en service.",
   },
   {
     question: "Comment exporter mes résultats ?",
@@ -146,7 +146,7 @@ export const FAQ: FaqEntry[] = [
   {
     question: "Les données sont-elles en temps réel ?",
     answer:
-      "Non. Hot-Spot lit une copie figée des archives NASA FIRMS, du 1er novembre 2000 au 31 décembre 2025, téléchargée le 13 novembre 2026. L'application fonctionne sans connexion et n'est pas un système d'alerte.",
+      "Non. Hot-Spots lit une copie locale des archives NASA FIRMS depuis le 1er novembre 2000, prolongée jusqu'aux derniers jours disponibles (mois récents provisoires). L'observatoire « Temps réel » de la carte montre les 7 derniers jours. Ce n'est pas un système d'alerte.",
     action: { label: "Voir les sources", actions: [{ type: "navigate", page: "methodology" }] },
   },
 ];

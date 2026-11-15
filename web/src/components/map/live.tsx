@@ -189,7 +189,7 @@ export function LiveControls({
           </ul>
         ) : null}
         <p className="text-[11.5px] leading-relaxed text-ink-3">
-          Source : NASA FIRMS, produits NRT {data?.mode === "api" ? "(API « area », clé configurée)" : "(fichiers « active fire » des 7 derniers jours, sans clé)"}. Ces détections ne sont ni harmonisées ni définitives : elles restent hors de l'archive 2000 à 2025 et de ses calculs.
+          Source : NASA FIRMS, produits NRT {data?.mode === "api" ? "(API « area », clé configurée)" : "(fichiers « active fire » des 7 derniers jours, sans clé)"}. Ces détections ne sont ni harmonisées ni définitives : elles restent hors de l'archive harmonisée et de ses calculs.
         </p>
       </section>
     </>
