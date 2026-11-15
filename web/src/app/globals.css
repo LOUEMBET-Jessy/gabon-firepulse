@@ -536,6 +536,29 @@ body {
     radial-gradient(1.5px 1.5px at 22% 56%, rgb(244 247 250 / 0.3), transparent 60%),
     radial-gradient(120% 90% at 60% 40%, var(--color-space-2) 0%, var(--color-space) 70%);
 }
+/* Autour du globe des ecrans de la plateforme : un ciel clair (vert nuit en theme sombre), pas l'espace. */
+.globe-backdrop {
+  background:
+    radial-gradient(70% 70% at 60% 45%, color-mix(in srgb, var(--color-sky) 18%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--color-surface-2), var(--color-bg));
+}
+/* Vignette du fond « Plan » : routes et parcs stylises, sans requete. */
+.plan-thumb {
+  background:
+    linear-gradient(28deg, transparent 46%, var(--color-savanna) 46% 52%, transparent 52%),
+    linear-gradient(118deg, transparent 58%, var(--color-ink-3) 58% 61%, transparent 61%),
+    radial-gradient(35% 45% at 28% 30%, color-mix(in srgb, var(--color-leaf) 45%, transparent), transparent 70%),
+    var(--color-surface-2);
+}
+[data-basemap="plan"] .map-label {
+  visibility: hidden !important;
+}
+.map-label-province {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-map-ink);
+}
 .cluster-marker {
   position: relative;
   display: grid;

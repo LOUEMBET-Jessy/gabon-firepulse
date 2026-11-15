@@ -107,7 +107,9 @@ export function useActionRunner() {
           if (action.confidence) for (const k of Object.keys(filters.conf) as (keyof typeof filters.conf)[]) filters.conf[k] = action.confidence.includes(k);
           if (action.sourceType) filters.types = action.sourceType;
           if (action.dayNight) filters.dayNight = action.dayNight;
-          updateView("map", { mode: action.mode ?? current.mode, filters, basemap: action.basemap ?? current.basemap });
+          // basemap de l'assistant : vrai = imagerie satellite (Terre), faux = plan.
+          const basemap = action.basemap === undefined ? current.basemap : action.basemap ? (current.basemap === "plan" ? "earth" : current.basemap) : "plan";
+          updateView("map", { mode: action.mode ?? current.mode, filters, basemap });
           go("/map");
           return true;
         }

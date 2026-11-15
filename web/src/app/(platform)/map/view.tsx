@@ -4,12 +4,14 @@ import { ArrowSquareOut, DownloadSimple, Faders, PencilSimpleLine, X } from "@ph
 import { useCallback, useEffect, useState } from "react";
 
 import { FireMap } from "@/components/blocks";
+import { BasemapSwitcher, ImageryBadge } from "@/components/map/basemap-switcher";
+import type { BasemapKind } from "@/components/map/basemaps";
 import { CONTINENTS, Navigator, TerritoryCard, archiveCountry, hasArchive, isGabon, territoryFromZone, territoryZone, type Territory } from "@/components/map/explorer";
 import { LIVE_SATS, LiveControls, LiveDetectionCard, LiveTerritoryCard, TERRITORY_BBOX, ago, type LiveFocus } from "@/components/map/live";
 import { ScaleLegend, activityBreaks } from "@/components/heatmaps";
 import { DRAW_EVENT, DRAW_FLAG, zoneLabel } from "@/components/shell/pickers";
 import { Button, Checkbox, ErrorState, Notice, Segmented, SensorMark, Skeleton, buttonClass, cx } from "@/components/ui";
-import { exportUrl, useHydrated, useDetection, useDetections, useGrid, useLive, useMetadata, type MapFilters } from "@/lib/api";
+import { exportUrl, useHydrated, useDetection, useDetections, useGrid, useImagery, useLive, useMetadata, type MapFilters } from "@/lib/api";
 import { fmtCoord, fmtDateShort, fmtDateTimeUtc, fmtInt, fmtPeriod } from "@/lib/format";
 import { CONF_LABEL, DEFINITIONS, LIVE_SATELLITE_INFO, SATELLITES } from "@/lib/labels";
 import type { DetectionDetail, GridCell, LiveTerritory, ZoneSpec } from "@/lib/types";
@@ -26,6 +28,20 @@ function Group({ title, children, hint }: { title: string; children: React.React
       {hint ? <p className="text-[11.5px] leading-relaxed text-ink-3">{hint}</p> : null}
     </fieldset>
   );
+}
+
+/** Ce que montre le fond choisi, et ce qu'il faut en savoir pour lire les detections. */
+function BasemapNote({ basemap, fallback }: { basemap: BasemapKind; fallback: boolean }) {
+  const text = fallback
+    ? "Fond satellite injoignable : la carte utilise le fond local simplifié (aplats et limites)."
+    : basemap === "earth"
+      ? "Fond : NASA Blue Marble (relief et fonds marins), relayé par Sentinel-2 au-delà du zoom 8."
+      : basemap === "daily"
+        ? "Fond : image satellite du dernier jour de la période (NASA GIBS). Les nuages et la fumée y apparaissent tels qu'ils étaient."
+        : basemap === "hires"
+          ? "Fond : mosaïque Sentinel-2 sans nuages 2023, pixels de 10 m. À partir du zoom 10, chaque détection montre l'emprise réelle de son pixel."
+          : "Fond : plan OpenStreetMap (routes, villes, quartiers). À partir du zoom 10, chaque détection montre l'emprise réelle de son pixel.";
+  return <p className={cx("text-[11.5px] leading-relaxed", fallback ? "text-warning" : "text-ink-3")}>{text} Choix du fond en bas à gauche de la carte.</p>;
 }
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
@@ -148,17 +164,16 @@ export function MapView() {
   const meta = useMetadata();
   const hydrated = useHydrated();
   // Mode, filtres et couches vivent dans le magasin partage : l'assistant les lit et les modifie.
-  const { mode, filters, basemap, showProvinces, streets, source, live: liveFilters } = useView((v) => v.map);
-  const setStreets = (value: boolean) => updateView("map", { streets: value });
+  const { mode, filters, basemap, showProvinces, relief3d, source, live: liveFilters } = useView((v) => v.map);
   const isLive = source === "live";
   const setMode = (value: MapMode) => updateView("map", { mode: value });
   const setFilters = (fn: (f: MapFilters) => MapFilters) => updateView("map", { filters: fn(filters) });
-  const setBasemap = (value: boolean) => updateView("map", { basemap: value });
+  const setBasemap = (value: BasemapKind) => updateView("map", { basemap: value });
   const setShowProvinces = (value: boolean) => updateView("map", { showProvinces: value });
   const [selected, setSelected] = useState<number | null>(null);
   const [cell, setCell] = useState<GridCell | null>(null);
   const [drawing, setDrawing] = useState(false);
-  const [basemapError, setBasemapError] = useState(false);
+  const [basemapFallback, setBasemapFallback] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
 
   // Exploration du globe : territoire montre (pas forcement la zone d'analyse), vols, niveau de zoom.
@@ -295,6 +310,10 @@ export function MapView() {
       fly(archiveCountry().bbox, 7);
     }
   };
+  // Image du jour : le dernier jour de la periode (archive) ou aujourd'hui (temps reel).
+  const [today] = useState(() => new Date().toISOString().slice(0, 10));
+  const imagery = useImagery(isLive ? today : to);
+  const daily = imagery.data ? { layer: imagery.data.layer, date: imagery.data.date } : null;
   const liveDetail = isLive && selectedLive ? live.data?.detections.find((x) => x.id === selectedLive) : undefined;
   const lastSync = live.data?.feeds.reduce<string | null>((acc, f) => (f.checkedAt && (!acc || f.checkedAt > acc) ? f.checkedAt : acc), null) ?? null;
   const highlight = isLive
@@ -378,23 +397,7 @@ export function MapView() {
         <Checkbox checked={satellites} onChange={toggleSatellites}>
           Satellites MODIS et VIIRS en vue Terre
         </Checkbox>
-        <Checkbox
-          checked={basemap}
-          onChange={(on) => {
-            setBasemap(on);
-            setBasemapError(false);
-          }}
-        >
-          Relief NASA Blue Marble (en ligne)
-        </Checkbox>
-        <Checkbox checked={streets} onChange={setStreets}>
-          Rues et quartiers, très détaillé (en ligne)
-        </Checkbox>
-        {streets ? (
-          <p className="text-[11.5px] leading-relaxed text-ink-3">
-            Fond OpenStreetMap, lisible jusqu'aux rues et aux quartiers. À partir du zoom 10, chaque détection montre l'emprise réelle de son pixel : le feu est quelque part dans ce rectangle, pas forcément au point.
-          </p>
-        ) : null}
+        <BasemapNote basemap={basemap} fallback={basemapFallback} />
         <p className="text-[11.5px] leading-relaxed text-ink-3">France : régions et départements geoBoundaries (Licence Ouverte Etalab 2.0, état 2022). Gabon : geoBoundaries.</p>
       </Group>
     </>
@@ -501,24 +504,7 @@ export function MapView() {
         <Checkbox checked={satellites} onChange={toggleSatellites}>
           Satellites MODIS et VIIRS en vue Terre
         </Checkbox>
-        <Checkbox
-          checked={basemap}
-          onChange={(on) => {
-            setBasemap(on);
-            setBasemapError(false);
-          }}
-        >
-          Relief NASA Blue Marble (en ligne)
-        </Checkbox>
-        <Checkbox checked={streets} onChange={setStreets}>
-          Rues et quartiers, très détaillé (en ligne)
-        </Checkbox>
-        {streets ? (
-          <p className="text-[11.5px] leading-relaxed text-ink-3">
-            Fond OpenStreetMap, lisible jusqu'aux rues et aux quartiers. À partir du zoom 10, chaque détection montre l'emprise réelle de son pixel : le feu est quelque part dans ce rectangle, pas forcément au point.
-          </p>
-        ) : null}
-        {basemap && basemapError ? <p className="text-[11.5px] text-warning">Fond en ligne indisponible. La carte continue de fonctionner avec les limites locales.</p> : null}
+        <BasemapNote basemap={basemap} fallback={basemapFallback} />
         <p className="text-[11.5px] leading-relaxed text-ink-3">
           Provinces : geoBoundaries (CC BY-SA 3.0, état 2005). Départements : geoBoundaries (CC BY 3.0, état 2018). Localités : GeoNames (CC BY 4.0). Pays du monde : Natural Earth. Repères, pas références juridiques.
         </p>
@@ -540,7 +526,7 @@ export function MapView() {
   );
 
   return (
-    <div className="relative flex h-full space-bg">
+    <div className="relative flex h-full globe-backdrop">
       {/* Panneau de filtres (ordinateur) */}
       <aside aria-label="Filtres de la carte" data-tour="map-filters" className="hidden w-[304px] shrink-0 overflow-y-auto border-r border-line bg-surface lg:block">
         {controls}
@@ -549,7 +535,6 @@ export function MapView() {
       <div className="relative min-w-0 flex-1">
         <FireMap
           geoBase={meta.data?.geoUrl}
-          streets={streets}
           globe
           intro={intro}
           highlight={highlight}
@@ -579,13 +564,26 @@ export function MapView() {
           }}
           onCancelDraw={() => setDrawing(false)}
           basemap={basemap}
-          onBasemapError={() => setBasemapError(true)}
+          daily={daily}
+          relief3d={relief3d}
+          onBasemapFallback={setBasemapFallback}
           showProvinces={showProvinces}
           className="absolute inset-0"
         />
 
+        {/* Fond de carte : vignettes en bas a gauche, badge de l'image du jour au-dessus */}
+        <div className="pointer-events-none absolute bottom-9 left-3 z-[5] flex flex-col items-start gap-2">
+          {basemap === "daily" && imagery.data && !basemapFallback ? <ImageryBadge sensor={imagery.data.sensor} date={imagery.data.date} shifted={imagery.data.shifted} /> : null}
+          {basemapFallback ? (
+            <p role="status" className="pointer-events-auto max-w-[300px] rounded-control border border-line bg-surface/90 px-3 py-2 text-[12px] leading-snug text-ink shadow-float backdrop-blur-[12px]">
+              Fond satellite injoignable : la carte affiche le fond local simplifié. Les détections restent exactes.
+            </p>
+          ) : null}
+          <BasemapSwitcher value={basemap} onChange={setBasemap} daily={daily} relief3d={relief3d} onRelief3d={(on) => updateView("map", { relief3d: on })} />
+        </div>
+
         {/* Etat, navigation et fiche du territoire */}
-        <div className="pointer-events-none absolute bottom-24 left-3 right-14 top-3 flex flex-col items-start gap-2 md:right-auto">
+        <div className="pointer-events-none absolute bottom-[180px] left-3 right-14 top-3 flex flex-col items-start gap-2 md:right-auto">
           <div className="pointer-events-auto flex max-w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-control border border-line-strong bg-surface/95 px-3 py-2 text-[12.5px] backdrop-blur" role="status" aria-live="polite">
             <button type="button" data-tour="map-filters" onClick={() => setPanelOpen(true)} className="flex items-center gap-1.5 font-medium text-accent lg:hidden">
               <Faders size={15} />
@@ -703,7 +701,7 @@ export function MapView() {
         </div>
 
         {/* Legende */}
-        <div className="pointer-events-none absolute bottom-9 left-3 right-3 flex justify-start lg:bottom-10">
+        <div className="pointer-events-none absolute bottom-[132px] left-3 right-3 flex justify-start md:bottom-9 md:left-auto md:justify-end">
           <div data-tour="map-legend" className="pointer-events-auto max-w-full rounded-control border border-line-strong bg-surface/95 px-3 py-2 backdrop-blur">
             {isLive ? (
               <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-ink-2">

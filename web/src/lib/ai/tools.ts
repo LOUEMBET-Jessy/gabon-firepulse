@@ -256,7 +256,7 @@ export const TOOL_DEFINITIONS: Tool[] = [
   },
   {
     name: "set_map_view",
-    description: "Action. Règle la carte et l'ouvre : mode (points = détections natives, grid = grille harmonisée), satellites affichés, niveaux de confiance, type de source, jour ou nuit, fond de relief en ligne. Les champs omis restent inchangés.",
+    description: "Action. Règle la carte et l'ouvre : mode (points = détections natives, grid = grille harmonisée), satellites affichés, niveaux de confiance, type de source, jour ou nuit, fond de carte (basemap vrai = imagerie satellite, faux = plan des routes et des villes). Les champs omis restent inchangés.",
     input_schema: schema({
       mode: { type: "string", enum: ["points", "grid"] },
       sensors: { type: "array", items: { type: "string", enum: SATELLITE_KEYS } },

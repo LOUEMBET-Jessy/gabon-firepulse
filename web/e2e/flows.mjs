@@ -31,6 +31,8 @@ function expect(condition, message) {
 }
 
 async function test(id, name, fn) {
+  // ONLY=T-10b,T-10c : ne lance que ces tests.
+  if (process.env.ONLY && !process.env.ONLY.split(",").includes(id)) return;
   const started = Date.now();
   try {
     const note = await fn();
@@ -279,21 +281,43 @@ await test("T-10", "Une panne de l'API affiche une erreur expliquée, sans valeu
   return "erreur affichée, reprise après Réessayer";
 });
 
-await test("T-10b", "Le fond de carte en ligne coupé n'empêche pas la carte", async () => {
+await test("T-10b", "Fond satellite coupé : la carte passe sur le fond local et garde les détections", async () => {
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: "fr-FR" });
+  await context.addInitScript(() => window.localStorage.setItem("hotspot.welcomed", "1"));
   const page = await context.newPage();
   let blocked = 0;
+  // Toutes les tuiles et styles externes refuses (GIBS, EOX, OpenFreeMap, relief) : panne simulee du fond.
   await page.route(/^https?:\/\/(?!localhost)/, (route) => (blocked++, route.abort()));
   await page.goto(base + "/map", { waitUntil: "load" });
   await mapReady(page);
-  await page.waitForTimeout(1500);
-  expect(blocked === 0, `${blocked} requête(s) externe(s) émise(s) sans action de l'utilisateur`);
-  await page.getByText("Relief NASA Blue Marble").click();
-  await page.getByText("Fond en ligne indisponible").waitFor({ timeout: 15_000 });
-  const status = await page.getByRole("status").first().innerText();
-  expect(/\d/.test(status), "les détections ne s'affichent plus");
+  await page.getByText("Fond satellite injoignable").first().waitFor({ timeout: 20_000 });
+  const count = await page.getByText(/\d[\d\s ]* détections/).first().innerText();
+  expect(/\d/.test(count), "les détections ne s'affichent plus");
+  // Le plan (style distant) echoue aussi proprement.
+  await page.getByRole("radio", { name: "Plan" }).click();
+  await page.getByText("Fond satellite injoignable").first().waitFor({ timeout: 20_000 });
   await context.close();
-  return `aucune requête externe par défaut ; fond en ligne coupé (${blocked} tuiles bloquées) : carte et détections toujours affichées`;
+  return `fond en ligne coupé (${blocked} requêtes bloquées) : fond local simplifié, détections toujours affichées`;
+});
+
+await test("T-10c", "Quatre fonds de carte, attributions visibles", async () => {
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: "fr-FR" });
+  await context.addInitScript(() => window.localStorage.setItem("hotspot.welcomed", "1"));
+  const page = await context.newPage();
+  await page.goto(base + "/map", { waitUntil: "load" });
+  await mapReady(page);
+  // Attributions repliees derriere le bouton « i » : on lit le texte present, ouvert ou non.
+  const attribution = async () => ((await page.locator(".maplibregl-ctrl-attrib-inner").textContent()) ?? "").replace(/\s+/g, " ");
+  const seen = [];
+  for (const [name, expected] of [["Terre", /Blue Marble/], ["Image du jour", /image du jour/], ["Haute résolution", /Sentinel-2 cloudless/], ["Plan", /OpenStreetMap/]]) {
+    await page.getByRole("radio", { name }).click();
+    await page.waitForFunction((re) => new RegExp(re).test(document.querySelector(".maplibregl-ctrl-attrib-inner")?.textContent ?? ""), expected.source, { timeout: 20_000 }).catch(() => {});
+    const text = await attribution();
+    expect(expected.test(text), `${name} : attribution absente (« ${text.slice(0, 160)} »)`);
+    seen.push(name);
+  }
+  await context.close();
+  return `${seen.join(", ")} : chaque fond cite sa source`;
 });
 
 await test("T-11", "Tablette et téléphone : pas de débordement, navigation utilisable", async () => {

@@ -6,8 +6,10 @@ import { Map as MapLibre, Marker, NavigationControl, Popup, ScaleControl, setWor
 import { useEffect, useRef, useState } from "react";
 
 import { activityBreaks } from "@/components/heatmaps";
-import { HEAT, LIVE_SATELLITE_INFO, SENSOR_COLOR } from "@/lib/labels";
+import { LIVE_SATELLITE_INFO, SENSOR_COLOR } from "@/lib/labels";
+import { FIRE_CLASSES_HEX, MAP_HEX } from "@/lib/palette";
 
+import { ATTRIBUTION, BASEMAP_SOURCE_OF, applyBasemap, basemapLayers, basemapSources, setRelief3d, type BasemapKind } from "./basemaps";
 import { attachSatellites, type SatelliteLayer } from "./satellites";
 import type { DetectionsResponse, GridResponse, LiveDetection, ZoneSpec } from "@/lib/types";
 
@@ -16,16 +18,10 @@ export const GABON_BOUNDS: [[number, number], [number, number]] = [
   [14.75, 2.45],
 ];
 
-/**
- * Fond detaille OpenStreetMap (tuiles officielles) : rues, quartiers et lieux-dits jusqu'au zoom 19.
- * Assombri a l'affichage pour rester lisible sous les detections. Charge seulement si l'utilisateur l'active.
- */
-const STREETS_TILES = ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"];
 /** Zoom a partir duquel l'emprise reelle de chaque pixel est dessinee. */
 const ZOOM_FOOTPRINTS = 9.5;
-
-const BASEMAP_TILES =
-  "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_ShadedRelief_Bathymetry/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg";
+/** Premiere couche de donnees : les fonds (dont le plan vectoriel) se glissent dessous. */
+const FIRST_DATA_LAYER = "country-fill";
 
 type Bbox = [number, number, number, number];
 type Geometry = { type: string; coordinates: unknown };
@@ -42,8 +38,15 @@ export interface FireMapProps {
   drawing?: boolean;
   onDrawn?: (bbox: Bbox) => void;
   onCancelDraw?: () => void;
-  basemap?: boolean;
-  onBasemapError?: () => void;
+  /** Fond de carte (imagerie satellite par defaut). */
+  basemap?: BasemapKind;
+  /** Couche et date NASA GIBS pour le fond « Image du jour ». */
+  daily?: { layer: string; date: string } | null;
+  /** Relief ombre sur les fonds satellite (actif par defaut) et relief 3D (inactif par defaut). */
+  hillshade?: boolean;
+  relief3d?: boolean;
+  /** Le fond en ligne ne repond pas : la carte bascule sur le fond local simplifie. */
+  onBasemapFallback?: (fallback: boolean) => void;
   showProvinces?: boolean;
   /** Carte de synthese : pas de selection ni de controles. */
   passive?: boolean;
@@ -60,8 +63,6 @@ export interface FireMapProps {
   placeRadiusKm?: number;
   /** Satellites MODIS et VIIRS en orbite (illustration, vue Terre seulement). */
   showSatellites?: boolean;
-  /** Fond detaille en ligne : rues et quartiers. */
-  streets?: boolean;
   /** Adresse des limites du pays de l'archive : « /geo » (Gabon) ou « /geo/fra » (France). */
   geoBase?: string;
   /** Observatoire temps reel : detections NASA FIRMS recentes, limites francaises, selection d'une detection. */
@@ -99,7 +100,8 @@ function squareIcon(): ImageData {
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = size;
   const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-  ctx.fillStyle = "#0b1830";
+  // Contour blanc : le carre reste lisible sur l'imagerie satellite comme sur le plan.
+  ctx.fillStyle = MAP_HEX.pointStroke;
   ctx.fillRect(1, 1, size - 2, size - 2);
   ctx.fillStyle = SENSOR_COLOR.modis;
   ctx.fillRect(3, 3, size - 6, size - 6);
@@ -135,10 +137,10 @@ export interface Highlight {
 /** Couches propres au globe, inserees sous les limites du Gabon. */
 function globeLayers(): StyleSpecification["layers"] {
   return [
-    { id: "world-fill", type: "fill", source: "world", paint: { "fill-color": ["case", ["==", ["get", "iso"], "GAB"], "#163257", "#0f2340"], "fill-opacity": 1 } },
-    { id: "world-hover", type: "fill", source: "world", filter: ["==", ["get", "iso"], ""], paint: { "fill-color": "#1b3a63", "fill-opacity": 1 } },
-    { id: "world-line", type: "line", source: "world", paint: { "line-color": "#2c4a70", "line-width": ["interpolate", ["linear"], ["zoom"], 1, 0.4, 5, 0.9] } },
-    { id: "world-active", type: "line", source: "world", filter: ["==", ["get", "iso"], ""], paint: { "line-color": "#12bfd2", "line-width": 2 } },
+    { id: "world-fill", type: "fill", source: "world", paint: { "fill-color": MAP_HEX.fallbackLand, "fill-opacity": 0 } },
+    { id: "world-hover", type: "fill", source: "world", filter: ["==", ["get", "iso"], ""], paint: { "fill-color": MAP_HEX.pointStroke, "fill-opacity": 0.16 } },
+    { id: "world-line", type: "line", source: "world", paint: { "line-color": MAP_HEX.boundaryOnImagery, "line-opacity": 0.55, "line-width": ["interpolate", ["linear"], ["zoom"], 1, 0.4, 5, 0.9] } },
+    { id: "world-active", type: "line", source: "world", filter: ["==", ["get", "iso"], ""], paint: { "line-color": MAP_HEX.selection, "line-width": 2.2 } },
   ];
 }
 
@@ -179,7 +181,7 @@ function clusterElement(m: number, s: number, n: number, onClick: () => void): H
   el.setAttribute("aria-label", `${total} détections regroupées : MODIS ${m}, Suomi-NPP ${s}, NOAA-20 ${n}. Zoomer`);
   el.style.width = el.style.height = `${size}px`;
   const label = total >= 10000 ? `${Math.round(total / 1000)} k` : total >= 1000 ? `${(total / 1000).toFixed(1).replace(".", ",")} k` : String(total);
-  el.innerHTML = `<svg width="${size}" height="${size}" aria-hidden="true"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="rgb(8 18 38 / 0.82)"/>${arcs}</svg><span>${label}</span>`;
+  el.innerHTML = `<svg width="${size}" height="${size}" aria-hidden="true"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="${MAP_HEX.halo}" fill-opacity="0.82"/>${arcs}</svg><span>${label}</span>`;
   el.addEventListener("click", (e) => {
     e.stopPropagation();
     onClick();
@@ -190,52 +192,33 @@ function clusterElement(m: number, s: number, n: number, onClick: () => void): H
 const style: StyleSpecification = {
   version: 8,
   sources: {
-    country: { type: "geojson", data: empty },
+    ...basemapSources(),
+    country: { type: "geojson", data: empty, attribution: ATTRIBUTION.boundaries },
     provinces: { type: "geojson", data: empty, promoteId: "index" },
-    basemap: {
-      type: "raster",
-      tiles: [BASEMAP_TILES],
-      tileSize: 256,
-      maxzoom: 8,
-      attribution: "Fond : NASA GIBS, Blue Marble",
-    },
-    streets: { type: "raster", tiles: STREETS_TILES, tileSize: 256, maxzoom: 19, attribution: "Fond : © contributeurs OpenStreetMap" },
     footprints: { type: "geojson", data: empty },
-    grid: { type: "geojson", data: empty },
-    points: { type: "geojson", data: empty },
+    grid: { type: "geojson", data: empty, attribution: ATTRIBUTION.detections },
+    points: { type: "geojson", data: empty, attribution: ATTRIBUTION.detections },
     selected: { type: "geojson", data: empty },
     zone: { type: "geojson", data: empty },
     draw: { type: "geojson", data: empty },
   },
   layers: [
-    { id: "background", type: "background", paint: { "background-color": "#081226" } },
-    {
-      id: "basemap",
-      type: "raster",
-      source: "basemap",
-      layout: { visibility: "none" },
-      paint: { "raster-brightness-max": 0.5, "raster-saturation": -0.45, "raster-contrast": 0.1, "raster-fade-duration": 200 },
-    },
-    {
-      id: "streets",
-      type: "raster",
-      source: "streets",
-      layout: { visibility: "none" },
-      paint: { "raster-brightness-max": 0.55, "raster-saturation": -0.85, "raster-contrast": 0.18, "raster-fade-duration": 200 },
-    },
-    { id: "country-fill", type: "fill", source: "country", paint: { "fill-color": "#12284a", "fill-opacity": 1 } },
-    { id: "grid-fill", type: "fill", source: "grid", paint: { "fill-color": HEAT[1], "fill-opacity": 0.92 } },
-    { id: "grid-line", type: "line", source: "grid", minzoom: 8.5, paint: { "line-color": "#081226", "line-width": 0.6 } },
-    { id: "provinces-line", type: "line", source: "provinces", paint: { "line-color": "#36557d", "line-width": 0.8 } },
-    { id: "country-line", type: "line", source: "country", paint: { "line-color": "#7c95bc", "line-width": 1.2 } },
+    { id: "background", type: "background", paint: { "background-color": MAP_HEX.fallbackOcean } },
+    ...basemapLayers(),
+    { id: "country-fill", type: "fill", source: "country", paint: { "fill-color": MAP_HEX.fallbackLandFocus, "fill-opacity": 0 } },
+    // Grille harmonisee : echelle feu, opacite 0,75 pour laisser lire l'imagerie dessous.
+    { id: "grid-fill", type: "fill", source: "grid", paint: { "fill-color": FIRE_CLASSES_HEX[2], "fill-opacity": 0.75 } },
+    { id: "grid-line", type: "line", source: "grid", minzoom: 8.5, paint: { "line-color": MAP_HEX.pointStroke, "line-width": 0.5, "line-opacity": 0.45 } },
+    { id: "provinces-line", type: "line", source: "provinces", paint: { "line-color": MAP_HEX.boundaryOnImagery, "line-opacity": 0.7, "line-width": 0.9 } },
+    { id: "country-line", type: "line", source: "country", paint: { "line-color": MAP_HEX.boundaryOnImagery, "line-opacity": 0.85, "line-width": 1.4 } },
     {
       id: "province-active",
       type: "line",
       source: "provinces",
       filter: ["==", ["get", "index"], -1],
-      paint: { "line-color": "#12bfd2", "line-width": 2 },
+      paint: { "line-color": MAP_HEX.selection, "line-width": 2.4 },
     },
-    { id: "zone-line", type: "line", source: "zone", paint: { "line-color": "#12bfd2", "line-width": 2 } },
+    { id: "zone-line", type: "line", source: "zone", paint: { "line-color": MAP_HEX.selection, "line-width": 2.4 } },
     {
       id: "footprints-fill",
       type: "fill",
@@ -257,15 +240,17 @@ const style: StyleSpecification = {
       filter: [">=", ["get", "s"], 2],
       paint: {
         "circle-color": ["case", ["==", ["get", "s"], 2], SENSOR_COLOR.snpp, SENSOR_COLOR.noaa20],
-        "circle-radius": ["interpolate", ["linear"], ["zoom"], 5, 1.3, 7, 2, 9, 3.4, 12, 6],
-        "circle-opacity": ["interpolate", ["linear"], ["zoom"], 5, 0.75, 9, 0.9],
-        "circle-stroke-color": "#081226",
-        "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 7, 0, 9, 1],
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 5, 1.6, 7, 2.4, 9, 3.6, 12, 6],
+        "circle-opacity": ["interpolate", ["linear"], ["zoom"], 5, 0.85, 9, 0.95],
+        // Contour blanc fin (1 px a partir du zoom 9) : chaque point reste lisible sur l'imagerie satellite.
+        "circle-stroke-color": MAP_HEX.pointStroke,
+        "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 5, 0.3, 7, 0.5, 9, 1],
+        "circle-stroke-opacity": 0.9,
       },
     },
-    { id: "selected-ring", type: "circle", source: "selected", paint: { "circle-radius": 11, "circle-color": "transparent", "circle-stroke-color": "#f4f7fa", "circle-stroke-width": 2 } },
-    { id: "draw-fill", type: "fill", source: "draw", paint: { "fill-color": "#12bfd2", "fill-opacity": 0.12 } },
-    { id: "draw-line", type: "line", source: "draw", paint: { "line-color": "#12bfd2", "line-width": 1.5, "line-dasharray": [3, 2] } },
+    { id: "selected-ring", type: "circle", source: "selected", paint: { "circle-radius": 11, "circle-color": "transparent", "circle-stroke-color": MAP_HEX.selection, "circle-stroke-width": 2.5 } },
+    { id: "draw-fill", type: "fill", source: "draw", paint: { "fill-color": MAP_HEX.selection, "fill-opacity": 0.14 } },
+    { id: "draw-line", type: "line", source: "draw", paint: { "line-color": MAP_HEX.selection, "line-width": 1.8, "line-dasharray": [3, 2] } },
   ],
 };
 
@@ -278,24 +263,24 @@ function globeStyle(): StyleSpecification {
   layers.splice(
     prov,
     0,
-    { id: "provinces-pick", type: "fill", source: "provinces", paint: { "fill-color": "#000", "fill-opacity": 0 } },
-    { id: "departments-pick", type: "fill", source: "departments", minzoom: ZOOM_DEPARTMENTS - 0.4, paint: { "fill-color": "#000", "fill-opacity": 0 } },
-    { id: "departments-line", type: "line", source: "departments", minzoom: ZOOM_DEPARTMENTS - 0.4, paint: { "line-color": "#2c4a70", "line-width": 0.7, "line-dasharray": [2, 2], "line-opacity": ["interpolate", ["linear"], ["zoom"], ZOOM_DEPARTMENTS - 0.4, 0, ZOOM_DEPARTMENTS + 0.3, 1] } },
+    { id: "provinces-pick", type: "fill", source: "provinces", paint: { "fill-color": MAP_HEX.halo, "fill-opacity": 0 } },
+    { id: "departments-pick", type: "fill", source: "departments", minzoom: ZOOM_DEPARTMENTS - 0.4, paint: { "fill-color": MAP_HEX.halo, "fill-opacity": 0 } },
+    { id: "departments-line", type: "line", source: "departments", minzoom: ZOOM_DEPARTMENTS - 0.4, paint: { "line-color": MAP_HEX.boundaryOnImagery, "line-width": 0.8, "line-dasharray": [2, 2], "line-opacity": 0.6 } },
   );
   const zoneLine = layers.findIndex((l) => l.id === "zone-line");
   layers.splice(
     zoneLine,
     0,
-    { id: "department-active", type: "line", source: "departments", filter: ["==", ["get", "index"], -1], paint: { "line-color": "#5ad8e6", "line-width": 2 } },
-    { id: "zone-fill", type: "fill", source: "zone", paint: { "fill-color": "#12bfd2", "fill-opacity": 0.08 } },
+    { id: "department-active", type: "line", source: "departments", filter: ["==", ["get", "index"], -1], paint: { "line-color": MAP_HEX.selection, "line-width": 2.2 } },
+    { id: "zone-fill", type: "fill", source: "zone", paint: { "fill-color": MAP_HEX.selection, "fill-opacity": 0.1 } },
   );
   layers.push(
-    { id: "fra-regions-pick", type: "fill", source: "fra_regions", layout: { visibility: "none" }, paint: { "fill-color": "#000", "fill-opacity": 0 } },
-    { id: "fra-departments-pick", type: "fill", source: "fra_departments", minzoom: 5.6, layout: { visibility: "none" }, paint: { "fill-color": "#000", "fill-opacity": 0 } },
-    { id: "fra-departments-line", type: "line", source: "fra_departments", minzoom: 5.6, layout: { visibility: "none" }, paint: { "line-color": "#2c4a70", "line-width": 0.6, "line-dasharray": [2, 2] } },
-    { id: "fra-regions-line", type: "line", source: "fra_regions", layout: { visibility: "none" }, paint: { "line-color": "#36557d", "line-width": ["interpolate", ["linear"], ["zoom"], 3, 0.5, 6, 1] } },
-    { id: "fra-active", type: "line", source: "fra_regions", filter: ["==", ["get", "name"], ""], paint: { "line-color": "#12bfd2", "line-width": 2 } },
-    { id: "fra-dept-active", type: "line", source: "fra_departments", filter: ["==", ["get", "name"], ""], paint: { "line-color": "#5ad8e6", "line-width": 2 } },
+    { id: "fra-regions-pick", type: "fill", source: "fra_regions", layout: { visibility: "none" }, paint: { "fill-color": MAP_HEX.halo, "fill-opacity": 0 } },
+    { id: "fra-departments-pick", type: "fill", source: "fra_departments", minzoom: 5.6, layout: { visibility: "none" }, paint: { "fill-color": MAP_HEX.halo, "fill-opacity": 0 } },
+    { id: "fra-departments-line", type: "line", source: "fra_departments", minzoom: 5.6, layout: { visibility: "none" }, paint: { "line-color": MAP_HEX.boundaryOnImagery, "line-opacity": 0.55, "line-width": 0.6, "line-dasharray": [2, 2] } },
+    { id: "fra-regions-line", type: "line", source: "fra_regions", layout: { visibility: "none" }, paint: { "line-color": MAP_HEX.boundaryOnImagery, "line-opacity": 0.7, "line-width": ["interpolate", ["linear"], ["zoom"], 3, 0.5, 6, 1] } },
+    { id: "fra-active", type: "line", source: "fra_regions", filter: ["==", ["get", "name"], ""], paint: { "line-color": MAP_HEX.selection, "line-width": 2.2 } },
+    { id: "fra-dept-active", type: "line", source: "fra_departments", filter: ["==", ["get", "name"], ""], paint: { "line-color": MAP_HEX.selection, "line-width": 2.2 } },
     {
       id: "live-halo",
       type: "circle",
@@ -311,29 +296,30 @@ function globeStyle(): StyleSpecification {
       paint: {
         "circle-radius": ["interpolate", ["linear"], ["zoom"], 2, 2.2, 6, 3.4, 10, 6],
         "circle-color": ["get", "color"],
-        "circle-stroke-color": "#f4f7fa",
-        "circle-stroke-width": ["case", ["==", ["get", "recent"], 1], 1, 0.4],
+        "circle-stroke-color": MAP_HEX.pointStroke,
+        "circle-stroke-width": ["case", ["==", ["get", "recent"], 1], 1.4, 1],
       },
     },
-    { id: "live-selected", type: "circle", source: "live-selected", paint: { "circle-radius": 12, "circle-color": "transparent", "circle-stroke-color": "#f4f7fa", "circle-stroke-width": 2 } },
-    { id: "villages", type: "circle", source: "places", minzoom: ZOOM_VILLAGES, filter: ["==", ["get", "kind"], "village"], paint: { "circle-radius": 2.4, "circle-color": "#b9c6d8", "circle-opacity": 0.75, "circle-stroke-color": "#081226", "circle-stroke-width": 1 } },
-    { id: "cluster-dots", type: "circle", source: "clusters", maxzoom: CLUSTER_MAX_ZOOM, filter: ["!", ["has", "point_count"]], paint: { "circle-radius": 2.5, "circle-color": ["case", ["<", ["get", "s"], 2], SENSOR_COLOR.modis, ["==", ["get", "s"], 2], SENSOR_COLOR.snpp, SENSOR_COLOR.noaa20], "circle-stroke-color": "#081226", "circle-stroke-width": 1 } },
+    { id: "live-selected", type: "circle", source: "live-selected", paint: { "circle-radius": 12, "circle-color": "transparent", "circle-stroke-color": MAP_HEX.selection, "circle-stroke-width": 2.5 } },
+    { id: "villages", type: "circle", source: "places", minzoom: ZOOM_VILLAGES, filter: ["==", ["get", "kind"], "village"], paint: { "circle-radius": 2.4, "circle-color": MAP_HEX.pointStroke, "circle-opacity": 0.85, "circle-stroke-color": MAP_HEX.halo, "circle-stroke-width": 1 } },
+    { id: "cluster-dots", type: "circle", source: "clusters", maxzoom: CLUSTER_MAX_ZOOM, filter: ["!", ["has", "point_count"]], paint: { "circle-radius": 2.5, "circle-color": ["case", ["<", ["get", "s"], 2], SENSOR_COLOR.modis, ["==", ["get", "s"], 2], SENSOR_COLOR.snpp, SENSOR_COLOR.noaa20], "circle-stroke-color": MAP_HEX.pointStroke, "circle-stroke-width": 1 } },
   );
   return {
     ...style,
     projection: { type: "globe" },
+    // Atmosphere bleu clair autour de la Terre, qui s'efface en s'approchant du sol.
     sky: {
-      "sky-color": "#0b1d3a",
-      "horizon-color": "#1a4f78",
-      "fog-color": "#0b1830",
-      "sky-horizon-blend": 0.6,
-      "horizon-fog-blend": 0.6,
-      "fog-ground-blend": 0.8,
+      "sky-color": MAP_HEX.sky,
+      "horizon-color": MAP_HEX.horizon,
+      "fog-color": MAP_HEX.fog,
+      "sky-horizon-blend": 0.7,
+      "horizon-fog-blend": 0.5,
+      "fog-ground-blend": 0.9,
       "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 5, 1, 7.5, 0],
     },
     sources: {
       ...style.sources,
-      world: { type: "geojson", data: "/geo/world.geojson" },
+      world: { type: "geojson", data: "/geo/world.geojson", attribution: ATTRIBUTION.boundaries },
       departments: { type: "geojson", data: empty },
       places: { type: "geojson", data: empty },
       fra_regions: { type: "geojson", data: "/geo/fra/provinces.geojson" },
@@ -369,7 +355,7 @@ const CONTINENT_LABELS: [string, number, number][] = [
 let workerConfigured = false;
 
 export default function FireMap(props: FireMapProps) {
-  const { mode, points, grid, zone, selectedIndex, drawing, basemap, showProvinces = true, passive, className, globe, intro, highlight, flight, placeRadiusKm = 15 } = props;
+  const { mode, points, grid, zone, selectedIndex, drawing, basemap = "earth", daily, hillshade = true, relief3d = false, showProvinces = true, passive, className, globe, intro, highlight, flight, placeRadiusKm = 15 } = props;
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibre | null>(null);
   const callbacks = useRef(props);
@@ -385,6 +371,9 @@ export default function FireMap(props: FireMapProps) {
   const [ready, setReady] = useState(false);
   const introDone = useRef(false);
   const [failed, setFailed] = useState<string | null>(null);
+  // Fond en ligne en panne : erreurs de tuiles de la source active, sans aucune tuile recue.
+  const [fallback, setFallback] = useState(false);
+  const tiles = useRef({ ok: 0, errors: 0 });
 
   useEffect(() => {
     callbacks.current = props;
@@ -432,12 +421,21 @@ export default function FireMap(props: FireMapProps) {
       map.addControl(new ScaleControl({ unit: "metric", maxWidth: 110 }), "bottom-left");
     }
 
+    // Panne du fond : plusieurs tuiles en erreur et aucune recue pour la source active -> fond local.
+    const active = () => BASEMAP_SOURCE_OF[callbacks.current.basemap ?? "earth"];
     map.on("error", (event) => {
       const sourceId = (event as unknown as { sourceId?: string }).sourceId;
-      if (sourceId === "basemap") callbacks.current.onBasemapError?.();
+      if (!sourceId || !active().includes(sourceId)) return;
+      tiles.current.errors++;
+      if (tiles.current.ok === 0 && tiles.current.errors >= 3) setFallback(true);
+    });
+    map.on("sourcedata", (event) => {
+      if (event.tile && active().includes(event.sourceId)) tiles.current.ok++;
     });
 
     map.on("load", () => {
+      // Attributions compactes : repliees derriere le bouton « i », ouvertes a la demande (toutes les sources y figurent).
+      container.current?.querySelector("details.maplibregl-ctrl-attrib")?.removeAttribute("open");
       map.addImage("modis-square", squareIcon(), { pixelRatio: 2 });
       map.addLayer(
         {
@@ -683,7 +681,7 @@ export default function FireMap(props: FireMapProps) {
           const [w, s, e, n] = ringBounds(outerRing(feature.geometry));
           const el = document.createElement("div");
           el.textContent = feature.properties.name;
-          el.className = "pointer-events-none select-none whitespace-nowrap text-[10.5px] font-medium tracking-wide text-ink-2/80 [text-shadow:0_1px_3px_#081226,0_0_2px_#081226]";
+          el.className = "map-label map-label-province";
           return new Marker({ element: el, anchor: "center", opacityWhenCovered: "0" }).setLngLat([(w + e) / 2, (s + n) / 2]).addTo(map);
         });
         syncRef.current();
@@ -758,20 +756,34 @@ export default function FireMap(props: FireMapProps) {
     source.setData({ type: "FeatureCollection", features });
   }, [points, mode, ready, liveRows, liveOn]);
 
-  // Fond detaille : les aplats sombres s'effacent pour laisser lire rues et quartiers.
+  // Fond de carte : nouveau choix -> compteurs de tuiles remis a zero, secours leve.
+  const dailyKey = daily ? `${daily.layer}|${daily.date}` : "";
+  useEffect(() => {
+    tiles.current = { ok: 0, errors: 0 };
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- un nouveau fond repart sans secours
+    setFallback(false);
+  }, [basemap, dailyKey]);
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready) return;
-    const on = Boolean(props.streets);
-    map.setLayoutProperty("streets", "visibility", on ? "visible" : "none");
-    if (on) {
-      map.setPaintProperty("country-fill", "fill-opacity", 0);
-      if (map.getLayer("world-fill")) map.setPaintProperty("world-fill", "fill-opacity", ["interpolate", ["linear"], ["zoom"], 3, 1, 5, 0]);
-    } else {
-      map.setPaintProperty("country-fill", "fill-opacity", props.basemap ? 0 : 1);
-      if (map.getLayer("world-fill")) map.setPaintProperty("world-fill", "fill-opacity", 1);
-    }
-  }, [props.streets, props.basemap, ready]);
+    let cancelled = false;
+    applyBasemap(map, basemap, { daily, hillshade, fallback, beforeId: FIRST_DATA_LAYER }).catch((error) => {
+      console.warn("[carte] fond indisponible :", error instanceof Error ? error.message : error);
+      if (!cancelled) setFallback(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- daily est suivi par sa cle
+  }, [basemap, dailyKey, hillshade, fallback, ready]);
+  useEffect(() => {
+    callbacks.current.onBasemapFallback?.(fallback);
+  }, [fallback]);
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || passive) return;
+    setRelief3d(map, relief3d);
+  }, [relief3d, ready, passive]);
 
   // Detections natives.
   useEffect(() => {
@@ -807,9 +819,10 @@ export default function FireMap(props: FireMapProps) {
       })),
     });
     const breaks = activityBreaks(grid.cells.map((c) => c.harmonized));
-    const expression: unknown[] = ["step", ["get", "h"], HEAT[1]];
-    breaks.forEach((b, i) => expression.push(b, HEAT[1 + Math.round(((i + 1) / breaks.length) * 6)]));
-    map.setPaintProperty("grid-fill", "fill-color", breaks.length ? (expression as never) : HEAT[3]);
+    // Sept classes sur l'echelle feu (pale : peu de jours actifs ; brun : beaucoup).
+    const expression: unknown[] = ["step", ["get", "h"], FIRE_CLASSES_HEX[0]];
+    breaks.forEach((b, i) => expression.push(b, FIRE_CLASSES_HEX[Math.round(((i + 1) / breaks.length) * 6)]));
+    map.setPaintProperty("grid-fill", "fill-color", breaks.length ? (expression as never) : FIRE_CLASSES_HEX[3]);
   }, [grid, mode, ready]);
 
   // Detection selectionnee.
@@ -939,11 +952,9 @@ export default function FireMap(props: FireMapProps) {
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready) return;
-    map.setLayoutProperty("basemap", "visibility", basemap ? "visible" : "none");
-    map.setPaintProperty("country-fill", "fill-opacity", basemap ? 0 : 1);
     map.setLayoutProperty("provinces-line", "visibility", showProvinces ? "visible" : "none");
     labelsRef.current.forEach((m) => (m.getElement().style.display = showProvinces ? "" : "none"));
-  }, [basemap, showProvinces, ready]);
+  }, [showProvinces, ready]);
 
   // Dessin d'un rectangle (souris et tactile).
   useEffect(() => {
@@ -1013,7 +1024,8 @@ export default function FireMap(props: FireMapProps) {
   }
   // MapLibre impose "position: relative" a son conteneur : la mise en page est portee par l'element parent.
   return (
-    <div className={className}>
+    // data-basemap : sur le plan, les noms de lieux viennent d'OpenStreetMap (nos etiquettes sont masquees en CSS).
+    <div className={className} data-basemap={fallback ? "fallback" : basemap}>
       <div ref={container} className="size-full" aria-label={globe ? "Globe terrestre et carte du Gabon" : "Carte du Gabon"} />
     </div>
   );

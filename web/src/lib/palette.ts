@@ -31,6 +31,10 @@ export const MAP_HEX = {
   selection: "#f9d65c",
   /** Halo sombre des etiquettes et des symboles. */
   halo: "#0b1a12",
+  /** Fond du plan (sous les tuiles vectorielles) et ombrage du relief. */
+  planBackground: "#f2efe6",
+  hillshadeShadow: "#1b2a1f",
+  hillshadeHighlight: "#ffffff",
   /** Repli hors ligne : ocean et terres si aucune tuile ne repond. */
   fallbackOcean: "#c9dde6",
   fallbackLand: "#e7e3d4",

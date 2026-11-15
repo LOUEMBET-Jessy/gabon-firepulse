@@ -146,6 +146,19 @@ export function useLive(territories: LiveTerritory[], days: number, sats: LiveSa
   });
 }
 
+/** Imagerie NASA GIBS du jour (fond « Image du jour ») : couche, capteur et date reelle de l'image. */
+export interface ImageryChoice {
+  layer: string;
+  sensor: string;
+  date: string;
+  shifted: boolean;
+  verified: boolean;
+}
+
+export function useImagery(date: string | null) {
+  return useSWR<ImageryChoice, ApiError>(date ? `/api/imagery?date=${date}` : null, fetchJson, { ...config, keepPreviousData: true });
+}
+
 /**
  * Vrai une fois la page hydratee. Les liens qui dependent du pays restaure depuis la session (exports)
  * attendent ce moment : le HTML du serveur et celui de l'hydratation restent identiques.

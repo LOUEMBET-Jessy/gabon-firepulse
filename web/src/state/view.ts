@@ -11,6 +11,7 @@
 
 import { useSyncExternalStore } from "react";
 
+import type { BasemapKind } from "@/components/map/basemaps";
 import type { MapFilters } from "@/lib/api";
 
 export type MapMode = "points" | "grid";
@@ -29,10 +30,11 @@ export interface ViewState {
   map: {
     mode: MapMode;
     filters: MapFilters;
-    basemap: boolean;
+    /** Fond de carte : Terre (defaut), image du jour, haute resolution, plan. */
+    basemap: BasemapKind;
     showProvinces: boolean;
-    /** Fond detaille en ligne (rues, quartiers, lieux-dits), jusqu'au zoom 18. */
-    streets: boolean;
+    /** Relief 3D (terrain exagere, inclinaison), desactive par defaut. */
+    relief3d: boolean;
     /** Archive harmonisee 2000-2025, ou observatoire temps quasi reel (NASA FIRMS NRT). */
     source: "archive" | "live";
     live: { territories: ("GAB" | "FRA")[]; days: number; sats: Record<"terra" | "aqua" | "snpp" | "noaa20" | "noaa21", boolean> };
@@ -54,9 +56,9 @@ const INITIAL: ViewState = {
   map: {
     mode: "points",
     filters: DEFAULT_MAP_FILTERS,
-    basemap: false,
+    basemap: "earth",
     showProvinces: true,
-    streets: false,
+    relief3d: false,
     source: "archive",
     live: { territories: ["GAB", "FRA"], days: 7, sats: { terra: true, aqua: true, snpp: true, noaa20: true, noaa21: true } },
   },
