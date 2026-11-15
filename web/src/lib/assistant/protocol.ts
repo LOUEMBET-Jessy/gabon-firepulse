@@ -131,5 +131,6 @@ export interface AssistantStatus {
 export const LIMITS = {
   userMessageChars: 1200,
   assistantMessageChars: 6000,
-  historyTurns: 16,
+  /** Six derniers echanges (question et reponse) : assez pour le fil, sans alourdir chaque appel. */
+  historyTurns: 12,
 } as const;

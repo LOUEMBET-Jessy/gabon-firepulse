@@ -49,6 +49,7 @@ import {
   savedTourStep,
   setAssistant,
   uid,
+  updateMessage,
   updateReceipt,
   useAssistant,
   type ActionReceipt,
@@ -368,10 +369,10 @@ function Intro({
 }
 
 /**
- * Attente d'une reponse. Les messages qui suivent dependent du temps ecoule, pas d'une etape reelle :
- * ils disent seulement que la demande continue, et pourquoi elle peut etre longue.
+ * Attente du premier mot : l'etape reelle envoyee par le serveur (lecture des donnees, outil utilise,
+ * bascule sur le modele de secours). Le message de lenteur ne depend que du temps ecoule.
  */
-function Thinking() {
+function Thinking({ step }: { step: string | null }) {
   const [seconds, setSeconds] = useState(0);
   useEffect(() => {
     const t = window.setInterval(() => setSeconds((s) => s + 1), 1000);
@@ -382,7 +383,7 @@ function Thinking() {
       <AssistantMark size={26} animated />
       <div className="flex flex-col">
         <span className="flex items-center gap-1 text-[13px] text-ink-2">
-          {BRAND.assistant} consulte les données
+          {step ?? `${BRAND.assistant} consulte les données`}
           <span aria-hidden className="ml-0.5 flex gap-[3px]">
             {[0, 1, 2].map((i) => (
               <span key={i} className="thinking-dot size-1 rounded-full bg-accent" style={{ animationDelay: `${i * 160}ms` }} />
@@ -399,12 +400,44 @@ function Thinking() {
   );
 }
 
+/* ------------------------------------------------------------------ Flux */
+
+/** Lit un flux text/event-stream : un evenement par bloc « event: …\ndata: … ». */
+async function* readEvents(body: ReadableStream<Uint8Array>): AsyncGenerator<{ type: string; data: Record<string, unknown> }> {
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  try {
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      let index;
+      while ((index = buffer.indexOf("\n\n")) >= 0) {
+        const block = buffer.slice(0, index);
+        buffer = buffer.slice(index + 2);
+        const type = /^event: (.*)$/m.exec(block)?.[1] ?? "message";
+        const data = /^data: (.*)$/m.exec(block)?.[1];
+        if (!data) continue;
+        try {
+          yield { type, data: JSON.parse(data) as Record<string, unknown> };
+        } catch {
+          /* bloc illisible : ignore */
+        }
+      }
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+
 /* ------------------------------------------------------------------ Panneau */
 
 export function AssistantPanel() {
   const open = useAssistant((s) => s.open);
   const messages = useAssistant((s) => s.messages);
   const busy = useAssistant((s) => s.busy);
+  const progress = useAssistant((s) => s.progress);
   const status = useAssistant((s) => s.status);
   const draftFromApp = useAssistant((s) => s.draft);
   const pathname = usePathname();
@@ -446,9 +479,11 @@ export function AssistantPanel() {
       const saved = savedTourStep();
       // eslint-disable-next-line react-hooks/set-state-in-effect -- lecture unique du stockage du navigateur apres le montage
       if (saved !== null && saved > 0 && saved < TOUR.length) setResumeStep(saved);
+      // Toute premiere visite seulement : le panneau s'ouvre une fois, puis reste ferme par defaut.
       if (!window.localStorage.getItem(WELCOME_KEY)) {
         setWelcome(true);
         setAssistant({ open: true });
+        window.localStorage.setItem(WELCOME_KEY, "1");
       }
     } catch {
       /* stockage indisponible : pas d'accueil automatique */
@@ -464,9 +499,11 @@ export function AssistantPanel() {
     window.setTimeout(() => input.current?.focus(), 50);
   }, [draftFromApp]);
 
+  // Suit la conversation, y compris le texte qui arrive en flux.
+  const lastText = messages[messages.length - 1]?.text.length ?? 0;
   useEffect(() => {
     scroller.current?.scrollTo({ top: scroller.current.scrollHeight, behavior: "smooth" });
-  }, [messages.length, busy]);
+  }, [messages.length, lastText, busy, progress]);
 
   useEffect(() => {
     if (!open) return;
@@ -502,13 +539,52 @@ export function AssistantPanel() {
     const history = getAssistant()
       .messages.filter((m) => !m.error)
       .map((m) => ({ role: m.role, text: m.text }));
+    // Etape visible des l'envoi : ce que l'assistant va lire.
+    setAssistant({ progress: `Je lis les données de ${zoneName}, ${fmtPeriod(from, to).toLowerCase()}…` });
+    const replyId = uid("a");
+    let streamed = "";
+    let started = false;
     try {
       const response = await fetch("/api/assistant", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Accept: "text/event-stream, application/json" },
         body: JSON.stringify({ messages: history, context: getContext(), mode: voice ? "voice" : "text" }),
         signal: controller.signal,
       });
+      const type = response.headers.get("content-type") ?? "";
+      if (response.ok && type.includes("text/event-stream") && response.body) {
+        // Reponse en flux : le texte s'affiche au fur et a mesure.
+        type Done = Partial<AssistantReply> & { model?: string; fallback?: boolean };
+        type Failure = { error?: string; unavailable?: boolean };
+        let done = null as Done | null;
+        let failure = null as Failure | null;
+        for await (const event of readEvents(response.body)) {
+          if (event.type === "status") setAssistant({ progress: String(event.data.text ?? "") || null });
+          else if (event.type === "delta") {
+            streamed += String(event.data.text ?? "");
+            if (!started) {
+              started = true;
+              pushMessage({ id: replyId, role: "assistant", text: streamed, streaming: true });
+              setAssistant({ progress: null });
+            } else updateMessage(replyId, { text: streamed, streaming: true });
+          } else if (event.type === "done") done = event.data as Done;
+          else if (event.type === "error") failure = event.data as Failure;
+        }
+        if (failure || !done) {
+          const message = failure?.error ?? "La réponse a été interrompue. Réessayez.";
+          if (failure?.unavailable) setAssistant({ status: { available: false, reason: message, model: null } });
+          if (started) updateMessage(replyId, { streaming: false });
+          pushMessage({ id: uid("e"), role: "assistant", text: message, error: true });
+          return { text: message, error: true };
+        }
+        const receipts = applyActions(done.actions ?? []);
+        const finalText = streamed || "C'est fait.";
+        const fields = { text: finalText, receipts, sources: done.sources ?? [], fallbackModel: done.fallback ? done.model : undefined, streaming: false };
+        if (started) updateMessage(replyId, fields);
+        else pushMessage({ id: replyId, role: "assistant", ...fields });
+        if (receipts.some((r) => r.action.type === "start_tour")) setAssistant({ open: false });
+        return { text: finalText };
+      }
       const body = (await response.json().catch(() => ({}))) as Partial<AssistantReply> & { error?: string; unavailable?: boolean };
       if (!response.ok || typeof body.text !== "string") {
         if (body.unavailable) setAssistant({ status: { available: false, reason: body.error ?? null, model: null } });
@@ -516,30 +592,39 @@ export function AssistantPanel() {
         pushMessage({ id: uid("e"), role: "assistant", text: message, error: true });
         return { text: message, error: true };
       }
-      const id = uid("a");
-      const receipts: ActionReceipt[] = (body.actions ?? []).map((action) => {
-        if (needsConfirmation(action)) return { id: uid("r"), action, state: "pending" };
-        let ok = false;
-        try {
-          ok = run(action);
-        } catch {
-          ok = false;
-        }
-        return { id: uid("r"), action, state: ok ? "applied" : "failed" };
-      });
-      pushMessage({ id, role: "assistant", text: body.text, receipts, sources: body.sources ?? [], fallbackModel: body.fallback ? body.model : undefined });
+      const receipts = applyActions(body.actions ?? []);
+      pushMessage({ id: replyId, role: "assistant", text: body.text, receipts, sources: body.sources ?? [], fallbackModel: body.fallback ? body.model : undefined });
       if (receipts.some((r) => r.action.type === "start_tour")) setAssistant({ open: false });
       return { text: body.text };
     } catch (error) {
       const aborted = error instanceof DOMException && error.name === "AbortError";
+      // Arret pendant l'ecriture : le debut de la reponse reste affiche, marque comme arrete.
+      if (aborted && started) {
+        updateMessage(replyId, { text: `${streamed}\n\n*(Réponse arrêtée.)*`, streaming: false });
+        return { text: streamed };
+      }
       const message = aborted ? "Demande interrompue." : "Le serveur Hot-Spots ne répond pas. Vérifiez votre connexion.";
+      if (started) updateMessage(replyId, { streaming: false });
       pushMessage({ id: uid("e"), role: "assistant", text: message, error: true });
       return { text: message, error: true };
     } finally {
       abort.current = null;
-      setAssistant({ busy: false });
+      setAssistant({ busy: false, progress: null });
     }
   };
+
+  /** Applique les actions recues ; l'export attend la confirmation de l'utilisateur. */
+  const applyActions = (actions: ActionReceipt["action"][]): ActionReceipt[] =>
+    actions.map((action) => {
+      if (needsConfirmation(action)) return { id: uid("r"), action, state: "pending" };
+      let ok = false;
+      try {
+        ok = run(action);
+      } catch {
+        ok = false;
+      }
+      return { id: uid("r"), action, state: ok ? "applied" : "failed" };
+    });
 
   const confirmExport = (message: UiMessage, receipt: ActionReceipt) => {
     const ok = run(receipt.action);
@@ -708,7 +793,10 @@ export function AssistantPanel() {
                           <span>{m.text}</span>
                         </p>
                       ) : (
-                        <RichText text={m.text} />
+                        <>
+                          <RichText text={m.text} />
+                          {m.streaming ? <span aria-hidden className="stream-caret" /> : null}
+                        </>
                       )}
                       <Receipts message={m} onConfirm={(r) => confirmExport(m, r)} />
                       {m.sources?.length ? (
@@ -719,7 +807,7 @@ export function AssistantPanel() {
                       ) : null}
                       {m.fallbackModel ? <p className="mt-1.5 text-[11.5px] text-ink-3">Réponse du modèle de secours {m.fallbackModel} : le modèle principal était surchargé.</p> : null}
                     </div>
-                    {!m.error && !voiceMode ? (
+                    {!m.error && !m.streaming && !voiceMode ? (
                       <div className="-ml-2 flex items-center gap-0.5">
                         {canSpeak() ? (
                           <button
@@ -747,7 +835,7 @@ export function AssistantPanel() {
                 )}
               </li>
             ))}
-            {busy ? <Thinking /> : null}
+            {busy && progress ? <Thinking step={progress} /> : null}
           </ol>
 
           {!available && status !== null ? (
@@ -819,8 +907,14 @@ export function AssistantPanel() {
               </button>
             ) : null}
             {busy ? (
-              <button type="button" onClick={() => abort.current?.abort()} aria-label="Interrompre" className="flex size-9 shrink-0 items-center justify-center rounded-[12px] bg-surface-3 text-ink hover:bg-line-strong">
-                <Stop size={16} weight="fill" />
+              <button
+                type="button"
+                onClick={() => abort.current?.abort()}
+                aria-label="Arrêter la réponse"
+                className="flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-[12px] bg-surface-3 px-3 text-[13px] font-medium text-ink hover:bg-line-strong"
+              >
+                <Stop size={14} weight="fill" />
+                Arrêter
               </button>
             ) : (
               <button

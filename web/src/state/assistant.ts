@@ -28,6 +28,8 @@ export interface UiMessage {
   fallbackModel?: string;
   /** Message d'erreur du service (affiche autrement, jamais renvoye au modele). */
   error?: boolean;
+  /** Reponse en cours d'ecriture (flux). */
+  streaming?: boolean;
 }
 
 export interface AssistantState {
@@ -39,13 +41,15 @@ export interface AssistantState {
   tourStep: number | null;
   /** Texte a pre-remplir dans la zone de saisie (suggestion choisie ailleurs dans l'application). */
   draft: string;
+  /** Etape affichee pendant l'attente (« Je lis les donnees du Gabon, annee 2025… »), null sinon. */
+  progress: string | null;
 }
 
 const STORAGE_KEY = "hotspot.assistant.v1";
 const TOUR_KEY = "hotspot.tour.step";
 export const WELCOME_KEY = "hotspot.welcomed";
 
-const INITIAL: AssistantState = { open: false, messages: [], busy: false, status: null, tourStep: null, draft: "" };
+const INITIAL: AssistantState = { open: false, messages: [], busy: false, status: null, tourStep: null, draft: "", progress: null };
 
 let state: AssistantState = INITIAL;
 let hydrated = false;
@@ -73,7 +77,8 @@ export function hydrateAssistant() {
     const raw = window.sessionStorage.getItem(STORAGE_KEY);
     if (raw) {
       const messages = JSON.parse(raw) as UiMessage[];
-      if (Array.isArray(messages)) state = { ...state, messages: messages.filter((m) => m && typeof m.text === "string") };
+      // Un flux coupe par un rechargement n'est plus « en cours ».
+      if (Array.isArray(messages)) state = { ...state, messages: messages.filter((m) => m && typeof m.text === "string").map((m) => ({ ...m, streaming: false })) };
     }
   } catch {
     /* donnees illisibles : on repart d'une conversation vide */
@@ -102,6 +107,14 @@ export function getAssistant(): AssistantState {
 
 export function pushMessage(message: UiMessage) {
   setAssistant({ messages: [...state.messages, message] });
+}
+
+/** Met a jour un message (texte qui arrive en flux, puis actions et sources a la fin). */
+export function updateMessage(id: string, patch: Partial<UiMessage>) {
+  state = { ...state, messages: state.messages.map((m) => (m.id === id ? { ...m, ...patch } : m)) };
+  // Pendant le flux, on n'ecrit pas le stockage a chaque fragment : seulement a la fin (streaming faux).
+  if (patch.streaming === false || patch.streaming === undefined) persist();
+  emit();
 }
 
 export function updateReceipt(messageId: string, receiptId: string, next: ReceiptState) {

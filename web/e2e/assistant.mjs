@@ -192,6 +192,36 @@ await test("A-09", "Téléphone : panneau plein écran, fermeture", async () => 
   return "plein écran, fermeture, pas de débordement";
 });
 
+await test("A-10", "Réponse en flux : étape, texte progressif, sources, fermé par défaut", async () => {
+  const { page, context } = await open("/dashboard", { available: true });
+  // Ferme par defaut pour un visiteur deja accueilli ; bouton flottant present.
+  expect((await panel(page).count()) === 0, "panneau ouvert sans demande");
+  // Flux simule au format du serveur : une etape, trois fragments, puis la fin avec la source.
+  const sse = [
+    ["status", { text: "Je lis la synthèse de la zone…" }],
+    ["delta", { text: "En 2025, " }],
+    ["delta", { text: "l'indice harmonisé " }],
+    ["delta", { text: "est de 3 978 cellules-jour." }],
+    ["done", { actions: [], sources: ["Synthèse Gabon, 2025-01-01 au 2025-12-31"], model: "gemini-3.8-flash", fallback: false }],
+  ]
+    .map(([event, data]) => `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`)
+    .join("");
+  let accept = "";
+  await page.route("**/api/assistant", async (route) => {
+    accept = route.request().headers()["accept"] ?? "";
+    await route.fulfill({ status: 200, headers: { "Content-Type": "text/event-stream; charset=utf-8" }, body: sse });
+  });
+  await page.getByRole("button", { name: "Ouvrir Hot-Spots AI" }).click();
+  await page.locator("#assistant-input").fill("Combien de détections au Gabon en 2025 ?");
+  await page.keyboard.press("Enter");
+  await panel(page).getByText("En 2025, l'indice harmonisé est de 3 978 cellules-jour.").waitFor();
+  await panel(page).getByText("Chiffres lus dans : Synthèse Gabon").waitFor();
+  expect(accept.includes("text/event-stream"), "le navigateur ne demande pas le flux");
+  expect((await page.locator(".stream-caret").count()) === 0, "curseur d'écriture resté affiché");
+  await context.close();
+  return "flux lu et affiché, source citée, panneau fermé au départ";
+});
+
 await browser.close();
 const failed = results.filter((r) => r.status !== "REUSSI").length;
 console.log(`\n${results.length - failed} réussi(s), ${failed} échec(s)`);

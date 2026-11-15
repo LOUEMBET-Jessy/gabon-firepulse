@@ -1,13 +1,17 @@
 import { aiConfig } from "@/lib/ai/config";
+import { quickReply } from "@/lib/ai/quick";
 import { checkRate, visitorKey } from "@/lib/ai/rate-limit";
 import { AssistantUnavailable, runAssistant, sanitizeHistory } from "@/lib/ai/service";
+import { runAssistantStream, type StreamEvent } from "@/lib/ai/stream";
 import { validateContext } from "@/lib/ai/tools";
 
 /**
  * POST /api/assistant : un tour de conversation avec Hot-Spots AI.
- * Corps : { messages: [{ role, text }], context: { page, zone, from, to, ... } }.
- * Reponse : { text, actions, sources }. Les actions sont appliquees par le navigateur.
- * Rien n'est journalise du contenu des messages.
+ * Corps : { messages: [{ role, text }], context: { page, zone, from, to, ... }, mode? }.
+ *
+ * Avec « Accept: text/event-stream » : reponse en flux (evenements status, delta, done, error),
+ * le premier mot s'affiche des que le modele l'ecrit. Sinon : { text, actions, sources } en une fois.
+ * Les actions sont appliquees par le navigateur. Rien n'est journalise du contenu des messages.
  */
 export async function POST(request: Request) {
   const config = aiConfig();
@@ -34,9 +38,47 @@ export async function POST(request: Request) {
   const { messages, context, mode } = (body ?? {}) as { messages?: unknown; context?: unknown; mode?: unknown };
   const history = sanitizeHistory(messages);
   if (!history.length) return Response.json({ error: "Message vide." }, { status: 400 });
+  const ctx = validateContext(context);
+  const voice = mode === "voice";
+
+  if ((request.headers.get("accept") ?? "").includes("text/event-stream")) {
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream<Uint8Array>({
+      async start(controller) {
+        let open = true;
+        const emit = (event: StreamEvent) => {
+          if (!open) return;
+          const { type, ...data } = event;
+          try {
+            controller.enqueue(encoder.encode(`event: ${type}\ndata: ${JSON.stringify(data)}\n\n`));
+          } catch {
+            open = false; // navigateur parti
+          }
+        };
+        try {
+          await runAssistantStream(history, ctx, { config, emit, signal: request.signal, voice });
+        } catch (error) {
+          console.error("[assistant] erreur", error instanceof Error ? error.message : error);
+          emit({ type: "error", error: "Erreur interne de l'assistant.", status: 500 });
+        } finally {
+          open = false;
+          try {
+            controller.close();
+          } catch {
+            /* deja ferme */
+          }
+        }
+      },
+    });
+    return new Response(stream, {
+      headers: { "Content-Type": "text/event-stream; charset=utf-8", "Cache-Control": "no-store, no-transform", "X-Accel-Buffering": "no" },
+    });
+  }
 
   try {
-    const reply = await runAssistant(history, validateContext(context), { config, signal: request.signal, voice: mode === "voice" });
+    const local = quickReply(history[history.length - 1].text, ctx);
+    if (local) return Response.json(local, { headers: { "Cache-Control": "no-store" } });
+    const reply = await runAssistant(history, ctx, { config, signal: request.signal, voice });
     return Response.json(reply, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     if (error instanceof AssistantUnavailable) {

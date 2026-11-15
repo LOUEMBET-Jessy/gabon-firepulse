@@ -161,12 +161,12 @@ async function runTurn(
 }
 
 /** Surcharge, quota, erreur serveur ou delai depasse : un autre modele peut repondre. */
-function isTransient(error: unknown): boolean {
+export function isTransient(error: unknown): boolean {
   if (error instanceof ApiError) return error.status === 429 || error.status >= 500;
   return true;
 }
 
-function geminiError(error: unknown): AssistantUnavailable {
+export function geminiError(error: unknown): AssistantUnavailable {
   if (error instanceof Error && error.name === "AbortError" && !/timeout|time out/i.test(error.message)) return new AssistantUnavailable("Demande interrompue.", 499);
   if (error instanceof ApiError) {
     const message = error.message ?? "";

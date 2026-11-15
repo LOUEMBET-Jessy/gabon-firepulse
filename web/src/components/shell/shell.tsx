@@ -89,28 +89,30 @@ export function Logo({ compact }: { compact?: boolean }) {
   );
 }
 
-/** Acces unique a l'assistant : toujours dans la barre du haut, sans bouton flottant qui masque les donnees. */
-function AssistantButton() {
+/**
+ * Acces a l'assistant : bouton rond vert, flottant en bas a droite (au-dessus de la barre de navigation
+ * sur telephone, de la legende sur la carte). Masque quand le panneau est ouvert : le panneau a son bouton de fermeture.
+ */
+function AssistantButton({ isMap }: { isMap: boolean }) {
   const open = useAssistant((s) => s.open);
   const busy = useAssistant((s) => s.busy);
   const status = useAssistant((s) => s.status);
+  if (open) return null;
   return (
     <button
       type="button"
       data-tour="assistant-launcher"
-      onClick={() => setAssistant({ open: !open })}
-      aria-expanded={open}
-      aria-label={open ? `Fermer ${BRAND.assistant}` : `Ouvrir ${BRAND.assistant}`}
+      onClick={() => setAssistant({ open: true })}
+      aria-expanded={false}
+      aria-label={`Ouvrir ${BRAND.assistant}`}
+      title={BRAND.assistant}
       className={cx(
-        "group relative flex h-9 shrink-0 items-center gap-2 rounded-full border pl-1 pr-1 text-[13px] font-medium transition-[border-color,background-color] duration-200 sm:pr-3.5",
-        open ? "border-accent bg-accent/12 text-ink" : "border-line-strong bg-surface-2 text-ink hover:border-accent/70",
+        "no-print fixed right-4 z-30 flex size-14 animate-fade-up items-center justify-center rounded-full bg-accent text-accent-ink shadow-float transition-transform duration-200 hover:scale-105 active:scale-95 lg:right-6",
+        isMap ? "bottom-[calc(76px+env(safe-area-inset-bottom))] md:bottom-24 lg:bottom-24" : "bottom-[calc(76px+env(safe-area-inset-bottom))] lg:bottom-6",
       )}
     >
-      <span className="relative">
-        <AssistantMark size={28} animated={busy} />
-        {status ? <span aria-hidden className={cx("absolute -right-0.5 -top-0.5 size-2.5 rounded-full border-2 border-surface-2", status.available ? "bg-good" : "bg-warning")} /> : null}
-      </span>
-      <span className="hidden sm:inline">{BRAND.assistant}</span>
+      <AssistantMark size={34} animated={busy} />
+      {status ? <span aria-hidden className={cx("absolute right-1 top-1 size-3 rounded-full border-2 border-accent", status.available ? "bg-good" : "bg-warning")} /> : null}
     </button>
   );
 }
@@ -258,7 +260,6 @@ export function Shell({ children }: { children: React.ReactNode }) {
             <DataBadge />
           </div>
           <ThemeToggle />
-          <AssistantButton />
         </header>
 
         <main className={cx("relative flex-1", isMap ? "min-h-0 pb-[64px] lg:pb-0" : "px-4 pb-28 pt-8 md:px-8 lg:pb-16")}>
@@ -311,6 +312,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       <MoreSheet open={more} onClose={() => setMore(false)} pathname={pathname} />
 
       <div className="no-print">
+        <AssistantButton isMap={isMap} />
         <AssistantPanel />
         <AssistantSpotlight />
         <GuidedTour />
