@@ -47,6 +47,19 @@ export const MAP_HEX = {
   space: "#050b14",
 } as const;
 
+/** Valeurs RVB (« r g b ») des couleurs ci-dessus, pour les canevas qui dosent l'opacite. */
+export const hexToRgb = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(" ");
+
+/** Satellites dessines en orbite (canevas) : etiquettes et corps des engins. */
+export const CANVAS_RGB = {
+  label: "255 255 255",
+  labelMuted: "214 226 218",
+} as const;
+export const CANVAS_HEX = {
+  body: "#23342a",
+  panel: "#f4f7f4",
+} as const;
+
 /** Lit la valeur courante d'un jeton CSS (theme clair ou sombre) ; repli si on est cote serveur. */
 export function token(name: string, fallback = "#000000"): string {
   if (typeof window === "undefined") return fallback;

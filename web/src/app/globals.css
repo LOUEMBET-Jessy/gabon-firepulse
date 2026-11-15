@@ -381,6 +381,13 @@ body {
     background-position: -420px 190px;
   }
 }
+/* Sphere d'attente du globe de l'accueil : ocean et atmosphere, avant l'arrivee des images Blue Marble. */
+.globe-placeholder {
+  background: radial-gradient(circle at 38% 34%, #3c7fb5 0%, #1d4f7e 42%, #0b2340 72%);
+  box-shadow:
+    0 0 70px 12px rgb(159 211 245 / 0.35),
+    inset -30px -40px 80px rgb(0 0 0 / 0.5);
+}
 .hero-line {
   display: block;
   animation: hero-rise 1.1s var(--ease-out-expo) both;

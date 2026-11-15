@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { FireMap, FlaggedMonths, FrpDistribution, MoreLink, ReferenceGauge, RegionBars, StatSkeleton } from "@/components/blocks";
 import { SeasonalChart } from "@/components/charts";
+import { BLUE_MARBLE_TILES } from "@/components/map/basemaps";
 import { pageIcon } from "@/components/shell/shell";
 import { ChartSkeleton, Disclosure, ErrorState, InfoTip, Notice, PageHeader, Panel, PanelHeader, ReliabilityBadge, SensorMark, Skeleton, SourceNote, StatusBadge } from "@/components/ui";
 import { zoneLabel } from "@/components/shell/pickers";
@@ -13,6 +14,12 @@ import { fmtCoord, fmtDateShort, fmtDelta, fmtInt, fmtPct, fmtPeriod, MONTHS } f
 import { CONF_LABEL, DEFINITIONS, SATELLITES } from "@/lib/labels";
 import { SATELLITE_KEYS } from "@/lib/types";
 import { useFilters } from "@/state/filters";
+
+/** Tuile NASA Blue Marble (zoom 6) centree sur le pays analyse : fond de la carte du chiffre cle. */
+function countryTile(country: "GAB" | "FRA"): string {
+  const [x, y] = country === "FRA" ? [32, 22] : [33, 31];
+  return BLUE_MARBLE_TILES.replace("{z}", "6").replace("{x}", String(x)).replace("{y}", String(y));
+}
 
 /** Phrase de lecture du verdict, en langage courant. */
 function verdict(status: string | undefined): string {
@@ -31,7 +38,7 @@ function verdict(status: string | undefined): string {
 }
 
 export function DashboardView() {
-  const { zone, from, to, setZone } = useFilters();
+  const { zone, from, to, setZone, country } = useFilters();
   const router = useRouter();
   const meta = useMetadata();
   const overview = useOverview(zone, from, to);
@@ -68,7 +75,11 @@ export function DashboardView() {
       {/* Le verdict : la valeur, sa place dans l'historique, et l'annee mois par mois. */}
       <Panel className="overflow-hidden">
         <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,400px)_minmax(0,1fr)]">
-          <div className="flex flex-col gap-5 border-b border-line/70 p-6 xl:border-b-0 xl:border-r" data-tour="kpi-index">
+          <div className="relative isolate flex flex-col gap-5 overflow-hidden border-b border-line/70 p-6 xl:border-b-0 xl:border-r" data-tour="kpi-index">
+            {/* Vignette satellite du pays (NASA Blue Marble), voilee pour la lisibilite du chiffre. */}
+            {/* eslint-disable-next-line @next/next/no-img-element -- tuile NASA GIBS distante */}
+            <img src={countryTile(country)} alt="" aria-hidden loading="lazy" className="absolute inset-0 -z-20 size-full scale-125 object-cover opacity-70" />
+            <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-surface)_72%,transparent),var(--color-surface)_62%)]" />
             <p className="flex items-center gap-1 text-[13px] font-medium text-ink-2">
               Indice harmonisé d'activité
               <InfoTip text={DEFINITIONS.index} />

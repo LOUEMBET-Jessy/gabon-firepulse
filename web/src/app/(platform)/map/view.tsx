@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowSquareOut, DownloadSimple, Faders, PencilSimpleLine, X } from "@phosphor-icons/react/dist/ssr";
+import { ArrowSquareOut, CaretLeft, DownloadSimple, Faders, PencilSimpleLine, X } from "@phosphor-icons/react/dist/ssr";
 import { useCallback, useEffect, useState } from "react";
 
 import { FireMap } from "@/components/blocks";
@@ -175,6 +175,9 @@ export function MapView() {
   const [drawing, setDrawing] = useState(false);
   const [basemapFallback, setBasemapFallback] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
+  // Ordinateur : panneau flottant ouvert au depart, repliable pour laisser toute la place a la carte.
+  const [filtersOpen, setFiltersOpen] = useState(true);
+  const shift = filtersOpen ? "lg:left-[328px]" : "";
 
   // Exploration du globe : territoire montre (pas forcement la zone d'analyse), vols, niveau de zoom.
   const [territory, setTerritory] = useState<Territory>(() => territoryFromZone(zone) ?? { kind: "world" });
@@ -527,11 +530,6 @@ export function MapView() {
 
   return (
     <div className="relative flex h-full globe-backdrop">
-      {/* Panneau de filtres (ordinateur) */}
-      <aside aria-label="Filtres de la carte" data-tour="map-filters" className="hidden w-[304px] shrink-0 overflow-y-auto border-r border-line bg-surface lg:block">
-        {controls}
-      </aside>
-
       <div className="relative min-w-0 flex-1">
         <FireMap
           geoBase={meta.data?.geoUrl}
@@ -571,8 +569,25 @@ export function MapView() {
           className="absolute inset-0"
         />
 
+        {/* Panneau de filtres flottant (ordinateur) : verre depoli clair au-dessus de la carte, repliable. */}
+        {filtersOpen ? (
+          <aside
+            aria-label="Filtres de la carte"
+            data-tour="map-filters"
+            className="absolute bottom-3 left-3 top-3 z-10 hidden w-[304px] animate-fade-up flex-col overflow-hidden rounded-panel border border-line/70 bg-surface/85 shadow-float backdrop-blur-[12px] lg:flex"
+          >
+            <header className="flex shrink-0 items-center justify-between border-b border-line/70 px-4 py-2.5">
+              <p className="text-[13.5px] font-medium text-ink">Filtres et couches</p>
+              <button type="button" onClick={() => setFiltersOpen(false)} aria-label="Replier les filtres" title="Replier les filtres" className="rounded-control p-1.5 text-ink-3 hover:bg-surface-2 hover:text-ink">
+                <CaretLeft size={16} weight="bold" />
+              </button>
+            </header>
+            <div className="min-h-0 flex-1 overflow-y-auto">{controls}</div>
+          </aside>
+        ) : null}
+
         {/* Fond de carte : vignettes en bas a gauche, badge de l'image du jour au-dessus */}
-        <div className="pointer-events-none absolute bottom-9 left-3 z-[5] flex flex-col items-start gap-2">
+        <div className={cx("pointer-events-none absolute bottom-9 left-3 z-[5] flex flex-col items-start gap-2", shift)}>
           {basemap === "daily" && imagery.data && !basemapFallback ? <ImageryBadge sensor={imagery.data.sensor} date={imagery.data.date} shifted={imagery.data.shifted} /> : null}
           {basemapFallback ? (
             <p role="status" className="pointer-events-auto max-w-[300px] rounded-control border border-line bg-surface/90 px-3 py-2 text-[12px] leading-snug text-ink shadow-float backdrop-blur-[12px]">
@@ -583,9 +598,13 @@ export function MapView() {
         </div>
 
         {/* Etat, navigation et fiche du territoire */}
-        <div className="pointer-events-none absolute bottom-[180px] left-3 right-14 top-3 flex flex-col items-start gap-2 md:right-auto">
+        <div className={cx("pointer-events-none absolute bottom-[180px] left-3 right-14 top-3 flex flex-col items-start gap-2 md:right-auto", shift)}>
           <div className="pointer-events-auto flex max-w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-control border border-line-strong bg-surface/95 px-3 py-2 text-[12.5px] backdrop-blur" role="status" aria-live="polite">
             <button type="button" data-tour="map-filters" onClick={() => setPanelOpen(true)} className="flex items-center gap-1.5 font-medium text-accent lg:hidden">
+              <Faders size={15} />
+              Filtres
+            </button>
+            <button type="button" onClick={() => setFiltersOpen(true)} aria-label="Afficher les filtres" className={cx("hidden items-center gap-1.5 font-medium text-accent", !filtersOpen && "lg:flex")}>
               <Faders size={15} />
               Filtres
             </button>
@@ -760,9 +779,10 @@ export function MapView() {
 
       {/* Filtres en feuille (tablette et telephone) */}
       {panelOpen ? (
-        <div className="absolute inset-0 z-30 flex lg:hidden" role="dialog" aria-modal="true" aria-label="Filtres de la carte">
-          <button type="button" aria-label="Fermer les filtres" className="flex-1 bg-bg/60" onClick={() => setPanelOpen(false)} />
-          <div className="flex w-[min(340px,88vw)] animate-fade-up flex-col border-l border-line-strong bg-surface">
+        <div className="absolute inset-0 z-30 flex flex-col lg:hidden" role="dialog" aria-modal="true" aria-label="Filtres de la carte">
+          <button type="button" aria-label="Fermer les filtres" className="min-h-[22%] flex-1 bg-ink/30 backdrop-blur-[2px]" onClick={() => setPanelOpen(false)} />
+          <div className="flex max-h-[78%] w-full animate-fade-up flex-col rounded-t-[24px] border-t border-line bg-surface/95 shadow-float backdrop-blur-[12px]">
+            <div aria-hidden className="mx-auto mt-2 h-1 w-10 rounded-full bg-line-strong" />
             <header className="flex items-center justify-between border-b border-line px-4 py-3">
               <p className="text-[14px] font-medium text-ink">Filtres et couches</p>
               <button type="button" onClick={() => setPanelOpen(false)} aria-label="Fermer" className="rounded-control p-1.5 text-ink-3 hover:bg-surface-2 hover:text-ink">

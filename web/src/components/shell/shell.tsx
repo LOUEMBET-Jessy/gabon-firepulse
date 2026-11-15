@@ -10,13 +10,14 @@ import {
   Gauge,
   GitDiff,
   MapTrifold,
+  SidebarSimple,
   WarningDiamond,
   X,
 } from "@phosphor-icons/react/dist/ssr";
 import { motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 import { AssistantPanel } from "@/components/assistant/panel";
 import { AssistantSpotlight, GuidedTour } from "@/components/assistant/spotlight";
@@ -117,13 +118,44 @@ function AssistantButton({ isMap }: { isMap: boolean }) {
   );
 }
 
-function SideNav({ pathname }: { pathname: string }) {
+/* ------------------------------------------------------------------ Rail replie (choix memorise) */
+
+const RAIL_KEY = "hotspot.nav.rail";
+const RAIL_EVENT = "hotspot:rail";
+function readRail(): boolean {
+  try {
+    return window.localStorage.getItem(RAIL_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+function setRail(on: boolean) {
+  try {
+    window.localStorage.setItem(RAIL_KEY, on ? "1" : "0");
+  } catch {
+    /* stockage indisponible : le choix vaut pour cette page */
+  }
+  window.dispatchEvent(new Event(RAIL_EVENT));
+}
+/** Navigation repliee en rail de 72 px ; depliee par defaut (rendu serveur identique). */
+function useRail(): boolean {
+  return useSyncExternalStore(
+    (notify) => {
+      window.addEventListener(RAIL_EVENT, notify);
+      return () => window.removeEventListener(RAIL_EVENT, notify);
+    },
+    readRail,
+    () => false,
+  );
+}
+
+function SideNav({ pathname, rail }: { pathname: string; rail: boolean }) {
   const reduce = useReducedMotion();
   return (
-    <nav aria-label="Navigation principale" data-tour="main-nav" className="flex flex-1 flex-col gap-6 overflow-y-auto px-3 py-4">
+    <nav aria-label="Navigation principale" data-tour="main-nav" className={cx("flex flex-1 flex-col overflow-y-auto py-4", rail ? "gap-3 px-2" : "gap-6 px-3")}>
       {NAV.map((group) => (
         <div key={group.group}>
-          <p className="px-3 pb-2 text-[11px] font-medium text-ink-3">{group.group}</p>
+          {rail ? <div aria-hidden className="mx-3 mb-2 border-t border-line" /> : <p className="px-3 pb-2 text-[11px] font-medium text-ink-3">{group.group}</p>}
           <div className="flex flex-col gap-0.5">
             {group.items.map((item) => {
               const active = pathname === item.href;
@@ -133,7 +165,13 @@ function SideNav({ pathname }: { pathname: string }) {
                   key={item.href}
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={cx("group relative flex h-10 items-center gap-3 rounded-control px-3 text-[13.5px] transition-colors", active ? "font-medium text-ink" : "text-ink-2 hover:text-ink")}
+                  aria-label={rail ? item.label : undefined}
+                  title={rail ? item.label : undefined}
+                  className={cx(
+                    "group relative flex rounded-control transition-colors",
+                    rail ? "h-14 flex-col items-center justify-center gap-1 px-1 text-[10.5px]" : "h-10 items-center gap-3 px-3 text-[13.5px]",
+                    active ? "font-medium text-ink" : "text-ink-2 hover:text-ink",
+                  )}
                 >
                   {active ? (
                     <motion.span
@@ -141,13 +179,13 @@ function SideNav({ pathname }: { pathname: string }) {
                       transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 36 }}
                       className="absolute inset-0 rounded-control border border-line-strong/70 bg-surface-2"
                     >
-                      <span className="absolute -left-3 top-2.5 h-5 w-[3px] rounded-r-full bg-ember" />
+                      <span className={cx("absolute top-2.5 h-5 w-[3px] rounded-r-full bg-ember", rail ? "-left-2" : "-left-3")} />
                     </motion.span>
                   ) : (
                     <span aria-hidden className="absolute inset-0 rounded-control bg-surface opacity-0 transition-opacity group-hover:opacity-100" />
                   )}
                   <Icon size={18} weight={active ? "fill" : "regular"} className={cx("relative transition-colors", active ? "text-accent" : "text-ink-3 group-hover:text-ink-2")} />
-                  <span className="relative">{item.label}</span>
+                  <span className="relative leading-tight">{rail ? item.short : item.label}</span>
                 </Link>
               );
             })}
@@ -223,25 +261,45 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const isMap = pathname === "/map";
   const [more, setMore] = useState(false);
   const { restored } = useFilters();
+  const rail = useRail();
   const inMore = !PRIMARY.includes(pathname);
   return (
     <div className="print-root orbit-glow flex min-h-[100dvh]">
       {/* Navigation laterale (ordinateur) */}
-      <aside className="no-print sticky top-0 z-10 hidden h-[100dvh] w-[264px] shrink-0 flex-col border-r border-line/60 bg-bg-deep lg:flex">
-        <div className="flex h-[68px] items-center px-5">
-          <Logo />
+      <aside
+        className={cx(
+          "no-print sticky top-0 z-10 hidden h-[100dvh] shrink-0 flex-col border-r border-line/70 bg-surface transition-[width] duration-300 lg:flex",
+          rail ? "w-[72px]" : "w-[236px]",
+        )}
+      >
+        <div className={cx("flex h-16 items-center", rail ? "justify-center" : "px-5")}>
+          <Logo compact={rail} />
         </div>
-        <SideNav pathname={pathname} />
-        <div className="flex flex-col gap-1 border-t border-line/60 px-3 py-3">
+        <SideNav pathname={pathname} rail={rail} />
+        <div className={cx("flex flex-col gap-1 border-t border-line/70 py-3", rail ? "items-center px-2" : "px-3")}>
           <button
             type="button"
             onClick={() => setAssistant({ tourStep: 0 })}
-            className="group flex h-10 items-center gap-3 rounded-control px-3 text-[13.5px] text-ink-2 transition-colors hover:bg-surface hover:text-ink"
+            aria-label={rail ? "Visite guidée" : undefined}
+            title={rail ? "Visite guidée" : undefined}
+            className={cx("group flex h-10 items-center gap-3 rounded-control text-[13.5px] text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink", rail ? "w-10 justify-center" : "px-3")}
           >
             <CompassTool size={18} className="text-ink-3 transition-colors group-hover:text-accent" />
-            Visite guidée
+            {rail ? null : "Visite guidée"}
           </button>
-          <p className="px-3 pt-1 text-[10.5px] leading-relaxed text-ink-3">Projet étudiant, NASA Space Apps Challenge 2026. Ni produit officiel de la NASA, ni service d'alerte incendie.</p>
+          <button
+            type="button"
+            onClick={() => setRail(!rail)}
+            aria-label={rail ? "Déplier la navigation" : "Replier la navigation"}
+            title={rail ? "Déplier la navigation" : "Replier la navigation"}
+            className={cx("group flex h-10 items-center gap-3 rounded-control text-[13.5px] text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink", rail ? "w-10 justify-center" : "px-3")}
+          >
+            {rail ? <SidebarSimple size={18} className="text-ink-3" /> : <SidebarSimple size={18} weight="fill" className="text-ink-3" />}
+            {rail ? null : "Replier"}
+          </button>
+          <p className={cx("pt-1 text-[10.5px] leading-relaxed text-ink-3", rail ? "sr-only" : "px-3")}>
+            Projet étudiant, NASA Space Apps Challenge 2026. Ni produit officiel de la NASA, ni service d'alerte incendie.
+          </p>
         </div>
       </aside>
 

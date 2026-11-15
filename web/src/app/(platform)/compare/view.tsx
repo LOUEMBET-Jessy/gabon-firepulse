@@ -8,6 +8,7 @@ import { pageIcon } from "@/components/shell/shell";
 import { ChartSkeleton, ErrorState, InfoTip, Notice, PageHeader, Panel, PanelHeader, SensorMark, SourceNote, cx } from "@/components/ui";
 import { useCalendar, useMetadata, useOverview } from "@/lib/api";
 import { fmt1, fmt2, fmtInt, fmtPct, fmtPeriod } from "@/lib/format";
+import { SENTINEL_TILES } from "@/components/map/basemaps";
 import { CONFIG_LABEL, SATELLITES, SENSOR_COLOR } from "@/lib/labels";
 import type { ConfigKey } from "@/lib/types";
 import { useFilters } from "@/state/filters";
@@ -99,7 +100,11 @@ function SensorLineup() {
     <Panel className="overflow-hidden">
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,300px)_minmax(0,1fr)]">
         <figure className="flex flex-col items-center gap-4 border-b border-line/70 p-6 lg:border-b-0 lg:border-r">
-          <div className="relative" style={{ width: modisPx, height: modisPx }} aria-hidden>
+          {/* Pixels poses sur une vraie image Sentinel-2 du Gabon (10 m) : l'echelle se lit sur le terrain. */}
+          <div className="relative overflow-hidden rounded-[10px] p-5 shadow-card" aria-hidden>
+            {/* eslint-disable-next-line @next/next/no-img-element -- tuile Sentinel-2 distante */}
+            <img src={SENTINEL_TILES.replace("{z}", "12").replace("{x}", "2202").replace("{y}", "2066")} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />
+          <div className="relative" style={{ width: modisPx, height: modisPx }}>
             <div className="absolute inset-0 rounded-[3px] border-2" style={{ borderColor: SENSOR_COLOR.modis, backgroundColor: `${SENSOR_COLOR.modis}1f` }} />
             <div
               className="absolute inset-0 rounded-[3px]"
@@ -110,6 +115,8 @@ function SensorLineup() {
             />
             <div className="absolute left-0 top-0 rounded-[2px] border-2" style={{ width: viirsPx, height: viirsPx, borderColor: SENSOR_COLOR.snpp, backgroundColor: `${SENSOR_COLOR.snpp}40` }} />
           </div>
+          </div>
+          <p className="-mt-2 text-[11px] text-ink-3">Image : Sentinel-2 cloudless 2023 (EOX), Haut-Ogooué</p>
           <figcaption className="text-center text-[12.5px] leading-relaxed text-ink-2">
             Un pixel MODIS couvre environ <span className="num text-ink">7</span> pixels VIIRS. Pour un même feu, VIIRS signale donc bien plus de points.
           </figcaption>

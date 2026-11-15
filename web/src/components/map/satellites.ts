@@ -16,6 +16,7 @@
  * (centre et rayon mesures a chaque image). Aucune interaction : le canevas laisse passer la souris.
  */
 
+import { CANVAS_HEX, CANVAS_RGB, SATELLITE_HEX, hexToRgb } from "@/lib/palette";
 import type { Map as MapLibre } from "maplibre-gl";
 
 const DEG = Math.PI / 180;
@@ -45,8 +46,8 @@ export const SPACECRAFT: Spacecraft[] = [
     key: "modis",
     name: "MODIS",
     platforms: "Terra · Aqua",
-    color: "#12bfd2",
-    rgb: "18 191 210",
+    color: SATELLITE_HEX.modis,
+    rgb: hexToRgb(SATELLITE_HEX.modis),
     altitudeKm: 705,
     periodMin: 98.9,
     inclination: 98.2 * DEG,
@@ -58,8 +59,8 @@ export const SPACECRAFT: Spacecraft[] = [
     key: "viirs",
     name: "VIIRS",
     platforms: "S-NPP · NOAA-20 · NOAA-21",
-    color: "#f59e0b",
-    rgb: "245 158 11",
+    color: SATELLITE_HEX.snpp,
+    rgb: hexToRgb(SATELLITE_HEX.snpp),
     altitudeKm: 824,
     periodMin: 101.4,
     inclination: 98.7 * DEG,
@@ -329,7 +330,7 @@ function drawSpacecraft(ctx: CanvasRenderingContext2D, view: View, sc: Spacecraf
       const t = ((seconds * 0.9 + k / 3) % 1 + 1) % 1;
       const x = nadir.x + (sat.x - nadir.x) * t;
       const y = nadir.y + (sat.y - nadir.y) * t;
-      ctx.fillStyle = `rgb(244 247 250 / ${0.75 * Math.sin(Math.PI * t)})`;
+      ctx.fillStyle = `rgb(${CANVAS_RGB.label} / ${0.75 * Math.sin(Math.PI * t)})`;
       ctx.beginPath();
       ctx.arc(x, y, 1.4, 0, Math.PI * 2);
       ctx.fill();
@@ -351,10 +352,10 @@ function drawSpacecraft(ctx: CanvasRenderingContext2D, view: View, sc: Spacecraf
       ctx.lineTo(st.x, st.y);
       ctx.stroke();
       ctx.setLineDash([]);
-      ctx.fillStyle = "rgb(244 247 250 / 0.9)";
+      ctx.fillStyle = `rgb(${CANVAS_RGB.label} / 0.9)`;
       ctx.fillRect(st.x - 2.5, st.y - 2.5, 5, 5);
       ctx.font = `500 10px ${font}`;
-      ctx.fillStyle = "rgb(185 198 216 / 0.85)";
+      ctx.fillStyle = `rgb(${CANVAS_RGB.labelMuted} / 0.85)`;
       ctx.fillText("SvalSat", st.x + 6, st.y + 12);
     }
   }
@@ -374,7 +375,7 @@ function drawSpacecraft(ctx: CanvasRenderingContext2D, view: View, sc: Spacecraf
   ctx.translate(sat.x, sat.y);
   ctx.rotate(angle);
   ctx.globalAlpha *= sat.front ? 1 : 0.55;
-  ctx.fillStyle = "#1b3557";
+  ctx.fillStyle = CANVAS_HEX.body;
   ctx.strokeStyle = sc.color;
   ctx.lineWidth = 1;
   // Panneaux solaires, perpendiculaires a la trace.
@@ -383,7 +384,7 @@ function drawSpacecraft(ctx: CanvasRenderingContext2D, view: View, sc: Spacecraf
   ctx.fillRect(-1.6, 4, 3.2, 7);
   ctx.strokeRect(-1.6, 4, 3.2, 7);
   // Corps.
-  ctx.fillStyle = "#f4f7fa";
+  ctx.fillStyle = CANVAS_HEX.panel;
   ctx.fillRect(-3.5, -2.5, 7, 5);
   ctx.fillStyle = sc.color;
   ctx.fillRect(1.5, -1.2, 2, 2.4);
@@ -396,7 +397,7 @@ function drawSpacecraft(ctx: CanvasRenderingContext2D, view: View, sc: Spacecraf
   ctx.fillStyle = sc.color;
   ctx.fillText(sc.name, sat.x + 15 * outward, sat.y - 4);
   ctx.font = `400 10px ${font}`;
-  ctx.fillStyle = "rgb(185 198 216 / 0.9)";
+  ctx.fillStyle = `rgb(${CANVAS_RGB.labelMuted} / 0.9)`;
   ctx.fillText(sc.platforms, sat.x + 15 * outward, sat.y + 9);
   ctx.textAlign = "left";
 }
