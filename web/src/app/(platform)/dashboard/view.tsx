@@ -1,26 +1,33 @@
 "use client";
 
+import { Microscope, Pulse } from "@phosphor-icons/react/dist/ssr";
 import { useRouter } from "next/navigation";
 
-import { FireMap, FlaggedMonths, FrpDistribution, MoreLink, RegionBars, SatelliteCounts, StatSkeleton } from "@/components/blocks";
+import { FireMap, FlaggedMonths, FrpDistribution, MoreLink, ReferenceGauge, RegionBars, StatSkeleton } from "@/components/blocks";
 import { SeasonalChart } from "@/components/charts";
-import { ChartSkeleton, ErrorState, InfoTip, Notice, PageHeader, Panel, PanelHeader, ReliabilityBadge, SensorMark, Skeleton, SourceNote, StatusBadge } from "@/components/ui";
+import { pageIcon } from "@/components/shell/shell";
+import { ChartSkeleton, Disclosure, ErrorState, InfoTip, Notice, PageHeader, Panel, PanelHeader, ReliabilityBadge, SensorMark, Skeleton, SourceNote, StatusBadge } from "@/components/ui";
 import { zoneLabel } from "@/components/shell/pickers";
 import { useCalendar, useGrid, useMetadata, useOverview, useRegions } from "@/lib/api";
 import { fmtCoord, fmtDateShort, fmtDelta, fmtInt, fmtPct, fmtPeriod, MONTHS } from "@/lib/format";
 import { CONF_LABEL, DEFINITIONS, SATELLITES } from "@/lib/labels";
+import { SATELLITE_KEYS } from "@/lib/types";
 import { useFilters } from "@/state/filters";
 
-function Tile({ label, help, children, className, tour }: { label: string; help?: string; children: React.ReactNode; className?: string; tour?: string }) {
-  return (
-    <Panel className={`flex flex-col gap-3 p-5 ${className ?? ""}`} data-tour={tour}>
-      <p className="flex items-center gap-1 text-[12.5px] font-medium text-ink-2">
-        {label}
-        {help ? <InfoTip text={help} /> : null}
-      </p>
-      {children}
-    </Panel>
-  );
+/** Phrase de lecture du verdict, en langage courant. */
+function verdict(status: string | undefined): string {
+  switch (status) {
+    case "strong_high":
+      return "Nettement plus d'activité détectée que d'habitude à ces dates.";
+    case "high":
+      return "Plus d'activité détectée que d'habitude à ces dates.";
+    case "low":
+      return "Moins d'activité détectée que d'habitude à ces dates.";
+    case "normal":
+      return "Une activité dans la norme de ces dates.";
+    default:
+      return "Pas assez de références pour juger si c'est habituel.";
+  }
 }
 
 export function DashboardView() {
@@ -43,10 +50,11 @@ export function DashboardView() {
   return (
     <>
       <PageHeader
+        icon={pageIcon("/dashboard")}
         title="Vue d'ensemble"
         lead={
           <>
-            Activité des feux détectée par satellite pour <span className="text-ink">{zoneName}</span>, {fmtPeriod(from, to).toLowerCase()}. Tous les chiffres sont calculés à partir des fichiers NASA FIRMS chargés.
+            Ce que les satellites ont détecté pour <span className="font-medium text-ink">{zoneName}</span>, {fmtPeriod(from, to).toLowerCase()}, et si c'est habituel.
           </>
         }
       />
@@ -57,80 +65,115 @@ export function DashboardView() {
         </Panel>
       ) : null}
 
-      {/* Indicateurs cles */}
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-12">
-        <Tile label="Indice harmonisé d'activité" help={DEFINITIONS.index} className="xl:col-span-5" tour="kpi-index">
-          {o ? (
-            <div className="flex flex-col gap-3">
-              <p className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-                <span className="num text-[38px] font-semibold leading-none tracking-[-0.03em] text-ink">{fmtInt(o.harmonized)}</span>
-                <span className="text-[13px] text-ink-3">cellules-jour actives</span>
-              </p>
-              {o.window ? (
-                <>
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                    <StatusBadge status={o.window.status} long />
-                    <ReliabilityBadge reliability={o.window.reliability} />
-                  </div>
-                  <p className="text-[13px] leading-relaxed text-ink-2">
-                    {o.window.median !== null && o.window.referenceCount > 0 ? (
-                      <>
-                        Médiane des mêmes dates sur {o.window.referenceCount} autres années : <span className="num text-ink">{fmtInt(o.window.median)}</span>, soit un écart de{" "}
-                        <span className="num text-ink">{fmtDelta(o.harmonized, o.window.median)}</span>.
-                      </>
-                    ) : (
-                      "Aucune année de référence complète pour ces dates."
-                    )}
+      {/* Le verdict : la valeur, sa place dans l'historique, et l'annee mois par mois. */}
+      <Panel className="overflow-hidden">
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,400px)_minmax(0,1fr)]">
+          <div className="flex flex-col gap-5 border-b border-line/70 p-6 xl:border-b-0 xl:border-r" data-tour="kpi-index">
+            <p className="flex items-center gap-1 text-[13px] font-medium text-ink-2">
+              Indice harmonisé d'activité
+              <InfoTip text={DEFINITIONS.index} />
+            </p>
+            {o ? (
+              <>
+                <div>
+                  <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span className="num text-[52px] font-semibold leading-[0.95] tracking-[-0.045em] text-ink md:text-[60px]">{fmtInt(o.harmonized)}</span>
+                    <span className="text-[14px] text-ink-3">cellules-jour actives</span>
                   </p>
-                </>
-              ) : (
-                <p className="text-[13px] leading-relaxed text-ink-2">Période de plus d'un an : la comparaison saisonnière ne s'applique pas. Consultez le calendrier pour comparer les années entre elles.</p>
-              )}
-              {o.estimatedShare > 0 ? (
-                <p className="text-[12.5px] text-ink-3">
-                  {fmtPct(o.estimatedShare)} de la valeur est estimée depuis MODIS. Intervalle de calage : <span className="num">{fmtInt(o.low)}</span> à <span className="num">{fmtInt(o.high)}</span>.
-                </p>
-              ) : null}
-            </div>
-          ) : (
-            <StatSkeleton />
-          )}
-        </Tile>
-
-        <Tile label="Détections natives par satellite" help={DEFINITIONS.detection} className="xl:col-span-4">
-          {o ? (
-            <>
-              <SatelliteCounts detections={o.detections} eligible={o.eligible} />
-              <p className="text-[12px] leading-relaxed text-ink-3">Ces nombres ne s'additionnent pas : les satellites observent en partie les mêmes feux, avec des pixels de taille différente.</p>
-            </>
-          ) : (
-            <StatSkeleton />
-          )}
-        </Tile>
-
-        <Tile label="Observation et qualité" className="md:col-span-2 xl:col-span-3">
-          {o ? (
-            <dl className="flex flex-col text-[13px]">
-              {(
-                [
-                  ["Jours couverts", `${fmtInt(o.days - o.unobservedDays)} sur ${fmtInt(o.days)}`],
-                  ["Interruptions de capteur", o.gaps.length === 0 ? "aucune" : String(o.gaps.length)],
-                  ["Sources statiques écartées", fmtPct(totalDetections ? Object.values(o.staticSources).reduce((a, b) => a + b, 0) / totalDetections : 0)],
-                  ["Confiance faible écartée", fmtPct(totalDetections ? Object.values(o.lowConfidence).reduce((a, b) => a + b, 0) / totalDetections : 0)],
-                  ["Cellules actives", fmtInt(o.activeCells)],
-                ] as const
-              ).map(([label, value]) => (
-                <div key={label} className="flex items-baseline justify-between gap-3 border-b border-line py-1.5 last:border-b-0">
-                  <dt className="text-ink-3">{label}</dt>
-                  <dd className="num text-ink">{value}</dd>
+                  {o.window ? <p className="mt-3 text-[15px] leading-snug text-ink">{verdict(o.window.status)}</p> : null}
                 </div>
-              ))}
-            </dl>
+                {o.window ? (
+                  <>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                      <StatusBadge status={o.window.status} />
+                      <ReliabilityBadge reliability={o.window.reliability} />
+                    </div>
+                    <ReferenceGauge a={o.window} />
+                    <p className="text-[13px] leading-relaxed text-ink-2">
+                      {o.window.median !== null && o.window.referenceCount > 0 ? (
+                        <>
+                          Médiane des mêmes dates sur {o.window.referenceCount} autres années : <span className="num text-ink">{fmtInt(o.window.median)}</span>, soit un écart de{" "}
+                          <span className="num text-ink">{fmtDelta(o.harmonized, o.window.median)}</span>.
+                        </>
+                      ) : (
+                        "Aucune année de référence complète pour ces dates."
+                      )}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-[13px] leading-relaxed text-ink-2">Période de plus d'un an : la comparaison saisonnière ne s'applique pas. Consultez le calendrier pour comparer les années entre elles.</p>
+                )}
+                {o.estimatedShare > 0 ? (
+                  <p className="text-[12.5px] leading-relaxed text-ink-3">
+                    {fmtPct(o.estimatedShare)} de la valeur est estimée depuis MODIS. Intervalle de calage : <span className="num">{fmtInt(o.low)}</span> à <span className="num">{fmtInt(o.high)}</span>.
+                  </p>
+                ) : null}
+              </>
+            ) : (
+              <StatSkeleton />
+            )}
+          </div>
+
+          <div className="flex min-w-0 flex-col">
+            <PanelHeader
+              title={`${year}, mois par mois`}
+              subtitle={
+                critical.length ? (
+                  <>Mois habituellement les plus actifs ici : {critical.map((m) => MONTHS[m - 1]).join(", ")}.</>
+                ) : (
+                  "Indice mensuel, comparé à la médiane du même mois les autres années."
+                )
+              }
+              help={DEFINITIONS.anomaly}
+              actions={<MoreLink href="/calendar">Calendrier complet</MoreLink>}
+            />
+            <div className="flex-1">
+              {calendar.error ? (
+                <ErrorState error={calendar.error} onRetry={() => calendar.mutate()} compact />
+              ) : calendar.data ? (
+                <SeasonalChart months={calendar.data.months} baselines={calendar.data.baselines} year={year} />
+              ) : (
+                <ChartSkeleton />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Ce que chaque satellite a vu : des comptes separes, jamais additionnes. */}
+        <div className="border-t border-line/70">
+          <div className="flex flex-wrap items-center justify-between gap-2 px-6 pt-4">
+            <p className="flex items-center gap-1 text-[13px] font-medium text-ink-2">
+              Détections natives par satellite
+              <InfoTip text={DEFINITIONS.detection} />
+            </p>
+            <p className="text-[12px] text-ink-3">Ces nombres ne s'additionnent pas : les satellites voient en partie les mêmes feux.</p>
+          </div>
+          {o ? (
+            <ul className="grid grid-cols-2 gap-px px-6 pb-5 pt-3 md:grid-cols-4">
+              {SATELLITE_KEYS.map((key) => {
+                const s = SATELLITES[key];
+                return (
+                  <li key={key} className="min-w-0 py-1 md:border-l md:border-line/70 md:pl-5 md:first:border-l-0 md:first:pl-0">
+                    <p className="flex items-center gap-1.5 text-[12px] text-ink-3">
+                      <SensorMark color={s.color} shape={s.shape} size={9} />
+                      <span className="truncate">
+                        {s.sensor} {s.name}
+                      </span>
+                    </p>
+                    <p className="num mt-1 text-[22px] font-medium leading-tight tracking-[-0.02em] text-ink">{fmtInt(o.detections[key])}</p>
+                    <p className="num text-[11.5px] text-ink-3">dont {fmtInt(o.eligible[key])} retenues</p>
+                  </li>
+                );
+              })}
+            </ul>
           ) : (
-            <StatSkeleton />
+            <div className="px-6 pb-5 pt-3">
+              <Skeleton className="h-12 w-full" />
+            </div>
           )}
-        </Tile>
-      </div>
+        </div>
+        <SourceNote provenance={calendar.data?.provenance} extra="Unité : cellules-jour actives, équivalent Suomi-NPP." />
+      </Panel>
 
       {o && o.unobservedDays > 0 ? (
         <Notice tone="warning" title="Période partiellement observée">
@@ -143,57 +186,42 @@ export function DashboardView() {
         </Notice>
       ) : null}
 
-      {/* Saison et carte */}
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
-        <Panel className="xl:col-span-7">
-          <PanelHeader
-            title={`${year} par rapport à la saison habituelle`}
-            subtitle={
-              critical.length ? (
-                <>
-                  Mois habituellement critiques pour cette zone : {critical.map((m) => MONTHS[m - 1]).join(", ")}.
-                </>
-              ) : (
-                "Indice harmonisé mensuel, comparé à la médiane du même mois les autres années."
-              )
-            }
-            help={DEFINITIONS.anomaly}
-            actions={<MoreLink href="/calendar">Calendrier complet</MoreLink>}
-          />
-          {calendar.error ? (
-            <ErrorState error={calendar.error} onRetry={() => calendar.mutate()} compact />
-          ) : calendar.data ? (
-            <SeasonalChart months={calendar.data.months} baselines={calendar.data.baselines} year={year} />
-          ) : (
-            <ChartSkeleton />
-          )}
-          <SourceNote provenance={calendar.data?.provenance} extra="Unité : cellules-jour actives, équivalent Suomi-NPP." />
-        </Panel>
-
-        <Panel className="flex flex-col xl:col-span-5">
-          <PanelHeader
-            title="Où l'activité se concentre"
-            subtitle="Jours actifs harmonisés par cellule de 0,05°, sur la période."
-            actions={<MoreLink href="/map">Ouvrir la carte</MoreLink>}
-          />
-          <div className="relative mx-5 mb-4 mt-3 min-h-[300px] flex-1 overflow-hidden rounded-control border border-line">
-            {grid.error ? (
-              <ErrorState error={grid.error} onRetry={() => grid.mutate()} compact />
-            ) : (
-              <FireMap mode="grid" points={undefined} grid={grid.data} zone={zone} passive className="absolute inset-0" />
-            )}
+      {/* Ou, et quand ca sort de l'ordinaire */}
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+        <Panel className="flex flex-col xl:col-span-7" interactive>
+          <PanelHeader title="Où l'activité se concentre" subtitle="Jours actifs harmonisés par cellule d'environ 5 km, sur la période." actions={<MoreLink href="/map">Ouvrir la carte</MoreLink>} />
+          <div className="relative mx-5 mb-4 mt-3 min-h-[340px] flex-1 overflow-hidden rounded-control border border-line">
+            {grid.error ? <ErrorState error={grid.error} onRetry={() => grid.mutate()} compact /> : <FireMap mode="grid" points={undefined} grid={grid.data} zone={zone} passive className="absolute inset-0" />}
           </div>
           <SourceNote provenance={grid.data?.provenance} />
         </Panel>
+
+        <Panel className="flex flex-col xl:col-span-5">
+          <PanelHeader title="Mois sortis de l'ordinaire" subtitle="Les six derniers mois signalés pour cette zone, tous types d'écart." actions={<MoreLink href="/anomalies">Tout voir</MoreLink>} />
+          <div className="flex-1">
+            {calendar.error ? (
+              <ErrorState error={calendar.error} compact />
+            ) : calendar.data ? (
+              <FlaggedMonths months={flagged} onSelect={(m) => router.push(`/anomalies?m=${m.year}-${m.month}`)} empty="Aucun mois ne s'écarte de sa référence saisonnière pour cette zone." />
+            ) : (
+              <div className="flex flex-col gap-2 px-5 py-4">
+                {[0, 1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-7 w-full" />
+                ))}
+              </div>
+            )}
+          </div>
+          <p className="mx-5 mb-4 flex items-start gap-2 rounded-control bg-surface-2/70 px-3 py-2.5 text-[12px] leading-relaxed text-ink-3">
+            <Pulse size={15} className="mt-px shrink-0 text-accent" />
+            Un écart statistique est un signal à vérifier. Ce n'est ni un incendie confirmé ni une prédiction.
+          </p>
+        </Panel>
       </div>
 
-      {/* Regions et periodes inhabituelles */}
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
-        <Panel className="xl:col-span-7">
-          <PanelHeader
-            title="Activité par province"
-            subtitle="Sélectionnez une province pour en faire la zone d'analyse. La densité est exprimée en cellules-jour pour 1 000 km²."
-          />
+      {/* Provinces et qualite de l'observation */}
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+        <Panel className="xl:col-span-8">
+          <PanelHeader title="Activité par province" subtitle="Touchez une province pour en faire la zone d'analyse. Densité en cellules-jour pour 1 000 km²." />
           {regions.error ? (
             <ErrorState error={regions.error} onRetry={() => regions.mutate()} compact />
           ) : regions.data ? (
@@ -211,110 +239,138 @@ export function DashboardView() {
           />
         </Panel>
 
-        <Panel className="xl:col-span-5">
-          <PanelHeader title="Dernières périodes inhabituelles" subtitle="Mois dont l'activité détectée s'écarte de la référence saisonnière." actions={<MoreLink href="/anomalies">Tout voir</MoreLink>} />
-          {calendar.error ? (
-            <ErrorState error={calendar.error} compact />
-          ) : calendar.data ? (
-            <FlaggedMonths months={flagged} onSelect={(m) => router.push(`/anomalies?m=${m.year}-${m.month}`)} empty="Aucun mois ne s'écarte de sa référence saisonnière pour cette zone." />
-          ) : (
-            <div className="flex flex-col gap-2 px-5 py-4">
-              {[0, 1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-7 w-full" />
+        <Panel className="xl:col-span-4">
+          <PanelHeader title="Qualité de l'observation" subtitle="Ce qui a été vu, et ce qui a été écarté du calcul." />
+          {o ? (
+            <dl className="flex flex-col gap-4 px-5 py-5">
+              <div>
+                <div className="flex items-baseline justify-between text-[13px]">
+                  <dt className="text-ink-2">Jours couverts par un capteur</dt>
+                  <dd className="num text-ink">
+                    {fmtInt(o.days - o.unobservedDays)} sur {fmtInt(o.days)}
+                  </dd>
+                </div>
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-3" aria-hidden>
+                  <div className="h-full rounded-full bg-good" style={{ width: `${((o.days - o.unobservedDays) / Math.max(o.days, 1)) * 100}%` }} />
+                </div>
+              </div>
+              {(
+                [
+                  ["Interruptions de capteur", o.gaps.length === 0 ? "aucune" : String(o.gaps.length)],
+                  ["Sources statiques écartées", fmtPct(totalDetections ? Object.values(o.staticSources).reduce((a, b) => a + b, 0) / totalDetections : 0)],
+                  ["Confiance faible écartée", fmtPct(totalDetections ? Object.values(o.lowConfidence).reduce((a, b) => a + b, 0) / totalDetections : 0)],
+                  ["Cellules actives", fmtInt(o.activeCells)],
+                ] as const
+              ).map(([label, value]) => (
+                <div key={label} className="flex items-baseline justify-between gap-3 text-[13px]">
+                  <dt className="text-ink-3">{label}</dt>
+                  <dd className="num text-ink">{value}</dd>
+                </div>
               ))}
+            </dl>
+          ) : (
+            <div className="px-5 py-5">
+              <StatSkeleton />
             </div>
           )}
-          <p className="border-t border-line px-5 py-2.5 text-[11.5px] leading-relaxed text-ink-3">Un écart statistique est un signal d'analyse. Ce n'est ni un incendie confirmé ni une prédiction.</p>
         </Panel>
       </div>
 
-      {/* Puissance radiative, confiance et dernieres observations */}
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
-        <Panel className="xl:col-span-5">
-          <PanelHeader title="Puissance radiative des détections" subtitle="Les capteurs ne mesurent pas la même chose : un pixel VIIRS est environ sept fois plus petit qu'un pixel MODIS." />
-          {o ? <FrpDistribution frp={o.frp} /> : <ChartSkeleton height={150} />}
-          <div className="border-t border-line px-5 py-3">
-            <p className="mb-2 text-[12px] font-medium text-ink-2">Niveaux de confiance natifs</p>
-            {o ? (
-              <ul className="flex flex-col gap-1.5">
-                {(Object.keys(SATELLITES) as (keyof typeof SATELLITES)[]).map((k) => {
-                  const c = o.confidence[k];
-                  const total = c.low + c.nominal + c.high;
-                  if (total === 0) return null;
-                  return (
-                    <li key={k} className="flex flex-wrap items-center gap-x-3 text-[12.5px] text-ink-2">
-                      <span className="flex w-[104px] items-center gap-1.5">
-                        <SensorMark color={SATELLITES[k].color} shape={SATELLITES[k].shape} size={8} />
-                        {SATELLITES[k].name}
-                      </span>
-                      {(["low", "nominal", "high"] as const).map((level) => (
-                        <span key={level} className="num">
-                          <span className="text-ink-3">{CONF_LABEL[level].toLowerCase()}</span> {fmtPct(c[level] / total)}
+      {/* Informations d'expert : disponibles, sans encombrer la lecture. */}
+      <Disclosure icon={<Microscope size={17} />} title="Détails pour spécialistes" summary="Puissance radiative, niveaux de confiance natifs et dernières détections de la période.">
+        <div className="grid grid-cols-1 xl:grid-cols-12">
+          <div className="border-line/70 xl:col-span-5 xl:border-r">
+            <PanelHeader title="Puissance radiative des détections" subtitle="Un pixel VIIRS est environ sept fois plus petit qu'un pixel MODIS : les valeurs ne se comparent pas directement." />
+            {o ? <FrpDistribution frp={o.frp} /> : <ChartSkeleton height={150} />}
+            <div className="border-t border-line/70 px-5 py-4">
+              <p className="mb-2.5 text-[12.5px] font-medium text-ink-2">Niveaux de confiance natifs</p>
+              {o ? (
+                <ul className="flex flex-col gap-2">
+                  {SATELLITE_KEYS.map((k) => {
+                    const c = o.confidence[k];
+                    const total = c.low + c.nominal + c.high;
+                    if (total === 0) return null;
+                    return (
+                      <li key={k} className="grid grid-cols-[104px_minmax(0,1fr)] items-center gap-3 text-[12px] text-ink-2">
+                        <span className="flex items-center gap-1.5">
+                          <SensorMark color={SATELLITES[k].color} shape={SATELLITES[k].shape} size={8} />
+                          {SATELLITES[k].name}
                         </span>
-                      ))}
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : (
-              <Skeleton className="h-16 w-full" />
-            )}
+                        <span className="flex h-5 overflow-hidden rounded-[4px] text-[10.5px]" title={`faible ${fmtPct(c.low / total)} · nominale ${fmtPct(c.nominal / total)} · élevée ${fmtPct(c.high / total)}`}>
+                          {(["low", "nominal", "high"] as const).map((level) => (
+                            <span
+                              key={level}
+                              className={`num flex items-center justify-center overflow-hidden whitespace-nowrap ${level === "low" ? "bg-surface-3 text-ink-3" : level === "nominal" ? "bg-line-strong text-ink-2" : "bg-ink-3 text-bg"}`}
+                              style={{ width: `${(c[level] / total) * 100}%` }}
+                            >
+                              {c[level] / total > 0.12 ? `${CONF_LABEL[level].toLowerCase()} ${fmtPct(c[level] / total)}` : ""}
+                            </span>
+                          ))}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <Skeleton className="h-16 w-full" />
+              )}
+            </div>
+            <SourceNote provenance={o?.provenance} extra="FRP en mégawatts, valeur native du produit. MODIS exprime la confiance en pourcentage, VIIRS en trois classes : les deux échelles ne sont pas converties l'une dans l'autre." />
           </div>
-          <SourceNote provenance={o?.provenance} extra="FRP en mégawatts, valeur native du produit. MODIS exprime la confiance en pourcentage, VIIRS en trois classes : les deux échelles ne sont pas converties l'une dans l'autre." />
-        </Panel>
 
-        <Panel className="xl:col-span-7">
-          <PanelHeader
-            title="Dernières observations de la période"
-            subtitle={o ? `Détections les plus récentes avant le ${fmtDateShort(o.to)}. Archive historique : ce n'est pas du temps réel.` : "Lecture des détections."}
-            actions={<MoreLink href="/map">Explorer</MoreLink>}
-          />
-          {o ? (
-            o.latest.length ? (
-              <div className="overflow-x-auto px-5 py-3">
-                <table className="w-full min-w-[520px] text-left text-[12.5px]">
-                  <thead>
-                    <tr className="text-[11.5px] text-ink-3">
-                      <th className="pb-2 font-normal">Date et heure (UTC)</th>
-                      <th className="pb-2 font-normal">Satellite</th>
-                      <th className="pb-2 font-normal">Position</th>
-                      <th className="pb-2 font-normal">Confiance</th>
-                      <th className="pb-2 text-right font-normal">FRP</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {o.latest.map((d) => (
-                      <tr key={d.id} className="border-t border-line">
-                        <td className="num py-1.5 text-ink">
-                          {fmtDateShort(d.date)} {d.time}
-                        </td>
-                        <td className="py-1.5">
-                          <span className="flex items-center gap-1.5 text-ink-2">
-                            <SensorMark color={SATELLITES[d.satellite].color} shape={SATELLITES[d.satellite].shape} size={8} />
-                            {SATELLITES[d.satellite].name}
-                          </span>
-                        </td>
-                        <td className="num py-1.5 text-ink-2">
-                          {fmtCoord(d.lat)}, {fmtCoord(d.lon)}
-                        </td>
-                        <td className="py-1.5 text-ink-2">
-                          {CONF_LABEL[d.confidenceClass]} <span className="num text-ink-3">({d.confidenceNative.split(" ")[0]})</span>
-                        </td>
-                        <td className="num py-1.5 text-right text-ink-2">{d.frp === null ? "indisponible" : `${fmtInt(d.frp)} MW`}</td>
+          <div className="border-t border-line/70 xl:col-span-7 xl:border-t-0">
+            <PanelHeader
+              title="Dernières détections de la période"
+              subtitle={o ? `Les plus récentes avant le ${fmtDateShort(o.to)}. Archive historique : ce n'est pas du temps réel.` : "Lecture des détections."}
+              actions={<MoreLink href="/map">Explorer la carte</MoreLink>}
+            />
+            {o ? (
+              o.latest.length ? (
+                <div className="overflow-x-auto px-5 py-3">
+                  <table className="w-full min-w-[520px] text-left text-[12.5px]">
+                    <thead>
+                      <tr className="text-[11.5px] text-ink-3">
+                        <th className="pb-2 font-normal">Date et heure (UTC)</th>
+                        <th className="pb-2 font-normal">Satellite</th>
+                        <th className="pb-2 font-normal">Position</th>
+                        <th className="pb-2 font-normal">Confiance</th>
+                        <th className="pb-2 text-right font-normal">FRP</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {o.latest.map((d) => (
+                        <tr key={d.id} className="border-t border-line/60 transition-colors hover:bg-surface-2/60">
+                          <td className="num py-2 text-ink">
+                            {fmtDateShort(d.date)} {d.time}
+                          </td>
+                          <td className="py-2">
+                            <span className="flex items-center gap-1.5 text-ink-2">
+                              <SensorMark color={SATELLITES[d.satellite].color} shape={SATELLITES[d.satellite].shape} size={8} />
+                              {SATELLITES[d.satellite].name}
+                            </span>
+                          </td>
+                          <td className="num py-2 text-ink-2">
+                            {fmtCoord(d.lat)}, {fmtCoord(d.lon)}
+                          </td>
+                          <td className="py-2 text-ink-2">
+                            {CONF_LABEL[d.confidenceClass]} <span className="num text-ink-3">({d.confidenceNative.split(" ")[0]})</span>
+                          </td>
+                          <td className="num py-2 text-right text-ink-2">{d.frp === null ? "indisponible" : `${fmtInt(d.frp)} MW`}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="px-5 py-6 text-[13px] text-ink-3">Aucune détection sur cette zone et cette période.</p>
+              )
             ) : (
-              <p className="px-5 py-6 text-[13px] text-ink-3">Aucune détection sur cette zone et cette période.</p>
-            )
-          ) : (
-            <ChartSkeleton height={200} />
-          )}
-          <SourceNote provenance={o?.provenance} />
-        </Panel>
-      </div>
+              <ChartSkeleton height={200} />
+            )}
+            <SourceNote provenance={o?.provenance} />
+          </div>
+        </div>
+      </Disclosure>
     </>
   );
 }

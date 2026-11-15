@@ -1,14 +1,15 @@
 "use client";
 
-import { CalendarCheck, DownloadSimple, MapTrifold } from "@phosphor-icons/react/dist/ssr";
+import { CalendarCheck, CursorClick, DownloadSimple, MapTrifold, X } from "@phosphor-icons/react/dist/ssr";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { AssessmentDetail, KindNote, SatelliteCounts } from "@/components/blocks";
 import { AnnualChart, ClimatologyChart, SeasonalChart } from "@/components/charts";
 import { DayHeatmap, HeatmapKey, MonthHeatmap, ScaleLegend, WeekHeatmap, activityBreaks, dailyIndex, weeklyRows, type HeatMode } from "@/components/heatmaps";
 import { zoneLabel } from "@/components/shell/pickers";
-import { Button, ChartSkeleton, EmptyState, ErrorState, Notice, PageHeader, Panel, PanelHeader, Segmented, SourceNote, buttonClass, cx, inputClass } from "@/components/ui";
+import { pageIcon } from "@/components/shell/shell";
+import { Button, ChartSkeleton, ErrorState, Notice, PageHeader, Panel, PanelHeader, Segmented, SourceNote, buttonClass, cx, inputClass } from "@/components/ui";
 import { exportUrl, useCalendar, useDaily, useMetadata } from "@/lib/api";
 import { fmtDate, fmtInt, lastDayOfMonth, MONTHS, monthLabel, pad2 } from "@/lib/format";
 import { CONFIG_LABEL, DEFINITIONS, UNIT } from "@/lib/labels";
@@ -78,13 +79,30 @@ export function CalendarView() {
   const monthRange = (y: number, m: number): [string, string] => [`${y}-${pad2(m)}-01`, `${y}-${pad2(m)}-${pad2(lastDayOfMonth(y, m))}`];
   const selectedInPeriod = (a: string, b: string) => from === a && to === b;
 
+  // Une selection fait apparaitre son detail sous la grille : on l'amene dans le champ de vision.
+  const detail = useRef<HTMLDivElement>(null);
+  const selectionKey = granularity === "month" || granularity === "year" ? (record ? `${record.year}-${record.month}` : null) : span ? `${span.from}/${span.to}` : null;
+  useEffect(() => {
+    if (!selectionKey) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.setTimeout(() => detail.current?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "nearest" }), 60);
+  }, [selectionKey]);
+  const clearSelection = () => (granularity === "month" || granularity === "year" ? setMonth(null) : setSpan(null));
+  const hint = (text: string) => (
+    <p className="flex items-center gap-2 rounded-control bg-surface-2/70 px-3 py-2 text-[12.5px] text-ink-2">
+      <CursorClick size={15} className="shrink-0 text-accent" />
+      {text}
+    </p>
+  );
+
   return (
     <>
       <PageHeader
+        icon={pageIcon("/calendar")}
         title="Calendrier d'activité"
         lead={
           <>
-            Vingt-cinq ans de détections MODIS et VIIRS ramenées à une même unité pour <span className="text-ink">{zoneName}</span>. Quels mois et quelles années ont été les plus actifs, et lesquels sortent de l'ordinaire.
+            Vingt-cinq ans d'activité détectée pour <span className="font-medium text-ink">{zoneName}</span>, dans une même unité. Repérez la saison, comparez les années, ouvrez un mois.
           </>
         }
         actions={
@@ -162,11 +180,12 @@ export function CalendarView() {
                 <ScaleLegend mode={mode} breaks={monthBreaks} unit="Cellules-jour actives par mois" />
                 <HeatmapKey mode={mode} />
               </div>
+              {record ? null : hint("Touchez une case pour afficher son détail : valeur, référence, score et fiabilité.")}
             </div>
           ) : granularity === "year" ? (
             <div className="-mx-5">
               <AnnualChart years={data.years} highlight={month?.year} onSelect={(y) => (setDayYear(y), setGranularity("day"))} height={340} />
-              <p className="px-5 pt-1 text-[12px] text-ink-3">Cliquez sur une année pour l'ouvrir jour par jour.</p>
+              <div className="px-5 pt-2">{hint("Touchez une année pour l'ouvrir jour par jour.")}</div>
             </div>
           ) : daily.error ? (
             <ErrorState error={daily.error} onRetry={() => daily.mutate()} />
@@ -179,6 +198,7 @@ export function CalendarView() {
                 <ScaleLegend mode="activity" breaks={dayBreaks} unit="Cellules-jour actives par jour" />
                 <p className="text-[11.5px] text-ink-3">Hachures : aucun capteur en service ce jour. Une case sombre signifie « aucune détection retenue », pas « aucun feu ».</p>
               </div>
+              {span ? null : hint("Touchez un jour pour sa valeur et un accès direct à la carte.")}
             </div>
           ) : (
             <div className="flex flex-col gap-4">
@@ -187,6 +207,7 @@ export function CalendarView() {
                 <ScaleLegend mode="activity" breaks={weekBreaks} unit="Cellules-jour actives par semaine" />
                 <p className="text-[11.5px] text-ink-3">Hachures : semaine incomplètement observée ou hors couverture.</p>
               </div>
+              {span ? null : hint("Touchez une semaine pour sa valeur et un accès direct à la carte.")}
             </div>
           )}
         </div>
@@ -194,15 +215,20 @@ export function CalendarView() {
       </Panel>
 
       {/* Detail de la selection */}
+      <div ref={detail} className="scroll-mt-24 empty:hidden">
       {granularity === "month" || granularity === "year" ? (
-        <Panel>
-          {record && data ? (
+        record && data ? (
+        <Panel key={selectionKey} className="animate-fade-up">
+          {(
             <>
               <PanelHeader
                 title={monthLabel(record.month, record.year).replace(/^./, (c) => c.toUpperCase())}
                 subtitle={`Comparé au mois de ${MONTHS[record.month - 1]} des autres années, pour ${zoneName}.`}
                 actions={
                   <>
+                    <Button size="sm" variant="ghost" onClick={clearSelection} aria-label="Fermer le détail">
+                      <X size={15} />
+                    </Button>
                     <Button size="sm" onClick={() => setPeriod(...monthRange(record.year, record.month))} disabled={selectedInPeriod(...monthRange(record.year, record.month))}>
                       <CalendarCheck size={15} />
                       {selectedInPeriod(...monthRange(record.year, record.month)) ? "Période active" : "Utiliser comme période"}
@@ -230,21 +256,21 @@ export function CalendarView() {
                 </div>
               </div>
             </>
-          ) : (
-            <EmptyState title="Sélectionnez un mois dans le calendrier">
-              Le détail affiche la valeur, la référence saisonnière, le score d'écart, sa fiabilité et les détections natives de chaque satellite.
-            </EmptyState>
           )}
         </Panel>
-      ) : (
-        <Panel>
-          {span && spanSummary ? (
+        ) : null
+      ) : span && spanSummary ? (
+        <Panel key={selectionKey} className="animate-fade-up">
+          {(
             <>
               <PanelHeader
                 title={span.from === span.to ? fmtDate(span.from).replace(/^./, (c) => c.toUpperCase()) : `Du ${fmtDate(span.from)} au ${fmtDate(span.to)}`}
                 subtitle={`Indice harmonisé pour ${zoneName}.`}
                 actions={
                   <>
+                    <Button size="sm" variant="ghost" onClick={clearSelection} aria-label="Fermer le détail">
+                      <X size={15} />
+                    </Button>
                     <Button size="sm" onClick={() => setPeriod(span.from, span.to)} disabled={selectedInPeriod(span.from, span.to)}>
                       <CalendarCheck size={15} />
                       {selectedInPeriod(span.from, span.to) ? "Période active" : "Utiliser comme période"}
@@ -272,16 +298,15 @@ export function CalendarView() {
                 </Notice>
               </div>
             </>
-          ) : (
-            <EmptyState title={granularity === "day" ? "Sélectionnez un jour" : "Sélectionnez une semaine"}>La valeur, le capteur qui l'alimente et un accès direct à la carte s'affichent ici.</EmptyState>
           )}
         </Panel>
-      )}
+      ) : null}
+      </div>
 
       {/* Saisonnalite : periodes critiques */}
       <Panel>
         <PanelHeader
-          title="Saison habituelle : les mois critiques de la zone"
+          title="La saison habituelle"
           subtitle={
             data
               ? data.criticalMonths.length

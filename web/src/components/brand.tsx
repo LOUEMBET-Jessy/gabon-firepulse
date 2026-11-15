@@ -38,13 +38,19 @@ export function Wordmark({ className }: { className?: string }) {
 }
 
 /** Symbole de l'assistant : le meme point, entoure d'un halo de dialogue. */
-export function AssistantMark({ size = 28, className }: { size?: number; className?: string }) {
+/**
+ * Marque de l'assistant. `animated` fait tourner l'orbite (le satellite autour du point detecte) :
+ * reserve aux moments ou l'assistant travaille, pour que le mouvement signifie quelque chose.
+ */
+export function AssistantMark({ size = 28, className, animated }: { size?: number; className?: string; animated?: boolean }) {
   return (
     <svg width={size} height={size} viewBox="0 0 28 28" aria-hidden className={className}>
       <circle cx="14" cy="14" r="13.5" fill="#0b1830" stroke="#12bfd2" strokeOpacity="0.7" />
-      <circle cx="14" cy="14" r="8.5" fill="none" stroke="#12bfd2" strokeOpacity="0.35" strokeDasharray="2.2 2.6" />
+      <g className={animated ? "assistant-orbit" : undefined}>
+        <circle cx="14" cy="14" r="8.5" fill="none" stroke="#12bfd2" strokeOpacity="0.35" strokeDasharray="2.2 2.6" />
+        <circle cx="21.4" cy="7.4" r="1.7" fill="#2fbf7e" />
+      </g>
       <circle cx="14" cy="14" r="3.6" fill="#f59e0b" />
-      <circle cx="21.4" cy="7.4" r="1.7" fill="#2fbf7e" />
     </svg>
   );
 }

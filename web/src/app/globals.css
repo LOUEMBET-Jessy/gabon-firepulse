@@ -78,6 +78,14 @@
       transform: translateY(0);
     }
   }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
   @keyframes shimmer {
     from {
       background-position: 200% 0;
@@ -149,6 +157,99 @@ body {
     animation: none;
     offset-distance: 55%;
   }
+}
+
+/*
+ * Entree d'ecran : les blocs d'une page apparaissent l'un apres l'autre, du haut vers le bas.
+ * Motif : indiquer l'ordre de lecture au changement d'ecran. Une seule fois, au montage.
+ */
+.stagger > * {
+  animation: fade-up 0.55s var(--ease-out-expo) both;
+}
+.stagger > *:nth-child(2) {
+  animation-delay: 50ms;
+}
+.stagger > *:nth-child(3) {
+  animation-delay: 100ms;
+}
+.stagger > *:nth-child(4) {
+  animation-delay: 150ms;
+}
+.stagger > *:nth-child(5) {
+  animation-delay: 200ms;
+}
+.stagger > *:nth-child(n + 6) {
+  animation-delay: 250ms;
+}
+
+/* Orbite de la marque de l'assistant, pendant qu'il travaille. */
+.assistant-orbit {
+  transform-box: view-box;
+  transform-origin: 14px 14px;
+  animation: voice-spin 2.4s linear infinite;
+}
+
+/* Trois points d'attente de l'assistant. */
+.thinking-dot {
+  animation: thinking 1.1s ease-in-out infinite;
+}
+@keyframes thinking {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+/* Panneau interactif : la bordure s'eclaire au survol, la surface ne bouge pas (lisibilite des donnees). */
+.panel-hover {
+  transition: border-color 0.2s var(--ease-out-expo), background-color 0.2s var(--ease-out-expo);
+}
+.panel-hover:hover {
+  border-color: var(--color-line-strong);
+}
+
+/* Ouverture d'un bloc repliable : la hauteur suit le contenu (grille 0fr vers 1fr). */
+.collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s var(--ease-out-expo);
+}
+.collapse[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+.collapse > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Fond de l'ecran : halo tres discret en haut, comme une orbite eclairee. Fixe, sans repaint au defilement. */
+.orbit-glow::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 420px;
+  pointer-events: none;
+  background: radial-gradient(60% 100% at 70% 0%, rgb(18 191 210 / 0.07), transparent 70%);
+  z-index: 0;
+}
+
+/* Ascenseurs masques pour les rubans horizontaux (navigation, suggestions). */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Fondu sur les bords d'un ruban defilant : indique qu'il continue. */
+.fade-x {
+  mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 28px), transparent);
 }
 
 /* Conversation vocale : pulsation pendant la parole, rotation pendant le traitement. */
@@ -258,6 +359,7 @@ body {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
@@ -278,7 +380,8 @@ body {
     background: #fff !important;
     color: #111 !important;
   }
-  .no-print {
+  .no-print,
+  .orbit-glow::before {
     display: none !important;
   }
   .print-root {
@@ -293,6 +396,9 @@ body {
     --color-ink-3: #5b667a;
     --color-heat-0: #f1f3f8;
     color: #10151f;
+  }
+  .collapse {
+    grid-template-rows: 1fr !important;
   }
   .print-break {
     break-before: page;

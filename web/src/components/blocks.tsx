@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
+import { motion, useReducedMotion } from "motion/react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 
@@ -28,16 +29,23 @@ export function MoreLink({ href, children }: { href: string; children: React.Rea
 
 /** Activite par province : barres horizontales, densite et statut saisonnier. */
 export function RegionBars({ regions, onSelect, activeIndex }: { regions: RegionRecord[]; onSelect?: (index: number) => void; activeIndex?: number | null }) {
+  const reduce = useReducedMotion();
   const sorted = [...regions].sort((a, b) => b.harmonized - a.harmonized);
   const max = Math.max(...sorted.map((r) => r.harmonized), 1);
   return (
     <ul className="flex flex-col px-5 py-3">
-      {sorted.map((r) => {
+      {sorted.map((r, i) => {
+        const active = activeIndex === r.index;
         const row = (
           <>
-            <span className="w-[128px] shrink-0 truncate text-left text-[13px] text-ink">{r.name}</span>
+            <span className={cx("w-[128px] shrink-0 truncate text-left text-[13px]", active ? "font-medium text-accent-strong" : "text-ink")}>{r.name}</span>
             <span className="relative h-4 min-w-0 flex-1">
-              <span className="absolute inset-y-[3px] left-0 rounded-r-[3px] bg-heat-5" style={{ width: `${Math.max((r.harmonized / max) * 100, r.harmonized > 0 ? 0.8 : 0)}%` }} />
+              <motion.span
+                initial={reduce ? false : { width: 0 }}
+                animate={{ width: `${Math.max((r.harmonized / max) * 100, r.harmonized > 0 ? 0.8 : 0)}%` }}
+                transition={{ duration: 0.7, delay: 0.1 + i * 0.04, ease: [0.16, 1, 0.3, 1] }}
+                className={cx("absolute inset-y-[3px] left-0 rounded-r-[3px] transition-colors", active ? "bg-heat-6" : "bg-heat-5 group-hover:bg-heat-6")}
+              />
             </span>
             <span className="num w-[52px] shrink-0 text-right text-[12.5px] text-ink">{fmtInt(r.harmonized)}</span>
             <span className="num hidden w-[46px] shrink-0 text-right text-[12px] text-ink-3 sm:block">{fmtPct(r.share)}</span>
@@ -53,8 +61,8 @@ export function RegionBars({ regions, onSelect, activeIndex }: { regions: Region
               <button
                 type="button"
                 onClick={() => onSelect(r.index)}
-                aria-pressed={activeIndex === r.index}
-                className={cx("flex w-full items-center gap-3 rounded-[6px] px-1.5 py-1.5 transition-colors hover:bg-surface-2", activeIndex === r.index && "bg-surface-2")}
+                aria-pressed={active}
+                className={cx("group flex w-full items-center gap-3 rounded-[8px] px-1.5 py-1.5 transition-colors hover:bg-surface-2", active && "bg-surface-2 shadow-[inset_0_0_0_1px_var(--color-line-strong)]")}
               >
                 {row}
               </button>
@@ -158,12 +166,13 @@ export function FlaggedMonths({ months, onSelect, empty }: { months: MonthRecord
               {fmtInt(m.harmonized)} <span className="text-ink-3">pour {fmtInt(m.assessment.median)}</span>
             </span>
             <span className="num hidden w-[52px] shrink-0 text-right text-[12.5px] text-ink sm:block">{m.assessment.median ? fmtDelta(m.harmonized, m.assessment.median) : ""}</span>
+            {onSelect ? <ArrowRight size={13} weight="bold" className="-ml-1 shrink-0 text-ink-3 opacity-0 transition-[opacity,transform] duration-200 group-hover:translate-x-0.5 group-hover:opacity-100" /> : null}
           </>
         );
         return (
           <li key={`${m.year}-${m.month}`}>
             {onSelect ? (
-              <button type="button" onClick={() => onSelect(m)} className="flex w-full items-center gap-3 rounded-[6px] px-2 py-1.5 transition-colors hover:bg-surface-2" aria-label={`Ouvrir ${monthLabel(m.month, m.year)}`}>
+              <button type="button" onClick={() => onSelect(m)} className="group flex w-full items-center gap-3 rounded-[8px] px-2 py-2 transition-colors hover:bg-surface-2" aria-label={`Ouvrir ${monthLabel(m.month, m.year)}`}>
                 {body}
               </button>
             ) : (
@@ -223,6 +232,59 @@ export function KindNote({ month }: { month: MonthRecord }) {
     <p className="text-[12.5px] leading-relaxed text-ink-3">
       <span className="text-ink-2">{KIND_LABEL[month.kind].label}.</span> {KIND_LABEL[month.kind].detail}
     </p>
+  );
+}
+
+/**
+ * Ou se place la valeur dans son historique : etendue des annees de reference (trait), plage habituelle
+ * du 1er au 3e quartile (bande), mediane (repere) et valeur de la periode (pastille).
+ * La pastille glisse depuis la mediane jusqu'a sa position : le mouvement montre l'ecart.
+ */
+export function ReferenceGauge({ a, unit = "cellules-jour" }: { a: AnomalyAssessment; unit?: string }) {
+  const reduce = useReducedMotion();
+  if (a.median === null || a.q25 === null || a.q75 === null || a.referenceMin === null || a.referenceMax === null) return null;
+  const lo = Math.min(a.referenceMin, a.value);
+  const hi = Math.max(a.referenceMax, a.value);
+  const span = hi - lo || 1;
+  const pct = (v: number) => ((v - lo) / span) * 100;
+  const above = a.value > a.q75;
+  const below = a.value < a.q25;
+  const color = above ? (a.status === "strong_high" ? "var(--color-critical)" : "var(--color-warning)") : below ? "var(--color-div-n2)" : "var(--color-ink)";
+  return (
+    <figure className="flex flex-col gap-2" aria-label={`Valeur ${fmtInt(a.value)} ${unit} ; plage habituelle ${fmtInt(a.q25)} à ${fmtInt(a.q75)} ; médiane ${fmtInt(a.median)}`}>
+      <div className="relative h-7">
+        {/* Etendue min-max des annees de reference */}
+        <span className="absolute top-1/2 h-px -translate-y-1/2 bg-line-strong" style={{ left: `${pct(a.referenceMin)}%`, right: `${100 - pct(a.referenceMax)}%` }} />
+        <span className="absolute top-1/2 h-2.5 w-px -translate-y-1/2 bg-ink-3" style={{ left: `${pct(a.referenceMin)}%` }} />
+        <span className="absolute top-1/2 h-2.5 w-px -translate-y-1/2 bg-ink-3" style={{ left: `${pct(a.referenceMax)}%` }} />
+        {/* Plage habituelle */}
+        <span className="absolute inset-y-[7px] rounded-[4px] bg-surface-3 shadow-[inset_0_0_0_1px_var(--color-line-strong)]" style={{ left: `${pct(a.q25)}%`, right: `${100 - pct(a.q75)}%` }} />
+        {/* Mediane */}
+        <span className="absolute inset-y-[4px] w-[2px] -translate-x-1/2 rounded-full bg-ink-2" style={{ left: `${pct(a.median)}%` }} />
+        {/* Valeur */}
+        <motion.span
+          initial={reduce ? false : { left: `${pct(a.median)}%`, opacity: 0 }}
+          animate={{ left: `${pct(a.value)}%`, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 90, damping: 18, delay: 0.25 }}
+          className="absolute top-1/2 size-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-surface"
+          style={{ backgroundColor: color, boxShadow: `0 0 0 1px ${color}` }}
+        />
+      </div>
+      <figcaption className="num flex justify-between text-[11px] text-ink-3">
+        <span>{fmtInt(lo)}</span>
+        <span className="flex items-center gap-3 font-sans">
+          <span className="flex items-center gap-1.5">
+            <span aria-hidden className="h-2 w-3 rounded-[2px] bg-surface-3 shadow-[inset_0_0_0_1px_var(--color-line-strong)]" />
+            plage habituelle
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span aria-hidden className="h-2.5 w-[2px] rounded-full bg-ink-2" />
+            médiane
+          </span>
+        </span>
+        <span>{fmtInt(hi)}</span>
+      </figcaption>
+    </figure>
   );
 }
 

@@ -3,11 +3,14 @@
 import { useMemo, useState } from "react";
 import { CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-import { MoreLink, RegionBars } from "@/components/blocks";
+import { ArrowDownRight, ArrowRight as Flat, ArrowUpRight, GitDiff } from "@phosphor-icons/react/dist/ssr";
+
+import { MoreLink } from "@/components/blocks";
 import { AnnualChart, HistoryChart, Legend, TooltipCard, TooltipRow, monthTick, useNarrow } from "@/components/charts";
 import { zoneLabel } from "@/components/shell/pickers";
-import { ChartSkeleton, ErrorState, Notice, PageHeader, Panel, PanelHeader, Segmented, SourceNote, cx, inputClass } from "@/components/ui";
-import { useCalendar, useMetadata, useRegions } from "@/lib/api";
+import { pageIcon } from "@/components/shell/shell";
+import { ChartSkeleton, ErrorState, InfoTip, PageHeader, Panel, PanelHeader, Segmented, SourceNote, cx, inputClass } from "@/components/ui";
+import { useCalendar, useMetadata } from "@/lib/api";
 import { fmt2, fmtDelta, fmtInt, fmtPct, fmtPeriod, MONTHS, MONTHS_SHORT } from "@/lib/format";
 import { DEFINITIONS, UNIT } from "@/lib/labels";
 import type { TrendResult } from "@/lib/science/stats";
@@ -84,11 +87,17 @@ function CompareYears({ calendar, a, b }: { calendar: CalendarResponse; a: numbe
   );
 }
 
+/** Verdict court de la tendance : un mot, puis les chiffres qui le justifient. */
+function trendVerdict(t: TrendResult | null): { word: string; tone: "up" | "down" | "flat" | "none" } {
+  if (!t) return { word: "Non calculée", tone: "none" };
+  if (t.pValue >= 0.05) return { word: "Pas de tendance nette", tone: "flat" };
+  return t.slope > 0 ? { word: "En hausse", tone: "up" } : { word: "En baisse", tone: "down" };
+}
+
 export function TrendsView() {
-  const { zone, from, to, setZone } = useFilters();
+  const { zone, from, to } = useFilters();
   const meta = useMetadata();
   const calendar = useCalendar(zone);
-  const regions = useRegions(from, to);
   const [trendScope, setTrendScope] = useState<"full" | "viirs">("full");
   const lastYear = Number(to.slice(0, 4));
   const [yearA, setYearA] = useState<number | null>(null);
@@ -103,22 +112,98 @@ export function TrendsView() {
   const zoneCal = data?.calibration.configs.TA ?? null;
   // Calage juge fragile : non verifiable, ou plus de 20 % d'erreur annuelle en validation.
   const weakCalibration = Boolean(data?.calibration.local && zoneCal && (!zoneCal.verified || zoneCal.annualErrorLoyo === null || zoneCal.annualErrorLoyo > 0.2));
-
+  const v = trendVerdict(trend);
+  const VerdictIcon = v.tone === "up" ? ArrowUpRight : v.tone === "down" ? ArrowDownRight : Flat;
 
   return (
     <>
       <PageHeader
+        icon={pageIcon("/trends")}
         title="Tendances"
         lead={
           <>
-            Évolution de l'activité détectée pour <span className="text-ink">{zoneName}</span>, et démonstration de ce que l'harmonisation MODIS et VIIRS change.
+            Comment l'activité détectée pour <span className="font-medium text-ink">{zoneName}</span> évolue depuis 2000, et ce que la tendance permet vraiment de dire.
           </>
         }
       />
 
+      {/* Le verdict de tendance, puis les totaux annuels qui le portent. */}
+      <Panel className="overflow-hidden" data-tour="trend-chart">
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
+          <div className="flex flex-col gap-5 border-b border-line/70 p-6 xl:border-b-0 xl:border-r">
+            <p className="flex items-center gap-1 text-[13px] font-medium text-ink-2">
+              Tendance des totaux annuels
+              <InfoTip text="Pente de Theil-Sen (médiane des pentes entre toutes les paires d'années) et test de Mann-Kendall. Méthode robuste aux années extrêmes, sans hypothèse de loi normale." />
+            </p>
+            {data ? (
+              <>
+                <div className="flex items-center gap-3">
+                  <span
+                    className={cx(
+                      "flex size-11 shrink-0 items-center justify-center rounded-[12px] border",
+                      v.tone === "up" ? "border-critical/40 bg-critical/10 text-critical" : v.tone === "down" ? "border-div-n2/50 bg-div-n2/10 text-div-n2" : "border-line-strong bg-surface-2 text-ink-2",
+                    )}
+                  >
+                    <VerdictIcon size={22} weight="bold" />
+                  </span>
+                  <p className="text-[22px] font-semibold leading-tight tracking-[-0.03em] text-ink">{v.word}</p>
+                </div>
+                <p className="text-[13.5px] leading-relaxed text-ink-2">{trendSentence(trend)}</p>
+                {trend ? (
+                  <dl className="grid grid-cols-[1.35fr_1fr_0.8fr] gap-2">
+                    {(
+                      [
+                        ["Pente", `${trend.slope > 0 ? "+" : "−"}${fmt2(Math.abs(trend.slopePctOfMedian))} %/an`],
+                        ["Valeur p", trend.pValue < 0.001 ? "< 0,001" : fmt2(trend.pValue)],
+                        ["Années", String(trend.n)],
+                      ] as const
+                    ).map(([label, value]) => (
+                      <div key={label} className="min-w-0 rounded-control bg-surface-2/70 px-2.5 py-2.5">
+                        <dt className="text-[11.5px] text-ink-3">{label}</dt>
+                        <dd className="num mt-0.5 whitespace-nowrap text-[14px] font-medium text-ink">{value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                ) : null}
+                <div className="flex flex-col gap-2">
+                  <Segmented
+                    label="Années prises en compte"
+                    value={trendScope}
+                    onChange={setTrendScope}
+                    options={[
+                      { value: "full", label: "Série harmonisée" },
+                      { value: "viirs", label: "VIIRS seul" },
+                    ]}
+                  />
+                  <p className="text-[12px] leading-relaxed text-ink-3">
+                    {trendScope === "full"
+                      ? "Depuis 2000, avec les années estimées depuis MODIS. Comparez avec « VIIRS seul » : sans calage, mais plus courte."
+                      : "Depuis 2012, sur les seules années observées par VIIRS : aucune hypothèse de calage."}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <ChartSkeleton height={180} />
+            )}
+          </div>
+          <div className="min-w-0">
+            <PanelHeader title="Totaux annuels" subtitle="Barres hachurées : estimées depuis MODIS, avec leur intervalle. Contour seul : année incomplète." />
+            {calendar.error ? <ErrorState error={calendar.error} compact /> : data ? <AnnualChart years={data.years} trend={trend} highlight={lastYear} /> : <ChartSkeleton height={280} />}
+          </div>
+        </div>
+        <SourceNote
+          provenance={data?.provenance}
+          extra={
+            trendScope === "full"
+              ? `Intervalle des années estimées : étendue des rapports annuels observés en validation. Tendance sur les années complètes, hors années alimentées surtout par Terra seul. Elle dépend du calage MODIS : la comparer à la tendance VIIRS seul.${weakCalibration ? " Dans cette zone le calage est fragile : une tendance sur la série harmonisée peut refléter le changement de capteur plutôt que l'activité." : ""}`
+              : "Tendance sur les seules années observées par VIIRS : aucune hypothèse de calage, mais une série plus courte."
+          }
+        />
+      </Panel>
+
       <Panel>
         <PanelHeader
-          title="Une série continue de 2000 à 2025"
+          title="Vingt-cinq ans, mois par mois"
           subtitle="Indice harmonisé mensuel. Avant 2012, la valeur est estimée depuis MODIS : la bande montre l'incertitude du calage."
           help={DEFINITIONS.index}
           actions={<MoreLink href="/methodology">Comment c'est calculé</MoreLink>}
@@ -127,36 +212,8 @@ export function TrendsView() {
         <SourceNote provenance={data?.provenance} extra={`Unité : ${UNIT}. Période sélectionnée : ${fmtPeriod(from, to).toLowerCase()}.`} />
       </Panel>
 
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
-        <Panel className="xl:col-span-7" data-tour="trend-chart">
-          <PanelHeader
-            title="Totaux annuels et tendance"
-            subtitle={data ? trendSentence(trend) : "Calcul de la tendance."}
-            help="Pente de Theil-Sen (médiane des pentes entre toutes les paires d'années) et test de Mann-Kendall. Méthode robuste aux années extrêmes, sans hypothèse de loi normale."
-            actions={
-              <Segmented
-                label="Années prises en compte"
-                value={trendScope}
-                onChange={setTrendScope}
-                options={[
-                  { value: "full", label: "Série harmonisée" },
-                  { value: "viirs", label: "VIIRS seul" },
-                ]}
-              />
-            }
-          />
-          {calendar.error ? <ErrorState error={calendar.error} compact /> : data ? <AnnualChart years={data.years} trend={trend} highlight={lastYear} /> : <ChartSkeleton height={280} />}
-          <SourceNote
-            provenance={data?.provenance}
-            extra={
-              trendScope === "full"
-                ? `Intervalle des années estimées : étendue des rapports annuels observés en validation. Tendance sur les années complètes, hors années alimentées surtout par Terra seul. Elle dépend du calage MODIS : la comparer à la tendance VIIRS seul.${weakCalibration ? " Dans cette zone le calage est fragile : une tendance sur la série harmonisée peut refléter le changement de capteur plutôt que l'activité." : ""}`
-                : "Tendance sur les seules années observées par VIIRS : aucune hypothèse de calage, mais une série plus courte."
-            }
-          />
-        </Panel>
-
-        <Panel className="xl:col-span-5">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+        <Panel className="xl:col-span-7">
           <PanelHeader
             title="Comparer deux années"
             subtitle={
@@ -186,39 +243,32 @@ export function TrendsView() {
           {calendar.error ? <ErrorState error={calendar.error} compact /> : data ? <CompareYears calendar={data} a={a} b={b} /> : <ChartSkeleton height={260} />}
           <SourceNote provenance={data?.provenance} />
         </Panel>
+
+        {/* Pourquoi la serie tient : ce que le calage fait, et ses limites dans cette zone. */}
+        <Panel className="flex flex-col xl:col-span-5" interactive>
+          <PanelHeader icon={<GitDiff size={17} />} title="Une seule série pour deux familles de capteurs" subtitle="MODIS et VIIRS ne comptent pas la même chose. Avant 2012, les valeurs sont converties dans l'unité VIIRS." />
+          <div className="flex flex-1 flex-col gap-4 px-5 py-5 text-[13.5px] leading-relaxed text-ink-2">
+            {zoneCal && data?.calibration.local ? (
+              <div className={cx("rounded-control border px-4 py-3", weakCalibration ? "border-warning/30 bg-warning/[0.06]" : "border-line-strong bg-surface-2/70")}>
+                <p className="font-medium text-ink">Calage ajusté à la zone : facteur national multiplié par {fmt2(zoneCal.k)}</p>
+                <p className="mt-1 text-[13px]">
+                  Le rapport entre VIIRS et MODIS varie d'une région à l'autre. Le facteur national est corrigé avec les années communes de la zone ({fmtInt(zoneCal.referenceCellDays)} cellules-jour Suomi-NPP).{" "}
+                  {zoneCal.annualErrorLoyo === null
+                    ? "La zone est trop peu active pour mesurer l'erreur de ce calage."
+                    : `Erreur annuelle médiane en retirant une année à la fois : ${fmtPct(zoneCal.annualErrorLoyo, 0)} sur ${zoneCal.yearsScored} années.`}{" "}
+                  {weakCalibration ? "Les valeurs antérieures à 2012 sont ici peu sûres : pour une tendance, préférez « VIIRS seul »." : ""}
+                </p>
+              </div>
+            ) : (
+              <p>Le facteur de calage national est validé en retirant une année à la fois : l'erreur mesurée figure dans la bande d'incertitude des années estimées.</p>
+            )}
+            <p>Sans cette conversion, l'arrivée de VIIRS en 2012 ressemblerait à une hausse brutale des feux : ses pixels plus fins détectent plus de points pour la même activité.</p>
+            <div className="mt-auto">
+              <MoreLink href="/compare">Voir la comparaison des capteurs</MoreLink>
+            </div>
+          </div>
+        </Panel>
       </div>
-
-      <Panel className="flex flex-col items-start justify-between gap-4 p-5 md:flex-row md:items-center">
-        <div>
-          <p className="text-[15px] font-medium text-ink">MODIS et VIIRS ne comptent pas la même chose</p>
-          <p className="mt-1 max-w-[70ch] text-[13.5px] leading-relaxed text-ink-2">
-            La page de comparaison montre, capteur par capteur, ce que l'harmonisation corrige et ce qu'elle ne corrige pas.
-          </p>
-        </div>
-        <MoreLink href="/compare">Comparer les capteurs</MoreLink>
-      </Panel>
-
-      {zoneCal && data?.calibration.local ? (
-        <Notice tone={weakCalibration ? "warning" : "info"} title={`Calage ajusté à la zone : facteur national multiplié par ${fmt2(zoneCal.k)}`}>
-          Le rapport entre VIIRS et MODIS varie d'une région à l'autre. Le facteur national est donc corrigé avec les années communes de la zone ({fmtInt(zoneCal.referenceCellDays)} cellules-jour Suomi-NPP).{" "}
-          {zoneCal.annualErrorLoyo === null
-            ? "La zone est trop peu active pour mesurer l'erreur de ce calage."
-            : `Erreur annuelle médiane en retirant une année à la fois : ${fmtPct(zoneCal.annualErrorLoyo, 0)} sur ${zoneCal.yearsScored} années.`}{" "}
-          {weakCalibration ? "Les valeurs antérieures à 2012 sont ici peu sûres : pour une tendance, préférez « VIIRS seul »." : ""}
-        </Notice>
-      ) : null}
-
-      <Panel>
-        <PanelHeader title="Répartition par province" subtitle={`Indice harmonisé, ${fmtPeriod(from, to).toLowerCase()}. Sélectionnez une province pour en faire la zone d'analyse.`} />
-        {regions.error ? (
-          <ErrorState error={regions.error} onRetry={() => regions.mutate()} compact />
-        ) : regions.data ? (
-          <RegionBars regions={regions.data.regions} activeIndex={zone.kind === "province" ? zone.index : null} onSelect={(index) => setZone({ kind: "province", index })} />
-        ) : (
-          <ChartSkeleton height={260} />
-        )}
-        <SourceNote provenance={regions.data?.provenance} extra="Densité : cellules-jour pour 1 000 km². Aucune corrélation avec d'autres variables n'est calculée ici : les données chargées ne le justifient pas." />
-      </Panel>
     </>
   );
 }
