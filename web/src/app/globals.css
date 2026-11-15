@@ -1,0 +1,413 @@
+@import "tailwindcss";
+
+/*
+ * Gabon FirePulse - jetons de design.
+ * Deux themes : sombre (valeurs par defaut ci-dessous) et clair (:root[data-theme="light"]).
+ * La classe .theme-dark force le theme sombre sur un sous-arbre (page d'accueil, carte). Rayons : 8 px (controles), 12 px (panneaux).
+ * Couleurs de capteurs validees pour les daltonismes (script validate_palette, surface #0f1626).
+ */
+@theme {
+  --color-bg: #080d18;
+  --color-surface: #0f1626;
+  --color-surface-2: #151e33;
+  --color-surface-3: #1d2842;
+  --color-line: #1e2a42;
+  --color-line-strong: #2f3f61;
+  --color-ink: #e9edf5;
+  --color-ink-2: #a9b4c8;
+  --color-ink-3: #7b8aa5;
+  --color-accent: #56c8ee;
+  --color-accent-strong: #8adcf5;
+  --color-accent-ink: #04202c;
+
+  /* Identite des capteurs (categoriel, ordre fixe). */
+  --color-modis: #d95926;
+  --color-snpp: #3987e5;
+  --color-noaa20: #199e70;
+
+  /* Etats (toujours accompagnes d'une icone et d'un libelle). */
+  --color-critical: #e5484d;
+  --color-warning: #f5b025;
+  --color-good: #2fb344;
+  --color-info: #8ea2c9;
+
+  /* Rampe sequentielle "activite thermique" : une seule teinte, du sombre au clair. */
+  --color-heat-0: #131b2e;
+  --color-heat-1: #3a2412;
+  --color-heat-2: #5f3611;
+  --color-heat-3: #8a4b10;
+  --color-heat-4: #b96412;
+  --color-heat-5: #e2861c;
+  --color-heat-6: #f6b547;
+  --color-heat-7: #fde2a2;
+
+  /* Rampe divergente (ecart a la reference) : bleu, gris neutre, rouge. */
+  --color-div-n3: #2f6fd0;
+  --color-div-n2: #4d7fbd;
+  --color-div-n1: #47597c;
+  --color-div-0: #2b3447;
+  --color-div-p1: #7c4a4a;
+  --color-div-p2: #b84a48;
+  --color-div-p3: #e5484d;
+  --color-muted-bar: #55627c;
+  --color-zone-a: #56c8ee;
+  --color-zone-b: #e58fd0;
+  --color-seg-active: #1d2842;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  --radius-control: 8px;
+  --radius-panel: 14px;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-fade-up: fade-up 0.5s var(--ease-out-expo) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ Theme clair
+ * Recommandation 9.1 du cahier des charges : fond clair pour l'analyse.
+ * La rampe d'activite est inversee (du clair vers le fonce) pour rester lisible sur fond blanc. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-bg: #f5f7fc;
+  --color-surface: #ffffff;
+  --color-surface-2: #f1f4fa;
+  --color-surface-3: #e8edf7;
+  --color-line: #e3e8f2;
+  --color-line-strong: #cbd4e4;
+  --color-ink: #0d1a45;
+  --color-ink-2: #3d4a6b;
+  --color-ink-3: #5e6a88;
+  --color-accent: #1d4ed8;
+  --color-accent-strong: #1e3a8a;
+  --color-accent-ink: #ffffff;
+  --color-critical: #d12f35;
+  --color-warning: #a8670a;
+  --color-good: #15803d;
+  --color-info: #4a5f92;
+  /* Rampe sequentielle bleue : du blanc (peu d'activite) au bleu marine (beaucoup). */
+  --color-heat-0: #f0f3f9;
+  --color-heat-1: #dce6fb;
+  --color-heat-2: #bccff5;
+  --color-heat-3: #93b3ee;
+  --color-heat-4: #6290e3;
+  --color-heat-5: #2f63cf;
+  --color-heat-6: #1d409f;
+  --color-heat-7: #0f2161;
+  --color-div-n3: #2563eb;
+  --color-div-n2: #6c97e8;
+  --color-div-n1: #bccdf0;
+  --color-div-0: #e9edf4;
+  --color-div-p1: #f2c4c0;
+  --color-div-p2: #e07a73;
+  --color-div-p3: #cc2f36;
+  --color-muted-bar: #c3cde0;
+  --color-zone-a: #1d4ed8;
+  --color-zone-b: #e2590c;
+  --color-seg-active: #ffffff;
+  /* Elevation Material 3 (niveau 1). */
+  --elev-1: 0 1px 2px rgb(13 26 69 / 0.05), 0 2px 8px -2px rgb(13 26 69 / 0.08);
+}
+
+/* Sous-arbre force en sombre : memes valeurs que le theme par defaut. */
+.theme-dark {
+  color-scheme: dark;
+  --color-bg: #080d18;
+  --color-surface: #0f1626;
+  --color-surface-2: #151e33;
+  --color-surface-3: #1d2842;
+  --color-line: #1e2a42;
+  --color-line-strong: #2f3f61;
+  --color-ink: #e9edf5;
+  --color-ink-2: #a9b4c8;
+  --color-ink-3: #7b8aa5;
+  --color-accent: #56c8ee;
+  --color-accent-strong: #8adcf5;
+  --color-accent-ink: #04202c;
+  --color-critical: #e5484d;
+  --color-warning: #f5b025;
+  --color-good: #2fb344;
+  --color-info: #8ea2c9;
+  --color-heat-0: #131b2e;
+  --color-heat-1: #3a2412;
+  --color-heat-2: #5f3611;
+  --color-heat-3: #8a4b10;
+  --color-heat-4: #b96412;
+  --color-heat-5: #e2861c;
+  --color-heat-6: #f6b547;
+  --color-heat-7: #fde2a2;
+  --color-div-n3: #2f6fd0;
+  --color-div-n2: #4d7fbd;
+  --color-div-n1: #47597c;
+  --color-div-0: #2b3447;
+  --color-div-p1: #7c4a4a;
+  --color-div-p2: #b84a48;
+  --color-div-p3: #e5484d;
+  --color-muted-bar: #55627c;
+  --color-zone-a: #56c8ee;
+  --color-zone-b: #e58fd0;
+  --color-seg-active: #1d2842;
+  --elev-1: none;
+}
+
+/* Elevation : aucune ombre en theme sombre (valeur par defaut). */
+:root {
+  --elev-1: none;
+}
+
+/* Barre laterale bleu marine (identique dans les deux themes). */
+.theme-navy {
+  color-scheme: dark;
+  --color-surface: transparent;
+  --color-surface-2: rgb(255 255 255 / 0.06);
+  --color-surface-3: rgb(255 255 255 / 0.12);
+  --color-line: rgb(255 255 255 / 0.1);
+  --color-line-strong: rgb(255 255 255 / 0.18);
+  --color-ink: #ffffff;
+  --color-ink-2: #d6defa;
+  --color-ink-3: #93a2d4;
+  --color-accent: #8db4ff;
+  background: linear-gradient(180deg, #0c1a5c 0%, #0a1550 100%);
+}
+
+/* Cartes : elevation douce (theme clair) et lisere degrade pour les indicateurs cles. */
+.elev {
+  box-shadow: var(--elev-1);
+}
+.kpi-accent {
+  position: relative;
+  overflow: hidden;
+}
+.kpi-accent::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, #0f1f66, #3b6fe0);
+}
+
+/* Libelles qui dependent du sens de la rampe d'activite. */
+.only-light {
+  display: none;
+}
+:root[data-theme="light"] .only-light {
+  display: inline;
+}
+:root[data-theme="light"] .only-dark {
+  display: none;
+}
+:root[data-theme="light"] .theme-dark .only-light {
+  display: none;
+}
+:root[data-theme="light"] .theme-dark .only-dark {
+  display: inline;
+}
+
+/* Ombres plus douces sur fond clair. */
+:root[data-theme="light"] [class*="shadow-[0_18px_50px"],
+:root[data-theme="light"] [class*="shadow-[0_12px_32px"] {
+  --tw-shadow-color: rgb(15 23 42 / 0.18);
+  box-shadow: 0 16px 40px -14px rgb(15 23 42 / 0.25);
+}
+
+/* Echelle de superposition : 10 barre fixe, 20 panneau flottant, 30 popover, 40 dialogue, 50 notification. */
+
+html {
+  color-scheme: dark;
+  background: var(--color-bg);
+}
+
+/* Transition douce lors du changement de theme (desactivee si mouvement reduit). */
+html.theme-switching,
+html.theme-switching * {
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease !important;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  text-rendering: optimizeLegibility;
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 35%, transparent);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
+}
+
+.skeleton {
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--color-surface-2) 25%, var(--color-surface-3) 50%, var(--color-surface-2) 75%);
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+}
+
+/* Case a cocher : la coche est dessinee, l'etat ne repose pas sur la seule couleur. */
+.check {
+  appearance: none;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid var(--color-line-strong);
+  background: var(--color-surface-2) center / 12px no-repeat;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+.check:hover {
+  border-color: var(--color-ink-3);
+}
+.check:checked {
+  border-color: var(--color-accent);
+  background-color: var(--color-accent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3.2L13 4.5' fill='none' stroke='%2304202c' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Motif "estimation MODIS" : hachures, pour ne pas reposer sur la seule couleur. */
+.hatch {
+  background-image: repeating-linear-gradient(135deg, rgb(8 13 24 / 0.55) 0 1.5px, transparent 1.5px 5px);
+}
+:root[data-theme="light"] .hatch {
+  background-image: repeating-linear-gradient(135deg, rgb(255 255 255 / 0.7) 0 1.5px, transparent 1.5px 5px);
+}
+:root[data-theme="light"] .theme-dark .hatch {
+  background-image: repeating-linear-gradient(135deg, rgb(8 13 24 / 0.55) 0 1.5px, transparent 1.5px 5px);
+}
+.hatch-missing {
+  background-image: repeating-linear-gradient(45deg, var(--color-line-strong) 0 1px, transparent 1px 5px);
+}
+
+/* Cartographie : habillage des controles MapLibre. */
+.maplibregl-map {
+  font-family: var(--font-sans);
+}
+.maplibregl-ctrl-group {
+  background: var(--color-surface-2) !important;
+  border: 1px solid var(--color-line-strong);
+  box-shadow: none !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+.maplibregl-ctrl-group button {
+  width: 32px;
+  height: 32px;
+}
+.maplibregl-ctrl-group button + button {
+  border-top: 1px solid var(--color-line) !important;
+}
+.maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+  filter: invert(0.9);
+}
+.maplibregl-ctrl-attrib {
+  background: rgb(8 13 24 / 0.7) !important;
+  color: var(--color-ink-3);
+  font-size: 10px;
+}
+.maplibregl-ctrl-attrib a {
+  color: var(--color-ink-2);
+}
+.maplibregl-ctrl-scale {
+  background: rgb(8 13 24 / 0.7) !important;
+  border-color: var(--color-ink-3) !important;
+  color: var(--color-ink-2) !important;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+/* Graphiques Recharts : pas de contour de focus parasite sur les SVG. */
+.recharts-wrapper :focus,
+.recharts-surface:focus {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .skeleton {
+    animation: none;
+  }
+}
+
+/* Rapport imprimable : fond clair, mise en page A4. */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-root {
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-2: #f4f6fa;
+    --color-surface-3: #e9edf5;
+    --color-line: #d5dbe7;
+    --color-line-strong: #b4bdd0;
+    --color-ink: #10151f;
+    --color-ink-2: #3c4658;
+    --color-ink-3: #5b667a;
+    --color-heat-0: #f1f3f8;
+    color: #10151f;
+  }
+  .print-break {
+    break-before: page;
+  }
+  .print-avoid {
+    break-inside: avoid;
+  }
+}
+
+

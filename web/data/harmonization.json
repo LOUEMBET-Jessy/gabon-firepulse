@@ -1,0 +1,8025 @@
+{
+ "built_at": "2026-11-14T18:21:14Z",
+ "unit": "cellules-jour actives, equivalent Suomi-NPP",
+ "grid": {
+  "lon0": 8.5,
+  "lat0": -4.0,
+  "step_deg": 0.05,
+  "ncols": 124,
+  "nrows": 130
+ },
+ "eligibility": {
+  "type": 0,
+  "modis_min_confidence_pct": 30,
+  "viirs_classes": [
+   "n",
+   "h"
+  ]
+ },
+ "configs": {
+  "T": [
+   "terra"
+  ],
+  "A": [
+   "aqua"
+  ],
+  "TA": [
+   "terra",
+   "aqua"
+  ],
+  "S": [
+   "snpp"
+  ],
+  "N": [
+   "noaa20"
+  ]
+ },
+ "reference_config": "S",
+ "relay_priority": [
+  "S",
+  "N",
+  "TA",
+  "A",
+  "T"
+ ],
+ "gap_rules": {
+  "VIIRS": {
+   "min_days": 3,
+   "min_expected": 30.0
+  },
+  "MODIS": {
+   "min_days": 5,
+   "min_expected": 50.0
+  },
+  "witness_min_detections": 10
+ },
+ "gaps": [
+  {
+   "satellite": "terra",
+   "start_day": 530,
+   "end_day": 548,
+   "start": "2001-06-14",
+   "end": "2001-07-02",
+   "days": 19,
+   "expected_detections": 76.6,
+   "witness": null,
+   "witness_detections": null
+  },
+  {
+   "satellite": "aqua",
+   "start_day": 941,
+   "end_day": 949,
+   "start": "2002-07-30",
+   "end": "2002-08-07",
+   "days": 9,
+   "expected_detections": 98.8,
+   "witness": null,
+   "witness_detections": null
+  },
+  {
+   "satellite": "aqua",
+   "start_day": 6080,
+   "end_day": 6085,
+   "start": "2016-08-24",
+   "end": "2016-08-29",
+   "days": 6,
+   "expected_detections": 67.1,
+   "witness": null,
+   "witness_detections": null
+  },
+  {
+   "satellite": "aqua",
+   "start_day": 7534,
+   "end_day": 7550,
+   "start": "2020-08-17",
+   "end": "2020-09-02",
+   "days": 17,
+   "expected_detections": 181.2,
+   "witness": null,
+   "witness_detections": null
+  },
+  {
+   "satellite": "snpp",
+   "start_day": 6551,
+   "end_day": 6554,
+   "start": "2017-12-08",
+   "end": "2017-12-11",
+   "days": 4,
+   "expected_detections": 36.8,
+   "witness": null,
+   "witness_detections": null
+  },
+  {
+   "satellite": "snpp",
+   "start_day": 8243,
+   "end_day": 8257,
+   "start": "2022-07-27",
+   "end": "2022-08-10",
+   "days": 15,
+   "expected_detections": 1112.8,
+   "witness": "noaa20",
+   "witness_detections": 1191
+  },
+  {
+   "satellite": "snpp",
+   "start_day": 8916,
+   "end_day": 8920,
+   "start": "2024-05-30",
+   "end": "2024-06-03",
+   "days": 5,
+   "expected_detections": 137.4,
+   "witness": "noaa20",
+   "witness_detections": 109
+  },
+  {
+   "satellite": "snpp",
+   "start_day": 8957,
+   "end_day": 8963,
+   "start": "2024-07-10",
+   "end": "2024-07-16",
+   "days": 7,
+   "expected_detections": 500.0,
+   "witness": "noaa20",
+   "witness_detections": 532
+  },
+  {
+   "satellite": "snpp",
+   "start_day": 8972,
+   "end_day": 8976,
+   "start": "2024-07-25",
+   "end": "2024-07-29",
+   "days": 5,
+   "expected_detections": 357.2,
+   "witness": "noaa20",
+   "witness_detections": 388
+  },
+  {
+   "satellite": "noaa20",
+   "start_day": 8600,
+   "end_day": 8603,
+   "start": "2023-07-19",
+   "end": "2023-07-22",
+   "days": 4,
+   "expected_detections": 246.8,
+   "witness": "snpp",
+   "witness_detections": 251
+  }
+ ],
+ "relay_segments": [
+  {
+   "config": "T",
+   "start_day": 305,
+   "end_day": 529,
+   "start": "2000-11-01",
+   "end": "2001-06-13"
+  },
+  {
+   "config": null,
+   "start_day": 530,
+   "end_day": 548,
+   "start": "2001-06-14",
+   "end": "2001-07-02"
+  },
+  {
+   "config": "T",
+   "start_day": 549,
+   "end_day": 914,
+   "start": "2001-07-03",
+   "end": "2002-07-03"
+  },
+  {
+   "config": "TA",
+   "start_day": 915,
+   "end_day": 940,
+   "start": "2002-07-04",
+   "end": "2002-07-29"
+  },
+  {
+   "config": "T",
+   "start_day": 941,
+   "end_day": 949,
+   "start": "2002-07-30",
+   "end": "2002-08-07"
+  },
+  {
+   "config": "TA",
+   "start_day": 950,
+   "end_day": 4401,
+   "start": "2002-08-08",
+   "end": "2012-01-19"
+  },
+  {
+   "config": "S",
+   "start_day": 4402,
+   "end_day": 6550,
+   "start": "2012-01-20",
+   "end": "2017-12-07"
+  },
+  {
+   "config": "TA",
+   "start_day": 6551,
+   "end_day": 6554,
+   "start": "2017-12-08",
+   "end": "2017-12-11"
+  },
+  {
+   "config": "S",
+   "start_day": 6555,
+   "end_day": 8242,
+   "start": "2017-12-12",
+   "end": "2022-07-26"
+  },
+  {
+   "config": "N",
+   "start_day": 8243,
+   "end_day": 8257,
+   "start": "2022-07-27",
+   "end": "2022-08-10"
+  },
+  {
+   "config": "S",
+   "start_day": 8258,
+   "end_day": 8915,
+   "start": "2022-08-11",
+   "end": "2024-05-29"
+  },
+  {
+   "config": "N",
+   "start_day": 8916,
+   "end_day": 8920,
+   "start": "2024-05-30",
+   "end": "2024-06-03"
+  },
+  {
+   "config": "S",
+   "start_day": 8921,
+   "end_day": 8956,
+   "start": "2024-06-04",
+   "end": "2024-07-09"
+  },
+  {
+   "config": "N",
+   "start_day": 8957,
+   "end_day": 8963,
+   "start": "2024-07-10",
+   "end": "2024-07-16"
+  },
+  {
+   "config": "S",
+   "start_day": 8964,
+   "end_day": 8971,
+   "start": "2024-07-17",
+   "end": "2024-07-24"
+  },
+  {
+   "config": "N",
+   "start_day": 8972,
+   "end_day": 8976,
+   "start": "2024-07-25",
+   "end": "2024-07-29"
+  },
+  {
+   "config": "S",
+   "start_day": 8977,
+   "end_day": 9496,
+   "start": "2024-07-30",
+   "end": "2025-12-31"
+  }
+ ],
+ "calibration": {
+  "T": {
+   "model": "month",
+   "factors_by_month": [
+    10.48356807511737,
+    20.01081081081081,
+    14.31060606060606,
+    10.816546762589928,
+    12.138613861386139,
+    5.911421911421911,
+    5.008653846153846,
+    6.3629453681710215,
+    9.893258426966293,
+    10.131147540983607,
+    8.935483870967742,
+    9.275
+   ],
+   "overlap_first_year": 2012,
+   "overlap_last_year": 2025,
+   "overlap_days": 5059,
+   "overlap_months": 168,
+   "validation": {
+    "model": "month",
+    "months_scored": 168,
+    "monthly_median_abs_pct_error": 0.22235569961043397,
+    "monthly_mean_abs_pct_error": 0.3143157286477349,
+    "monthly_bias_pct": 0.00654073963841242,
+    "monthly_ratio_q10": 0.6563661711211227,
+    "monthly_ratio_q90": 1.866106406382181,
+    "monthly_correlation": 0.9400144846043023,
+    "annual_mean_abs_pct_error": 0.0741887214020418,
+    "annual_max_abs_pct_error": 0.3816089703666534,
+    "annual_ratio_min": 0.7237937950957416,
+    "annual_ratio_max": 1.1884043450384956,
+    "annual": [
+     {
+      "year": 2012,
+      "predicted": 3943.7130440184596,
+      "reference": 3994.0
+     },
+     {
+      "year": 2013,
+      "predicted": 4255.452557540803,
+      "reference": 4675.0
+     },
+     {
+      "year": 2014,
+      "predicted": 3337.9751019,
+      "reference": 3869.0
+     },
+     {
+      "year": 2015,
+      "predicted": 4091.4148722486393,
+      "reference": 4157.0
+     },
+     {
+      "year": 2016,
+      "predicted": 4452.105581028871,
+      "reference": 4197.0
+     },
+     {
+      "year": 2017,
+      "predicted": 5053.925613601218,
+      "reference": 3658.0
+     },
+     {
+      "year": 2018,
+      "predicted": 3628.394677284963,
+      "reference": 4312.0
+     },
+     {
+      "year": 2019,
+      "predicted": 4447.406085886767,
+      "reference": 4272.0
+     },
+     {
+      "year": 2020,
+      "predicted": 4377.166991358417,
+      "reference": 4261.0
+     },
+     {
+      "year": 2021,
+      "predicted": 3768.2595964664024,
+      "reference": 3579.0
+     },
+     {
+      "year": 2022,
+      "predicted": 3637.278543091122,
+      "reference": 3752.0
+     },
+     {
+      "year": 2023,
+      "predicted": 3589.3264592125493,
+      "reference": 3599.0
+     },
+     {
+      "year": 2024,
+      "predicted": 4381.825257406403,
+      "reference": 4356.0
+     },
+     {
+      "year": 2025,
+      "predicted": 4065.3473861281955,
+      "reference": 3978.0
+     }
+    ]
+   },
+   "candidates": {
+    "global": {
+     "model": "global",
+     "months_scored": 168,
+     "monthly_median_abs_pct_error": 0.3704875955190581,
+     "monthly_mean_abs_pct_error": 0.38757665786898154,
+     "monthly_bias_pct": 0.0005035369269027761,
+     "monthly_ratio_q10": 0.7166350110101948,
+     "monthly_ratio_q90": 2.7459118832511358,
+     "monthly_correlation": 0.9223132603033696,
+     "annual_mean_abs_pct_error": 0.07930422815889923,
+     "annual_max_abs_pct_error": 0.2514911512793775,
+     "annual_ratio_min": 0.7990468002731921,
+     "annual_ratio_max": 1.1683253588105698
+    },
+    "season": {
+     "model": "season",
+     "months_scored": 168,
+     "monthly_median_abs_pct_error": 0.3089903951631622,
+     "monthly_mean_abs_pct_error": 0.37253884885353206,
+     "monthly_bias_pct": 0.0014846606024267277,
+     "monthly_ratio_q10": 0.5960235323336593,
+     "monthly_ratio_q90": 1.8641847668461795,
+     "monthly_correlation": 0.9083161007525542,
+     "annual_mean_abs_pct_error": 0.07789870428428551,
+     "annual_max_abs_pct_error": 0.3293712193257102,
+     "annual_ratio_min": 0.7522353316082957,
+     "annual_ratio_max": 1.1691487694980338
+    },
+    "month": {
+     "model": "month",
+     "months_scored": 168,
+     "monthly_median_abs_pct_error": 0.22235569961043397,
+     "monthly_mean_abs_pct_error": 0.3143157286477349,
+     "monthly_bias_pct": 0.00654073963841242,
+     "monthly_ratio_q10": 0.6563661711211227,
+     "monthly_ratio_q90": 1.866106406382181,
+     "monthly_correlation": 0.9400144846043023,
+     "annual_mean_abs_pct_error": 0.0741887214020418,
+     "annual_max_abs_pct_error": 0.3816089703666534,
+     "annual_ratio_min": 0.7237937950957416,
+     "annual_ratio_max": 1.1884043450384956
+    }
+   }
+  },
+  "A": {
+   "model": "season",
+   "factors_by_month": [
+    4.599903006789525,
+    4.599903006789525,
+    4.599903006789525,
+    4.599903006789525,
+    4.599903006789525,
+    4.140500442869796,
+    4.140500442869796,
+    4.140500442869796,
+    4.140500442869796,
+    4.599903006789525,
+    4.599903006789525,
+    4.599903006789525
+   ],
+   "overlap_first_year": 2012,
+   "overlap_last_year": 2025,
+   "overlap_days": 5036,
+   "overlap_months": 168,
+   "validation": {
+    "model": "season",
+    "months_scored": 168,
+    "monthly_median_abs_pct_error": 0.1792474108536533,
+    "monthly_mean_abs_pct_error": 0.23660398281443107,
+    "monthly_bias_pct": 0.001657239776402589,
+    "monthly_ratio_q10": 0.7024254902119762,
+    "monthly_ratio_q90": 1.6503956114334557,
+    "monthly_correlation": 0.9463841021137136,
+    "annual_mean_abs_pct_error": 0.11875948707476255,
+    "annual_max_abs_pct_error": 0.315821194363412,
+    "annual_ratio_min": 0.7599816785773809,
+    "annual_ratio_max": 1.2986470702754092,
+    "annual": [
+     {
+      "year": 2012,
+      "predicted": 3648.8223684340815,
+      "reference": 3994.0
+     },
+     {
+      "year": 2013,
+      "predicted": 4302.666142599207,
+      "reference": 4675.0
+     },
+     {
+      "year": 2014,
+      "predicted": 3726.482016189066,
+      "reference": 3869.0
+     },
+     {
+      "year": 2015,
+      "predicted": 4124.0564859397855,
+      "reference": 4157.0
+     },
+     {
+      "year": 2016,
+      "predicted": 4360.568653421368,
+      "reference": 4164.0
+     },
+     {
+      "year": 2017,
+      "predicted": 3661.5546882765834,
+      "reference": 3658.0
+     },
+     {
+      "year": 2018,
+      "predicted": 3320.378645358617,
+      "reference": 4312.0
+     },
+     {
+      "year": 2019,
+      "predicted": 3496.2076960636246,
+      "reference": 4272.0
+     },
+     {
+      "year": 2020,
+      "predicted": 3702.8935109226886,
+      "reference": 4002.0
+     },
+     {
+      "year": 2021,
+      "predicted": 3920.4650992948805,
+      "reference": 3579.0
+     },
+     {
+      "year": 2022,
+      "predicted": 3347.4480297715554,
+      "reference": 3752.0
+     },
+     {
+      "year": 2023,
+      "predicted": 4018.2943242244573,
+      "reference": 3599.0
+     },
+     {
+      "year": 2024,
+      "predicted": 5731.717122647023,
+      "reference": 4356.0
+     },
+     {
+      "year": 2025,
+      "predicted": 5098.85885133355,
+      "reference": 3978.0
+     }
+    ]
+   },
+   "candidates": {
+    "global": {
+     "model": "global",
+     "months_scored": 168,
+     "monthly_median_abs_pct_error": 0.1980389329284152,
+     "monthly_mean_abs_pct_error": 0.23658090761718156,
+     "monthly_bias_pct": 0.001571384501140739,
+     "monthly_ratio_q10": 0.7400771340206959,
+     "monthly_ratio_q90": 1.7303824786285074,
+     "monthly_correlation": 0.9500464967058351,
+     "annual_mean_abs_pct_error": 0.11827198042094514,
+     "annual_max_abs_pct_error": 0.31369117183555867,
+     "annual_ratio_min": 0.7612139149894318,
+     "annual_ratio_max": 1.294893165244725
+    },
+    "season": {
+     "model": "season",
+     "months_scored": 168,
+     "monthly_median_abs_pct_error": 0.1792474108536533,
+     "monthly_mean_abs_pct_error": 0.23660398281443107,
+     "monthly_bias_pct": 0.001657239776402589,
+     "monthly_ratio_q10": 0.7024254902119762,
+     "monthly_ratio_q90": 1.6503956114334557,
+     "monthly_correlation": 0.9463841021137136,
+     "annual_mean_abs_pct_error": 0.11875948707476255,
+     "annual_max_abs_pct_error": 0.315821194363412,
+     "annual_ratio_min": 0.7599816785773809,
+     "annual_ratio_max": 1.2986470702754092
+    },
+    "month": {
+     "model": "month",
+     "months_scored": 168,
+     "monthly_median_abs_pct_error": 0.18601640016558638,
+     "monthly_mean_abs_pct_error": 0.24311266591725134,
+     "monthly_bias_pct": 0.006303433558831985,
+     "monthly_ratio_q10": 0.703902393332731,
+     "monthly_ratio_q90": 1.5650940333484313,
+     "monthly_correlation": 0.9438132480755536,
+     "annual_mean_abs_pct_error": 0.12246826018118788,
+     "annual_max_abs_pct_error": 0.3403022127563971,
+     "annual_ratio_min": 0.7461003872726966,
+     "annual_ratio_max": 1.2888317010810104
+    }
+   }
+  },
+  "TA": {
+   "model": "month",
+   "factors_by_month": [
+    3.1991404011461317,
+    3.2703180212014136,
+    3.8238866396761133,
+    3.4209328782707624,
+    3.732115677321157,
+    2.480195599022005,
+    2.3053772958619163,
+    2.69376026272578,
+    3.1278490028490027,
+    3.185567010309278,
+    3.159695817490494,
+    3.3125
+   ],
+   "overlap_first_year": 2012,
+   "overlap_last_year": 2025,
+   "overlap_days": 5036,
+   "overlap_months": 168,
+   "validation": {
+    "model": "month",
+    "months_scored": 168,
+    "monthly_median_abs_pct_error": 0.14649050922672388,
+    "monthly_mean_abs_pct_error": 0.2042181389774018,
+    "monthly_bias_pct": 0.003516112853100589,
+    "monthly_ratio_q10": 0.7562593156194747,
+    "monthly_ratio_q90": 1.5524231511107023,
+    "monthly_correlation": 0.9706506436970553,
+    "annual_mean_abs_pct_error": 0.09948529089479874,
+    "annual_max_abs_pct_error": 0.22029412428755146,
+    "annual_ratio_min": 0.819474567726722,
+    "annual_ratio_max": 1.2399276045059373,
+    "annual": [
+     {
+      "year": 2012,
+      "predicted": 3662.6059008495586,
+      "reference": 3994.0
+     },
+     {
+      "year": 2013,
+      "predicted": 4302.001360833783,
+      "reference": 4675.0
+     },
+     {
+      "year": 2014,
+      "predicted": 3613.1975047859796,
+      "reference": 3869.0
+     },
+     {
+      "year": 2015,
+      "predicted": 4072.8689094078263,
+      "reference": 4157.0
+     },
+     {
+      "year": 2016,
+      "predicted": 4362.338849878951,
+      "reference": 4164.0
+     },
+     {
+      "year": 2017,
+      "predicted": 4079.4696244887273,
+      "reference": 3658.0
+     },
+     {
+      "year": 2018,
+      "predicted": 3477.622390476711,
+      "reference": 4312.0
+     },
+     {
+      "year": 2019,
+      "predicted": 3922.0194833240544,
+      "reference": 4272.0
+     },
+     {
+      "year": 2020,
+      "predicted": 3793.4518719904627,
+      "reference": 4002.0
+     },
+     {
+      "year": 2021,
+      "predicted": 3856.5734548686487,
+      "reference": 3579.0
+     },
+     {
+      "year": 2022,
+      "predicted": 3458.7349674549537,
+      "reference": 3752.0
+     },
+     {
+      "year": 2023,
+      "predicted": 3850.3089014458583,
+      "reference": 3599.0
+     },
+     {
+      "year": 2024,
+      "predicted": 5259.669486969329,
+      "reference": 4356.0
+     },
+     {
+      "year": 2025,
+      "predicted": 4854.33002641588,
+      "reference": 3978.0
+     }
+    ]
+   },
+   "candidates": {
+    "global": {
+     "model": "global",
+     "months_scored": 168,
+     "monthly_median_abs_pct_error": 0.1933528193943197,
+     "monthly_mean_abs_pct_error": 0.2231427812187108,
+     "monthly_bias_pct": 0.0007082363186987505,
+     "monthly_ratio_q10": 0.7986385742569436,
+     "monthly_ratio_q90": 1.7843016528520306,
+     "monthly_correlation": 0.9676165245985734,
+     "annual_mean_abs_pct_error": 0.09372118888265417,
+     "annual_max_abs_pct_error": 0.1954029011808541,
+     "annual_ratio_min": 0.8365380400299938,
+     "annual_ratio_max": 1.22893604481126
+    },
+    "season": {
+     "model": "season",
+     "months_scored": 168,
+     "monthly_median_abs_pct_error": 0.18280050732434888,
+     "monthly_mean_abs_pct_error": 0.21535735159380845,
+     "monthly_bias_pct": 0.0009232786020294241,
+     "monthly_ratio_q10": 0.724724324026486,
+     "monthly_ratio_q90": 1.547573542545128,
+     "monthly_correlation": 0.9645144761014036,
+     "annual_mean_abs_pct_error": 0.09684152367589448,
+     "annual_max_abs_pct_error": 0.2048226482045654,
+     "annual_ratio_min": 0.8299976776583728,
+     "annual_ratio_max": 1.24398793808379
+    },
+    "month": {
+     "model": "month",
+     "months_scored": 168,
+     "monthly_median_abs_pct_error": 0.14649050922672388,
+     "monthly_mean_abs_pct_error": 0.2042181389774018,
+     "monthly_bias_pct": 0.003516112853100589,
+     "monthly_ratio_q10": 0.7562593156194747,
+     "monthly_ratio_q90": 1.5524231511107023,
+     "monthly_correlation": 0.9706506436970553,
+     "annual_mean_abs_pct_error": 0.09948529089479874,
+     "annual_max_abs_pct_error": 0.22029412428755146,
+     "annual_ratio_min": 0.819474567726722,
+     "annual_ratio_max": 1.2399276045059373
+    }
+   }
+  },
+  "N": {
+   "model": "global",
+   "factors_by_month": [
+    0.9841604073038122,
+    0.9841604073038122,
+    0.9841604073038122,
+    0.9841604073038122,
+    0.9841604073038122,
+    0.9841604073038122,
+    0.9841604073038122,
+    0.9841604073038122,
+    0.9841604073038122,
+    0.9841604073038122,
+    0.9841604073038122,
+    0.9841604073038122
+   ],
+   "overlap_first_year": 2018,
+   "overlap_last_year": 2025,
+   "overlap_days": 2796,
+   "overlap_months": 93,
+   "validation": {
+    "model": "global",
+    "months_scored": 93,
+    "monthly_median_abs_pct_error": 0.08813872646183632,
+    "monthly_mean_abs_pct_error": 0.12535907167538854,
+    "monthly_bias_pct": 7.119001677441331e-05,
+    "monthly_ratio_q10": 0.8121988957982912,
+    "monthly_ratio_q90": 1.2319853803424015,
+    "monthly_correlation": 0.9932437340532028,
+    "annual_mean_abs_pct_error": 0.03890155711137168,
+    "annual_max_abs_pct_error": 0.07996207192732963,
+    "annual_ratio_min": 0.933280802062395,
+    "annual_ratio_max": 1.0869117125365007,
+    "annual": [
+     {
+      "year": 2018,
+      "predicted": 3325.0170720546307,
+      "reference": 3614.0
+     },
+     {
+      "year": 2019,
+      "predicted": 4072.9766037462928,
+      "reference": 4272.0
+     },
+     {
+      "year": 2020,
+      "predicted": 4231.888642558604,
+      "reference": 4261.0
+     },
+     {
+      "year": 2021,
+      "predicted": 3834.858696429849,
+      "reference": 3579.0
+     },
+     {
+      "year": 2022,
+      "predicted": 3818.7975811357214,
+      "reference": 3752.0
+     },
+     {
+      "year": 2023,
+      "predicted": 3707.804388089472,
+      "reference": 3503.0
+     },
+     {
+      "year": 2024,
+      "predicted": 4414.287286957795,
+      "reference": 4356.0
+     },
+     {
+      "year": 2025,
+      "predicted": 3911.5990444029317,
+      "reference": 3978.0
+     }
+    ]
+   },
+   "candidates": {
+    "global": {
+     "model": "global",
+     "months_scored": 93,
+     "monthly_median_abs_pct_error": 0.08813872646183632,
+     "monthly_mean_abs_pct_error": 0.12535907167538854,
+     "monthly_bias_pct": 7.119001677441331e-05,
+     "monthly_ratio_q10": 0.8121988957982912,
+     "monthly_ratio_q90": 1.2319853803424015,
+     "monthly_correlation": 0.9932437340532028,
+     "annual_mean_abs_pct_error": 0.03890155711137168,
+     "annual_max_abs_pct_error": 0.07996207192732963,
+     "annual_ratio_min": 0.933280802062395,
+     "annual_ratio_max": 1.0869117125365007
+    },
+    "season": {
+     "model": "season",
+     "months_scored": 93,
+     "monthly_median_abs_pct_error": 0.09049120320832607,
+     "monthly_mean_abs_pct_error": 0.1282912539221072,
+     "monthly_bias_pct": 0.00044805895115722605,
+     "monthly_ratio_q10": 0.7995304959738359,
+     "monthly_ratio_q90": 1.2402414500663792,
+     "monthly_correlation": 0.9930541986106203,
+     "annual_mean_abs_pct_error": 0.03926057176119637,
+     "annual_max_abs_pct_error": 0.08035681154147294,
+     "annual_ratio_min": 0.9326472642938154,
+     "annual_ratio_max": 1.0873782490317403
+    },
+    "month": {
+     "model": "month",
+     "months_scored": 93,
+     "monthly_median_abs_pct_error": 0.10256937307297007,
+     "monthly_mean_abs_pct_error": 0.13603127946246532,
+     "monthly_bias_pct": 0.000511331892412493,
+     "monthly_ratio_q10": 0.8000448179739977,
+     "monthly_ratio_q90": 1.2650750996741167,
+     "monthly_correlation": 0.9921361567930329,
+     "annual_mean_abs_pct_error": 0.03973004212417222,
+     "annual_max_abs_pct_error": 0.08337103909332055,
+     "annual_ratio_min": 0.9347305492013217,
+     "annual_ratio_max": 1.090953965725515
+    }
+   }
+  }
+ },
+ "calibration_settings": {
+  "season_months": [
+   6,
+   7,
+   8,
+   9
+  ],
+  "cv_min_reference": 20,
+  "parsimony_tolerance": 0.01,
+  "method": "rapport des sommes mensuelles sur les jours observes par les deux configurations ; validation en retirant une annee a la fois"
+ },
+ "diagnostics": {
+  "unit_comparison": {
+   "cell_days": {
+    "factor_global": 2.8498407401789776,
+    "monthly_median_abs_pct_error": 0.14649050922672388,
+    "annual_mean_abs_pct_error": 0.09948529089479874,
+    "monthly_ratio_q10": 0.7562593156194747,
+    "monthly_ratio_q90": 1.5524231511107023
+   },
+   "raw_detections": {
+    "factor_global": 3.98669741042923,
+    "monthly_median_abs_pct_error": 0.1626748571298014,
+    "annual_mean_abs_pct_error": 0.08408332788706151,
+    "monthly_ratio_q10": 0.7286814151788088,
+    "monthly_ratio_q90": 1.4882057014627823
+   }
+  },
+  "yearly_ratio": [
+   {
+    "year": 2012,
+    "TA": 2.973938942665674,
+    "A": 4.622685185185185,
+    "T": 7.094138543516874,
+    "N": null
+   },
+   {
+    "year": 2013,
+    "TA": 3.047588005215124,
+    "A": 4.5968534906588,
+    "T": 7.923728813559322,
+    "N": null
+   },
+   {
+    "year": 2014,
+    "TA": 3.068199841395718,
+    "A": 4.457373271889401,
+    "T": 8.773242630385488,
+    "N": null
+   },
+   {
+    "year": 2015,
+    "TA": 2.9336626676076216,
+    "A": 4.316718587746625,
+    "T": 7.978886756238004,
+    "N": null
+   },
+   {
+    "year": 2016,
+    "TA": 2.7109375,
+    "A": 4.122772277227723,
+    "T": 7.006677796327212,
+    "N": null
+   },
+   {
+    "year": 2017,
+    "TA": 2.631654676258993,
+    "A": 4.293427230046948,
+    "T": 6.158249158249158,
+    "N": null
+   },
+   {
+    "year": 2018,
+    "TA": 3.4523618895116095,
+    "A": 5.451327433628318,
+    "T": 8.372815533980582,
+    "N": 1.059824046920821
+   },
+   {
+    "year": 2019,
+    "TA": 3.075593952483801,
+    "A": 5.165659008464329,
+    "T": 6.969004893964111,
+    "N": 1.0256902761104443
+   },
+   {
+    "year": 2020,
+    "TA": 3.0572956455309397,
+    "A": 4.642691415313225,
+    "T": 8.116190476190477,
+    "N": 0.9900092936802974
+   },
+   {
+    "year": 2021,
+    "TA": 2.6589895988112926,
+    "A": 3.924342105263158,
+    "T": 7.215725806451613,
+    "N": 0.9260025873221216
+   },
+   {
+    "year": 2022,
+    "TA": 3.0703764320785596,
+    "A": 4.761421319796955,
+    "T": 8.1036717062635,
+    "N": 0.96900826446281
+   },
+   {
+    "year": 2023,
+    "TA": 2.685820895522388,
+    "A": 3.8698924731182798,
+    "T": 7.87527352297593,
+    "N": 0.9358803099118355
+   },
+   {
+    "year": 2024,
+    "TA": 2.42,
+    "A": 3.3404907975460123,
+    "T": 7.549393414211439,
+    "N": 0.972972972972973
+   },
+   {
+    "year": 2025,
+    "TA": 2.4211807668898357,
+    "A": 3.405821917808219,
+    "T": 7.6943907156673115,
+    "N": 0.9987446648255084
+   }
+  ],
+  "province_transfer": [
+   {
+    "province": "Estuaire",
+    "reference_cell_days": 1690.0,
+    "predicted_cell_days": 1253.1188848854185,
+    "ratio_reference_over_predicted": 1.3486350101207905,
+    "annual_median_abs_pct_error": 0.37190904840704386,
+    "years_scored": 14
+   },
+   {
+    "province": "Haut-Ogooué",
+    "reference_cell_days": 23918.0,
+    "predicted_cell_days": 23433.83124643868,
+    "ratio_reference_over_predicted": 1.0206611009727613,
+    "annual_median_abs_pct_error": 0.0453399827686954,
+    "years_scored": 14
+   },
+   {
+    "province": "Moyen-Ogooué",
+    "reference_cell_days": 1301.0,
+    "predicted_cell_days": 704.4073417349194,
+    "ratio_reference_over_predicted": 1.8469427033450605,
+    "annual_median_abs_pct_error": 0.4970731499776945,
+    "years_scored": 14
+   },
+   {
+    "province": "Ngounié",
+    "reference_cell_days": 6909.0,
+    "predicted_cell_days": 6686.372474035561,
+    "ratio_reference_over_predicted": 1.033295711064399,
+    "annual_median_abs_pct_error": 0.13782025476779403,
+    "years_scored": 14
+   },
+   {
+    "province": "Nyanga",
+    "reference_cell_days": 7274.0,
+    "predicted_cell_days": 9800.751575191443,
+    "ratio_reference_over_predicted": 0.7421879785640738,
+    "annual_median_abs_pct_error": 0.3440275895748134,
+    "years_scored": 14
+   },
+   {
+    "province": "Ogooué-Ivindo",
+    "reference_cell_days": 3250.0,
+    "predicted_cell_days": 1895.2203132902391,
+    "ratio_reference_over_predicted": 1.714840209979475,
+    "annual_median_abs_pct_error": 0.43591386442809776,
+    "years_scored": 14
+   },
+   {
+    "province": "Ogooué-Lolo",
+    "reference_cell_days": 1911.0,
+    "predicted_cell_days": 2312.1735038814486,
+    "ratio_reference_over_predicted": 0.8264950691598195,
+    "annual_median_abs_pct_error": 0.36725056961100355,
+    "years_scored": 14
+   },
+   {
+    "province": "Ogooué-Maritime",
+    "reference_cell_days": 3621.0,
+    "predicted_cell_days": 5079.549261255781,
+    "ratio_reference_over_predicted": 0.7128585261726167,
+    "annual_median_abs_pct_error": 0.33553146019365565,
+    "years_scored": 14
+   },
+   {
+    "province": "Woleu-Ntem",
+    "reference_cell_days": 4909.0,
+    "predicted_cell_days": 3857.007326149851,
+    "ratio_reference_over_predicted": 1.272748425111308,
+    "annual_median_abs_pct_error": 0.25800875731663697,
+    "years_scored": 14
+   }
+  ]
+ },
+ "national_monthly": [
+  {
+   "year": 2000,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "T": 30
+   },
+   "cell_days": {
+    "T": 8.0,
+    "A": 0.0,
+    "TA": 8.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 37,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 71.48387096774194
+  },
+  {
+   "year": 2000,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "T": 31
+   },
+   "cell_days": {
+    "T": 13.0,
+    "A": 0.0,
+    "TA": 13.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 61,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 120.57500000000002
+  },
+  {
+   "year": 2001,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "T": 31
+   },
+   "cell_days": {
+    "T": 11.0,
+    "A": 0.0,
+    "TA": 11.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 111,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 115.31924882629107
+  },
+  {
+   "year": 2001,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "T": 28
+   },
+   "cell_days": {
+    "T": 20.0,
+    "A": 0.0,
+    "TA": 20.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 78,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 400.21621621621625
+  },
+  {
+   "year": 2001,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "T": 31
+   },
+   "cell_days": {
+    "T": 33.0,
+    "A": 0.0,
+    "TA": 33.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 100,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 472.25
+  },
+  {
+   "year": 2001,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "T": 30
+   },
+   "cell_days": {
+    "T": 23.0,
+    "A": 0.0,
+    "TA": 23.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 73,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 248.78057553956833
+  },
+  {
+   "year": 2001,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "T": 31
+   },
+   "cell_days": {
+    "T": 13.0,
+    "A": 0.0,
+    "TA": 13.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 68,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 157.8019801980198
+  },
+  {
+   "year": 2001,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 17,
+   "source_days": {
+    "T": 13
+   },
+   "cell_days": {
+    "T": 12.0,
+    "A": 0.0,
+    "TA": 12.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 44,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 70.93706293706293
+  },
+  {
+   "year": 2001,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 2,
+   "source_days": {
+    "T": 29
+   },
+   "cell_days": {
+    "T": 166.0,
+    "A": 0.0,
+    "TA": 166.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 321,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 831.4365384615387
+  },
+  {
+   "year": 2001,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "T": 31
+   },
+   "cell_days": {
+    "T": 214.0,
+    "A": 0.0,
+    "TA": 214.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 400,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 1361.6703087885987
+  },
+  {
+   "year": 2001,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "T": 30
+   },
+   "cell_days": {
+    "T": 94.0,
+    "A": 0.0,
+    "TA": 94.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 188,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 929.9662921348314
+  },
+  {
+   "year": 2001,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "T": 31
+   },
+   "cell_days": {
+    "T": 14.0,
+    "A": 0.0,
+    "TA": 14.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 38,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 141.8360655737705
+  },
+  {
+   "year": 2001,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "T": 30
+   },
+   "cell_days": {
+    "T": 6.0,
+    "A": 0.0,
+    "TA": 6.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 29,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 53.61290322580645
+  },
+  {
+   "year": 2001,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "T": 31
+   },
+   "cell_days": {
+    "T": 9.0,
+    "A": 0.0,
+    "TA": 9.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 76,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 83.47500000000002
+  },
+  {
+   "year": 2002,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "T": 31
+   },
+   "cell_days": {
+    "T": 6.0,
+    "A": 0.0,
+    "TA": 6.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 26,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 62.90140845070422
+  },
+  {
+   "year": 2002,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "T": 28
+   },
+   "cell_days": {
+    "T": 11.0,
+    "A": 0.0,
+    "TA": 11.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 46,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 220.11891891891892
+  },
+  {
+   "year": 2002,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "T": 31
+   },
+   "cell_days": {
+    "T": 4.0,
+    "A": 0.0,
+    "TA": 4.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 35,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 57.24242424242424
+  },
+  {
+   "year": 2002,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "T": 30
+   },
+   "cell_days": {
+    "T": 31.0,
+    "A": 0.0,
+    "TA": 31.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 93,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 335.3129496402878
+  },
+  {
+   "year": 2002,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "T": 31
+   },
+   "cell_days": {
+    "T": 20.0,
+    "A": 0.0,
+    "TA": 20.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 80,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 242.77227722772278
+  },
+  {
+   "year": 2002,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "T": 30
+   },
+   "cell_days": {
+    "T": 68.0,
+    "A": 0.0,
+    "TA": 68.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 184,
+    "aqua": 0,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 401.97668997668995
+  },
+  {
+   "year": 2002,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 26,
+    "T": 5
+   },
+   "cell_days": {
+    "T": 122.0,
+    "A": 157.0,
+    "TA": 268.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 227,
+    "aqua": 251,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 677.313199397416
+  },
+  {
+   "year": 2002,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 24,
+    "T": 7
+   },
+   "cell_days": {
+    "T": 93.0,
+    "A": 131.0,
+    "TA": 221.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 158,
+    "aqua": 197,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 698.0582010148642
+  },
+  {
+   "year": 2002,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 15.0,
+    "A": 92.0,
+    "TA": 107.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 37,
+    "aqua": 139,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 334.6798433048433
+  },
+  {
+   "year": 2002,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 10.0,
+    "A": 29.0,
+    "TA": 39.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 24,
+    "aqua": 38,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 124.23711340206185
+  },
+  {
+   "year": 2002,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 8.0,
+    "A": 9.0,
+    "TA": 17.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 20,
+    "aqua": 38,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 53.7148288973384
+  },
+  {
+   "year": 2002,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 12.0,
+    "A": 16.0,
+    "TA": 28.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 45,
+    "aqua": 51,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 92.75
+  },
+  {
+   "year": 2003,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 18.0,
+    "A": 40.0,
+    "TA": 58.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 82,
+    "aqua": 100,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 185.55014326647566
+  },
+  {
+   "year": 2003,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 28
+   },
+   "cell_days": {
+    "T": 31.0,
+    "A": 103.0,
+    "TA": 130.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 81,
+    "aqua": 148,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 425.14134275618375
+  },
+  {
+   "year": 2003,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 30.0,
+    "A": 80.0,
+    "TA": 109.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 72,
+    "aqua": 127,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 416.80364372469637
+  },
+  {
+   "year": 2003,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 14.0,
+    "A": 38.0,
+    "TA": 51.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 47,
+    "aqua": 69,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 174.46757679180888
+  },
+  {
+   "year": 2003,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 17.0,
+    "A": 48.0,
+    "TA": 64.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 61,
+    "aqua": 109,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 238.85540334855403
+  },
+  {
+   "year": 2003,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 58.0,
+    "A": 106.0,
+    "TA": 160.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 136,
+    "aqua": 175,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 396.8312958435208
+  },
+  {
+   "year": 2003,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 95.0,
+    "A": 132.0,
+    "TA": 215.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 190,
+    "aqua": 233,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 495.656118610312
+  },
+  {
+   "year": 2003,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 160.0,
+    "A": 303.0,
+    "TA": 451.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 263,
+    "aqua": 459,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 1214.8858784893266
+  },
+  {
+   "year": 2003,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 32.0,
+    "A": 77.0,
+    "TA": 104.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 53,
+    "aqua": 124,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 325.2962962962963
+  },
+  {
+   "year": 2003,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 9.0,
+    "A": 29.0,
+    "TA": 38.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 41,
+    "aqua": 52,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 121.0515463917526
+  },
+  {
+   "year": 2003,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 6.0,
+    "A": 14.0,
+    "TA": 20.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 30,
+    "aqua": 38,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 63.19391634980988
+  },
+  {
+   "year": 2003,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 6.0,
+    "A": 22.0,
+    "TA": 28.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 31,
+    "aqua": 61,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 92.75
+  },
+  {
+   "year": 2004,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 8.0,
+    "A": 15.0,
+    "TA": 23.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 44,
+    "aqua": 49,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 73.58022922636103
+  },
+  {
+   "year": 2004,
+   "month": 2,
+   "days": 29,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 29
+   },
+   "cell_days": {
+    "T": 26.0,
+    "A": 94.0,
+    "TA": 116.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 66,
+    "aqua": 145,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 379.35689045936397
+  },
+  {
+   "year": 2004,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 19.0,
+    "A": 99.0,
+    "TA": 117.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 74,
+    "aqua": 157,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 447.3947368421053
+  },
+  {
+   "year": 2004,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 18.0,
+    "A": 77.0,
+    "TA": 94.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 48,
+    "aqua": 135,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 321.56769055745167
+  },
+  {
+   "year": 2004,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 21.0,
+    "A": 40.0,
+    "TA": 60.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 59,
+    "aqua": 61,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 223.92694063926942
+  },
+  {
+   "year": 2004,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 59.0,
+    "A": 116.0,
+    "TA": 168.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 116,
+    "aqua": 197,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 416.6728606356969
+  },
+  {
+   "year": 2004,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 158.0,
+    "A": 176.0,
+    "TA": 315.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 259,
+    "aqua": 308,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 726.1938481965037
+  },
+  {
+   "year": 2004,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 189.0,
+    "A": 422.0,
+    "TA": 591.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 307,
+    "aqua": 664,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 1592.012315270936
+  },
+  {
+   "year": 2004,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 55.0,
+    "A": 189.0,
+    "TA": 239.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 100,
+    "aqua": 294,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 747.5559116809115
+  },
+  {
+   "year": 2004,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 12.0,
+    "A": 14.0,
+    "TA": 26.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 25,
+    "aqua": 30,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 82.82474226804125
+  },
+  {
+   "year": 2004,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 8.0,
+    "A": 18.0,
+    "TA": 25.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 35,
+    "aqua": 31,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 78.99239543726235
+  },
+  {
+   "year": 2004,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 15.0,
+    "A": 15.0,
+    "TA": 29.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 50,
+    "aqua": 33,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 96.0625
+  },
+  {
+   "year": 2005,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 31.0,
+    "A": 31.0,
+    "TA": 59.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 83,
+    "aqua": 66,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 188.74928366762177
+  },
+  {
+   "year": 2005,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 28
+   },
+   "cell_days": {
+    "T": 25.0,
+    "A": 68.0,
+    "TA": 91.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 60,
+    "aqua": 98,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 297.59893992932865
+  },
+  {
+   "year": 2005,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 23.0,
+    "A": 77.0,
+    "TA": 96.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 67,
+    "aqua": 121,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 367.0931174089069
+  },
+  {
+   "year": 2005,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 17.0,
+    "A": 49.0,
+    "TA": 65.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 44,
+    "aqua": 85,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 222.36063708759957
+  },
+  {
+   "year": 2005,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 22.0,
+    "A": 49.0,
+    "TA": 68.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 64,
+    "aqua": 97,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 253.78386605783865
+  },
+  {
+   "year": 2005,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 76.0,
+    "A": 125.0,
+    "TA": 194.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 140,
+    "aqua": 214,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 481.15794621026896
+  },
+  {
+   "year": 2005,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 81.0,
+    "A": 188.0,
+    "TA": 256.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 155,
+    "aqua": 327,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 590.1765877406506
+  },
+  {
+   "year": 2005,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 150.0,
+    "A": 343.0,
+    "TA": 471.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 267,
+    "aqua": 532,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 1268.7610837438424
+  },
+  {
+   "year": 2005,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 30.0,
+    "A": 112.0,
+    "TA": 141.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 58,
+    "aqua": 160,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 441.02670940170947
+  },
+  {
+   "year": 2005,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 8.0,
+    "A": 18.0,
+    "TA": 26.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 24,
+    "aqua": 39,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 82.82474226804123
+  },
+  {
+   "year": 2005,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 1.0,
+    "A": 5.0,
+    "TA": 6.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 13,
+    "aqua": 14,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 18.958174904942965
+  },
+  {
+   "year": 2005,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 7.0,
+    "A": 9.0,
+    "TA": 16.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 33,
+    "aqua": 34,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 53.0
+  },
+  {
+   "year": 2006,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 11.0,
+    "A": 11.0,
+    "TA": 22.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 24,
+    "aqua": 23,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 70.3810888252149
+  },
+  {
+   "year": 2006,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 28
+   },
+   "cell_days": {
+    "T": 14.0,
+    "A": 43.0,
+    "TA": 55.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 24,
+    "aqua": 58,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 179.86749116607774
+  },
+  {
+   "year": 2006,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 18.0,
+    "A": 90.0,
+    "TA": 107.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 29,
+    "aqua": 116,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 409.15587044534414
+  },
+  {
+   "year": 2006,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 37.0,
+    "A": 72.0,
+    "TA": 103.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 55,
+    "aqua": 103,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 352.35608646188854
+  },
+  {
+   "year": 2006,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 35.0,
+    "A": 43.0,
+    "TA": 78.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 65,
+    "aqua": 66,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 291.1050228310502
+  },
+  {
+   "year": 2006,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 37.0,
+    "A": 55.0,
+    "TA": 90.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 61,
+    "aqua": 82,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 223.21760391198043
+  },
+  {
+   "year": 2006,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 160.0,
+    "A": 276.0,
+    "TA": 413.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 280,
+    "aqua": 461,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 952.1208231909715
+  },
+  {
+   "year": 2006,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 168.0,
+    "A": 206.0,
+    "TA": 355.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 253,
+    "aqua": 327,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 956.2848932676517
+  },
+  {
+   "year": 2006,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 28.0,
+    "A": 69.0,
+    "TA": 95.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 43,
+    "aqua": 101,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 297.14565527065525
+  },
+  {
+   "year": 2006,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 18.0,
+    "A": 22.0,
+    "TA": 39.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 31,
+    "aqua": 31,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 124.23711340206185
+  },
+  {
+   "year": 2006,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 4.0,
+    "A": 19.0,
+    "TA": 23.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 10,
+    "aqua": 26,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 72.67300380228137
+  },
+  {
+   "year": 2006,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 5.0,
+    "A": 20.0,
+    "TA": 25.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 10,
+    "aqua": 31,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 82.8125
+  },
+  {
+   "year": 2007,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 27.0,
+    "A": 89.0,
+    "TA": 110.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 53,
+    "aqua": 141,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 351.9054441260745
+  },
+  {
+   "year": 2007,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 28
+   },
+   "cell_days": {
+    "T": 8.0,
+    "A": 101.0,
+    "TA": 107.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 11,
+    "aqua": 134,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 349.92402826855124
+  },
+  {
+   "year": 2007,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 37.0,
+    "A": 121.0,
+    "TA": 158.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 72,
+    "aqua": 175,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 604.174089068826
+  },
+  {
+   "year": 2007,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 30.0,
+    "A": 53.0,
+    "TA": 82.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 45,
+    "aqua": 67,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 280.5164960182026
+  },
+  {
+   "year": 2007,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 12.0,
+    "A": 42.0,
+    "TA": 50.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 28,
+    "aqua": 63,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 186.60578386605783
+  },
+  {
+   "year": 2007,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 76.0,
+    "A": 142.0,
+    "TA": 209.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 139,
+    "aqua": 222,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 518.3608801955991
+  },
+  {
+   "year": 2007,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 125.0,
+    "A": 178.0,
+    "TA": 290.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 208,
+    "aqua": 257,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 668.5594157999558
+  },
+  {
+   "year": 2007,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 84.0,
+    "A": 102.0,
+    "TA": 182.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 139,
+    "aqua": 157,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 490.26436781609203
+  },
+  {
+   "year": 2007,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 57.0,
+    "A": 98.0,
+    "TA": 153.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 104,
+    "aqua": 160,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 478.56089743589746
+  },
+  {
+   "year": 2007,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 7.0,
+    "A": 17.0,
+    "TA": 23.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 8,
+    "aqua": 22,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 73.2680412371134
+  },
+  {
+   "year": 2007,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 6.0,
+    "A": 6.0,
+    "TA": 11.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 11,
+    "aqua": 16,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 34.756653992395435
+  },
+  {
+   "year": 2007,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 11.0,
+    "A": 16.0,
+    "TA": 26.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 20,
+    "aqua": 27,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 86.125
+  },
+  {
+   "year": 2008,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 5.0,
+    "A": 26.0,
+    "TA": 31.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 31,
+    "aqua": 59,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 99.17335243553009
+  },
+  {
+   "year": 2008,
+   "month": 2,
+   "days": 29,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 29
+   },
+   "cell_days": {
+    "T": 11.0,
+    "A": 94.0,
+    "TA": 105.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 36,
+    "aqua": 147,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 343.3833922261484
+  },
+  {
+   "year": 2008,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 27.0,
+    "A": 78.0,
+    "TA": 98.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 54,
+    "aqua": 127,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 374.74089068825907
+  },
+  {
+   "year": 2008,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 12.0,
+    "A": 32.0,
+    "TA": 42.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 25,
+    "aqua": 51,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 143.679180887372
+  },
+  {
+   "year": 2008,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 19.0,
+    "A": 41.0,
+    "TA": 59.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 33,
+    "aqua": 74,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 220.19482496194826
+  },
+  {
+   "year": 2008,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 89.0,
+    "A": 124.0,
+    "TA": 204.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 179,
+    "aqua": 214,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 505.95990220048895
+  },
+  {
+   "year": 2008,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 154.0,
+    "A": 239.0,
+    "TA": 366.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 272,
+    "aqua": 397,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 843.7680902854617
+  },
+  {
+   "year": 2008,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 149.0,
+    "A": 201.0,
+    "TA": 340.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 273,
+    "aqua": 293,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 915.8784893267651
+  },
+  {
+   "year": 2008,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 47.0,
+    "A": 94.0,
+    "TA": 139.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 94,
+    "aqua": 143,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 434.7710113960114
+  },
+  {
+   "year": 2008,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 14.0,
+    "A": 22.0,
+    "TA": 36.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 27,
+    "aqua": 31,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 114.68041237113403
+  },
+  {
+   "year": 2008,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 5.0,
+    "A": 6.0,
+    "TA": 11.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 15,
+    "aqua": 18,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 34.756653992395435
+  },
+  {
+   "year": 2008,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 5.0,
+    "A": 12.0,
+    "TA": 16.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 17,
+    "aqua": 29,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 53.0
+  },
+  {
+   "year": 2009,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 9.0,
+    "A": 21.0,
+    "TA": 30.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 25,
+    "aqua": 32,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 95.97421203438397
+  },
+  {
+   "year": 2009,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 28
+   },
+   "cell_days": {
+    "T": 12.0,
+    "A": 36.0,
+    "TA": 48.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 23,
+    "aqua": 46,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 156.97526501766788
+  },
+  {
+   "year": 2009,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 14.0,
+    "A": 89.0,
+    "TA": 100.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 20,
+    "aqua": 111,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 382.38866396761136
+  },
+  {
+   "year": 2009,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 23.0,
+    "A": 50.0,
+    "TA": 72.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 39,
+    "aqua": 76,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 246.30716723549492
+  },
+  {
+   "year": 2009,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 23.0,
+    "A": 46.0,
+    "TA": 66.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 42,
+    "aqua": 71,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 246.31963470319633
+  },
+  {
+   "year": 2009,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 39.0,
+    "A": 57.0,
+    "TA": 94.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 68,
+    "aqua": 78,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 233.13838630806848
+  },
+  {
+   "year": 2009,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 112.0,
+    "A": 160.0,
+    "TA": 258.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 171,
+    "aqua": 236,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 594.7873423323745
+  },
+  {
+   "year": 2009,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 60.0,
+    "A": 66.0,
+    "TA": 123.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 95,
+    "aqua": 88,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 331.33251231527095
+  },
+  {
+   "year": 2009,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 87.0,
+    "A": 225.0,
+    "TA": 309.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 139,
+    "aqua": 315,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 966.5053418803419
+  },
+  {
+   "year": 2009,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 19.0,
+    "A": 20.0,
+    "TA": 39.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 30,
+    "aqua": 33,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 124.23711340206188
+  },
+  {
+   "year": 2009,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 5.0,
+    "A": 8.0,
+    "TA": 13.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 11,
+    "aqua": 22,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 41.07604562737642
+  },
+  {
+   "year": 2009,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 13.0,
+    "A": 20.0,
+    "TA": 33.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 24,
+    "aqua": 40,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 109.3125
+  },
+  {
+   "year": 2010,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 9.0,
+    "A": 26.0,
+    "TA": 35.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 43,
+    "aqua": 50,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 111.96991404011463
+  },
+  {
+   "year": 2010,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 28
+   },
+   "cell_days": {
+    "T": 13.0,
+    "A": 63.0,
+    "TA": 73.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 43,
+    "aqua": 100,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 238.7332155477032
+  },
+  {
+   "year": 2010,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 36.0,
+    "A": 104.0,
+    "TA": 139.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 58,
+    "aqua": 146,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 531.5202429149798
+  },
+  {
+   "year": 2010,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 30.0,
+    "A": 75.0,
+    "TA": 101.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 54,
+    "aqua": 114,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 345.51422070534704
+  },
+  {
+   "year": 2010,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 37.0,
+    "A": 55.0,
+    "TA": 89.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 75,
+    "aqua": 96,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 332.1582952815829
+  },
+  {
+   "year": 2010,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 67.0,
+    "A": 86.0,
+    "TA": 146.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 129,
+    "aqua": 134,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 362.1085574572127
+  },
+  {
+   "year": 2010,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 103.0,
+    "A": 129.0,
+    "TA": 222.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 167,
+    "aqua": 212,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 511.79375968134536
+  },
+  {
+   "year": 2010,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 140.0,
+    "A": 223.0,
+    "TA": 349.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 253,
+    "aqua": 366,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 940.1223316912972
+  },
+  {
+   "year": 2010,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 55.0,
+    "A": 117.0,
+    "TA": 168.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 121,
+    "aqua": 177,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 525.4786324786324
+  },
+  {
+   "year": 2010,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 4.0,
+    "A": 20.0,
+    "TA": 24.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 9,
+    "aqua": 35,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 76.45360824742268
+  },
+  {
+   "year": 2010,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 1.0,
+    "A": 11.0,
+    "TA": 12.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 4,
+    "aqua": 18,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 37.91634980988593
+  },
+  {
+   "year": 2010,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 5.0,
+    "A": 18.0,
+    "TA": 22.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 26,
+    "aqua": 54,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 72.875
+  },
+  {
+   "year": 2011,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 11.0,
+    "A": 29.0,
+    "TA": 39.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 28,
+    "aqua": 43,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 124.76647564469916
+  },
+  {
+   "year": 2011,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 28
+   },
+   "cell_days": {
+    "T": 6.0,
+    "A": 53.0,
+    "TA": 58.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 26,
+    "aqua": 87,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 189.67844522968198
+  },
+  {
+   "year": 2011,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 21.0,
+    "A": 93.0,
+    "TA": 112.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 48,
+    "aqua": 136,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 428.2753036437247
+  },
+  {
+   "year": 2011,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 19.0,
+    "A": 59.0,
+    "TA": 73.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 31,
+    "aqua": 98,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 249.72810011376566
+  },
+  {
+   "year": 2011,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 15.0,
+    "A": 35.0,
+    "TA": 50.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 36,
+    "aqua": 50,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 186.60578386605786
+  },
+  {
+   "year": 2011,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 53.0,
+    "A": 58.0,
+    "TA": 105.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 91,
+    "aqua": 93,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 260.4205378973105
+  },
+  {
+   "year": 2011,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 150.0,
+    "A": 273.0,
+    "TA": 402.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 291,
+    "aqua": 451,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 926.7616729364904
+  },
+  {
+   "year": 2011,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 204.0,
+    "A": 286.0,
+    "TA": 461.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 354,
+    "aqua": 433,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 1241.8234811165846
+  },
+  {
+   "year": 2011,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 110.0,
+    "A": 187.0,
+    "TA": 292.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 178,
+    "aqua": 262,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 913.3319088319087
+  },
+  {
+   "year": 2011,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 13.0,
+    "A": 16.0,
+    "TA": 28.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 28,
+    "aqua": 25,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 89.19587628865979
+  },
+  {
+   "year": 2011,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 30
+   },
+   "cell_days": {
+    "T": 5.0,
+    "A": 11.0,
+    "TA": 16.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 18,
+    "aqua": 21,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 50.555133079847906
+  },
+  {
+   "year": 2011,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "TA": 31
+   },
+   "cell_days": {
+    "T": 10.0,
+    "A": 11.0,
+    "TA": 20.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 22,
+    "aqua": 20,
+    "snpp": 0,
+    "noaa20": 0
+   },
+   "harmonized": 66.25
+  },
+  {
+   "year": 2012,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 12,
+    "TA": 19
+   },
+   "cell_days": {
+    "T": 6.0,
+    "A": 21.0,
+    "TA": 27.0,
+    "S": 68.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 20,
+    "aqua": 32,
+    "snpp": 166,
+    "noaa20": 0
+   },
+   "harmonized": 115.98710601719198
+  },
+  {
+   "year": 2012,
+   "month": 2,
+   "days": 29,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 29
+   },
+   "cell_days": {
+    "T": 5.0,
+    "A": 27.0,
+    "TA": 31.0,
+    "S": 144.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 17,
+    "aqua": 43,
+    "snpp": 389,
+    "noaa20": 0
+   },
+   "harmonized": 144.0
+  },
+  {
+   "year": 2012,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 27.0,
+    "A": 48.0,
+    "TA": 74.0,
+    "S": 276.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 44,
+    "aqua": 97,
+    "snpp": 631,
+    "noaa20": 0
+   },
+   "harmonized": 276.0
+  },
+  {
+   "year": 2012,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 17.0,
+    "A": 43.0,
+    "TA": 57.0,
+    "S": 248.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 26,
+    "aqua": 79,
+    "snpp": 620,
+    "noaa20": 0
+   },
+   "harmonized": 248.0
+  },
+  {
+   "year": 2012,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 10.0,
+    "A": 35.0,
+    "TA": 43.0,
+    "S": 141.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 21,
+    "aqua": 56,
+    "snpp": 445,
+    "noaa20": 0
+   },
+   "harmonized": 141.0
+  },
+  {
+   "year": 2012,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 57.0,
+    "A": 64.0,
+    "TA": 116.0,
+    "S": 229.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 104,
+    "aqua": 94,
+    "snpp": 694,
+    "noaa20": 0
+   },
+   "harmonized": 229.0
+  },
+  {
+   "year": 2012,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 254.0,
+    "A": 352.0,
+    "TA": 544.0,
+    "S": 1228.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 450,
+    "aqua": 582,
+    "snpp": 3950,
+    "noaa20": 0
+   },
+   "harmonized": 1228.0
+  },
+  {
+   "year": 2012,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 105.0,
+    "A": 154.0,
+    "TA": 251.0,
+    "S": 804.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 163,
+    "aqua": 215,
+    "snpp": 1836,
+    "noaa20": 0
+   },
+   "harmonized": 804.0
+  },
+  {
+   "year": 2012,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 53.0,
+    "A": 91.0,
+    "TA": 143.0,
+    "S": 663.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 99,
+    "aqua": 152,
+    "snpp": 1334,
+    "noaa20": 0
+   },
+   "harmonized": 663.0
+  },
+  {
+   "year": 2012,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 7.0,
+    "A": 22.0,
+    "TA": 29.0,
+    "S": 83.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 18,
+    "aqua": 36,
+    "snpp": 207,
+    "noaa20": 0
+   },
+   "harmonized": 83.0
+  },
+  {
+   "year": 2012,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 15.0,
+    "A": 11.0,
+    "TA": 25.0,
+    "S": 60.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 33,
+    "aqua": 37,
+    "snpp": 254,
+    "noaa20": 0
+   },
+   "harmonized": 60.0
+  },
+  {
+   "year": 2012,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 9.0,
+    "A": 9.0,
+    "TA": 18.0,
+    "S": 50.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 26,
+    "aqua": 30,
+    "snpp": 202,
+    "noaa20": 0
+   },
+   "harmonized": 50.0
+  },
+  {
+   "year": 2013,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 15.0,
+    "A": 26.0,
+    "TA": 41.0,
+    "S": 97.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 37,
+    "aqua": 47,
+    "snpp": 342,
+    "noaa20": 0
+   },
+   "harmonized": 97.0
+  },
+  {
+   "year": 2013,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 28
+   },
+   "cell_days": {
+    "T": 18.0,
+    "A": 51.0,
+    "TA": 64.0,
+    "S": 238.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 32,
+    "aqua": 73,
+    "snpp": 564,
+    "noaa20": 0
+   },
+   "harmonized": 238.0
+  },
+  {
+   "year": 2013,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 7.0,
+    "A": 55.0,
+    "TA": 61.0,
+    "S": 234.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 17,
+    "aqua": 74,
+    "snpp": 514,
+    "noaa20": 0
+   },
+   "harmonized": 234.0
+  },
+  {
+   "year": 2013,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 18.0,
+    "A": 68.0,
+    "TA": 83.0,
+    "S": 243.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 32,
+    "aqua": 97,
+    "snpp": 569,
+    "noaa20": 0
+   },
+   "harmonized": 243.0
+  },
+  {
+   "year": 2013,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 12.0,
+    "A": 46.0,
+    "TA": 57.0,
+    "S": 158.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 24,
+    "aqua": 77,
+    "snpp": 378,
+    "noaa20": 0
+   },
+   "harmonized": 158.0
+  },
+  {
+   "year": 2013,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 88.0,
+    "A": 106.0,
+    "TA": 187.0,
+    "S": 431.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 150,
+    "aqua": 183,
+    "snpp": 1180,
+    "noaa20": 0
+   },
+   "harmonized": 431.0
+  },
+  {
+   "year": 2013,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 177.0,
+    "A": 176.0,
+    "TA": 324.0,
+    "S": 830.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 271,
+    "aqua": 303,
+    "snpp": 2419,
+    "noaa20": 0
+   },
+   "harmonized": 830.0
+  },
+  {
+   "year": 2013,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 173.0,
+    "A": 309.0,
+    "TA": 458.0,
+    "S": 1487.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 272,
+    "aqua": 498,
+    "snpp": 3594,
+    "noaa20": 0
+   },
+   "harmonized": 1487.0
+  },
+  {
+   "year": 2013,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 67.0,
+    "A": 157.0,
+    "TA": 223.0,
+    "S": 741.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 123,
+    "aqua": 220,
+    "snpp": 1470,
+    "noaa20": 0
+   },
+   "harmonized": 741.0
+  },
+  {
+   "year": 2013,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 8.0,
+    "A": 14.0,
+    "TA": 21.0,
+    "S": 106.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 11,
+    "aqua": 23,
+    "snpp": 275,
+    "noaa20": 0
+   },
+   "harmonized": 106.0
+  },
+  {
+   "year": 2013,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 2.0,
+    "A": 3.0,
+    "TA": 4.0,
+    "S": 39.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 4,
+    "aqua": 9,
+    "snpp": 151,
+    "noaa20": 0
+   },
+   "harmonized": 39.0
+  },
+  {
+   "year": 2013,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 5.0,
+    "A": 6.0,
+    "TA": 11.0,
+    "S": 71.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 10,
+    "aqua": 13,
+    "snpp": 201,
+    "noaa20": 0
+   },
+   "harmonized": 71.0
+  },
+  {
+   "year": 2014,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 9.0,
+    "A": 22.0,
+    "TA": 30.0,
+    "S": 88.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 20,
+    "aqua": 28,
+    "snpp": 256,
+    "noaa20": 0
+   },
+   "harmonized": 88.0
+  },
+  {
+   "year": 2014,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 28
+   },
+   "cell_days": {
+    "T": 8.0,
+    "A": 83.0,
+    "TA": 91.0,
+    "S": 256.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 10,
+    "aqua": 103,
+    "snpp": 481,
+    "noaa20": 0
+   },
+   "harmonized": 256.0
+  },
+  {
+   "year": 2014,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 23.0,
+    "A": 65.0,
+    "TA": 85.0,
+    "S": 278.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 32,
+    "aqua": 91,
+    "snpp": 611,
+    "noaa20": 0
+   },
+   "harmonized": 278.0
+  },
+  {
+   "year": 2014,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 8.0,
+    "A": 28.0,
+    "TA": 36.0,
+    "S": 149.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 15,
+    "aqua": 37,
+    "snpp": 345,
+    "noaa20": 0
+   },
+   "harmonized": 149.0
+  },
+  {
+   "year": 2014,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 8.0,
+    "A": 47.0,
+    "TA": 52.0,
+    "S": 181.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 16,
+    "aqua": 65,
+    "snpp": 396,
+    "noaa20": 0
+   },
+   "harmonized": 181.0
+  },
+  {
+   "year": 2014,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 23.0,
+    "A": 37.0,
+    "TA": 60.0,
+    "S": 170.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 43,
+    "aqua": 50,
+    "snpp": 536,
+    "noaa20": 0
+   },
+   "harmonized": 170.0
+  },
+  {
+   "year": 2014,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 166.0,
+    "A": 271.0,
+    "TA": 407.0,
+    "S": 977.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 265,
+    "aqua": 420,
+    "snpp": 2852,
+    "noaa20": 0
+   },
+   "harmonized": 977.0
+  },
+  {
+   "year": 2014,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 88.0,
+    "A": 83.0,
+    "TA": 166.0,
+    "S": 657.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 154,
+    "aqua": 121,
+    "snpp": 1435,
+    "noaa20": 0
+   },
+   "harmonized": 657.0
+  },
+  {
+   "year": 2014,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 70.0,
+    "A": 173.0,
+    "TA": 238.0,
+    "S": 812.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 136,
+    "aqua": 254,
+    "snpp": 1609,
+    "noaa20": 0
+   },
+   "harmonized": 812.0
+  },
+  {
+   "year": 2014,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 24.0,
+    "A": 32.0,
+    "TA": 56.0,
+    "S": 176.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 31,
+    "aqua": 49,
+    "snpp": 385,
+    "noaa20": 0
+   },
+   "harmonized": 176.0
+  },
+  {
+   "year": 2014,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 11.0,
+    "A": 14.0,
+    "TA": 24.0,
+    "S": 62.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 18,
+    "aqua": 26,
+    "snpp": 176,
+    "noaa20": 0
+   },
+   "harmonized": 62.0
+  },
+  {
+   "year": 2014,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 3.0,
+    "A": 13.0,
+    "TA": 16.0,
+    "S": 63.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 8,
+    "aqua": 23,
+    "snpp": 201,
+    "noaa20": 0
+   },
+   "harmonized": 63.0
+  },
+  {
+   "year": 2015,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 22.0,
+    "A": 49.0,
+    "TA": 69.0,
+    "S": 209.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 33,
+    "aqua": 70,
+    "snpp": 542,
+    "noaa20": 0
+   },
+   "harmonized": 209.0
+  },
+  {
+   "year": 2015,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 28
+   },
+   "cell_days": {
+    "T": 3.0,
+    "A": 56.0,
+    "TA": 59.0,
+    "S": 259.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 8,
+    "aqua": 68,
+    "snpp": 463,
+    "noaa20": 0
+   },
+   "harmonized": 259.0
+  },
+  {
+   "year": 2015,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 13.0,
+    "A": 45.0,
+    "TA": 56.0,
+    "S": 200.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 16,
+    "aqua": 59,
+    "snpp": 419,
+    "noaa20": 0
+   },
+   "harmonized": 200.0
+  },
+  {
+   "year": 2015,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 24.0,
+    "A": 67.0,
+    "TA": 88.0,
+    "S": 301.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 30,
+    "aqua": 92,
+    "snpp": 660,
+    "noaa20": 0
+   },
+   "harmonized": 301.0
+  },
+  {
+   "year": 2015,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 6.0,
+    "A": 23.0,
+    "TA": 29.0,
+    "S": 176.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 8,
+    "aqua": 29,
+    "snpp": 416,
+    "noaa20": 0
+   },
+   "harmonized": 176.0
+  },
+  {
+   "year": 2015,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 102.0,
+    "A": 127.0,
+    "TA": 213.0,
+    "S": 543.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 159,
+    "aqua": 198,
+    "snpp": 1409,
+    "noaa20": 0
+   },
+   "harmonized": 543.0
+  },
+  {
+   "year": 2015,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 115.0,
+    "A": 207.0,
+    "TA": 307.0,
+    "S": 697.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 183,
+    "aqua": 325,
+    "snpp": 2031,
+    "noaa20": 0
+   },
+   "harmonized": 697.0
+  },
+  {
+   "year": 2015,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 76.0,
+    "A": 107.0,
+    "TA": 180.0,
+    "S": 538.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 120,
+    "aqua": 175,
+    "snpp": 1208,
+    "noaa20": 0
+   },
+   "harmonized": 538.0
+  },
+  {
+   "year": 2015,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 122.0,
+    "A": 219.0,
+    "TA": 319.0,
+    "S": 899.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 197,
+    "aqua": 314,
+    "snpp": 1848,
+    "noaa20": 0
+   },
+   "harmonized": 899.0
+  },
+  {
+   "year": 2015,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 19.0,
+    "A": 22.0,
+    "TA": 39.0,
+    "S": 126.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 33,
+    "aqua": 33,
+    "snpp": 279,
+    "noaa20": 0
+   },
+   "harmonized": 126.0
+  },
+  {
+   "year": 2015,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 4.0,
+    "A": 13.0,
+    "TA": 17.0,
+    "S": 69.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 5,
+    "aqua": 16,
+    "snpp": 164,
+    "noaa20": 0
+   },
+   "harmonized": 69.0
+  },
+  {
+   "year": 2015,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 15.0,
+    "A": 28.0,
+    "TA": 41.0,
+    "S": 140.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 23,
+    "aqua": 39,
+    "snpp": 360,
+    "noaa20": 0
+   },
+   "harmonized": 140.0
+  },
+  {
+   "year": 2016,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 19.0,
+    "A": 61.0,
+    "TA": 78.0,
+    "S": 241.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 30,
+    "aqua": 81,
+    "snpp": 588,
+    "noaa20": 0
+   },
+   "harmonized": 241.0
+  },
+  {
+   "year": 2016,
+   "month": 2,
+   "days": 29,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 29
+   },
+   "cell_days": {
+    "T": 18.0,
+    "A": 116.0,
+    "TA": 131.0,
+    "S": 366.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 34,
+    "aqua": 152,
+    "snpp": 730,
+    "noaa20": 0
+   },
+   "harmonized": 366.0
+  },
+  {
+   "year": 2016,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 13.0,
+    "A": 16.0,
+    "TA": 28.0,
+    "S": 163.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 13,
+    "aqua": 27,
+    "snpp": 348,
+    "noaa20": 0
+   },
+   "harmonized": 163.0
+  },
+  {
+   "year": 2016,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 15.0,
+    "A": 43.0,
+    "TA": 55.0,
+    "S": 225.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 17,
+    "aqua": 54,
+    "snpp": 467,
+    "noaa20": 0
+   },
+   "harmonized": 225.0
+  },
+  {
+   "year": 2016,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 21.0,
+    "A": 50.0,
+    "TA": 70.0,
+    "S": 235.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 21,
+    "aqua": 65,
+    "snpp": 567,
+    "noaa20": 0
+   },
+   "harmonized": 235.0
+  },
+  {
+   "year": 2016,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 61.0,
+    "A": 108.0,
+    "TA": 163.0,
+    "S": 415.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 89,
+    "aqua": 152,
+    "snpp": 1134,
+    "noaa20": 0
+   },
+   "harmonized": 415.0
+  },
+  {
+   "year": 2016,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 223.0,
+    "A": 277.0,
+    "TA": 465.0,
+    "S": 961.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 348,
+    "aqua": 437,
+    "snpp": 2816,
+    "noaa20": 0
+   },
+   "harmonized": 961.0
+  },
+  {
+   "year": 2016,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 134.0,
+    "A": 84.0,
+    "TA": 208.0,
+    "S": 554.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 224,
+    "aqua": 126,
+    "snpp": 1441,
+    "noaa20": 0
+   },
+   "harmonized": 554.0
+  },
+  {
+   "year": 2016,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 64.0,
+    "A": 186.0,
+    "TA": 242.0,
+    "S": 723.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 114,
+    "aqua": 283,
+    "snpp": 1657,
+    "noaa20": 0
+   },
+   "harmonized": 723.0
+  },
+  {
+   "year": 2016,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 19.0,
+    "A": 39.0,
+    "TA": 57.0,
+    "S": 164.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 27,
+    "aqua": 50,
+    "snpp": 364,
+    "noaa20": 0
+   },
+   "harmonized": 164.0
+  },
+  {
+   "year": 2016,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 5.0,
+    "A": 14.0,
+    "TA": 19.0,
+    "S": 83.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 6,
+    "aqua": 19,
+    "snpp": 227,
+    "noaa20": 0
+   },
+   "harmonized": 83.0
+  },
+  {
+   "year": 2016,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 7.0,
+    "A": 16.0,
+    "TA": 22.0,
+    "S": 67.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 7,
+    "aqua": 23,
+    "snpp": 259,
+    "noaa20": 0
+   },
+   "harmonized": 67.0
+  },
+  {
+   "year": 2017,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 13.0,
+    "A": 29.0,
+    "TA": 40.0,
+    "S": 100.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 19,
+    "aqua": 33,
+    "snpp": 355,
+    "noaa20": 0
+   },
+   "harmonized": 100.0
+  },
+  {
+   "year": 2017,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 28
+   },
+   "cell_days": {
+    "T": 23.0,
+    "A": 37.0,
+    "TA": 57.0,
+    "S": 203.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 25,
+    "aqua": 46,
+    "snpp": 453,
+    "noaa20": 0
+   },
+   "harmonized": 203.0
+  },
+  {
+   "year": 2017,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 35.0,
+    "A": 60.0,
+    "TA": 91.0,
+    "S": 312.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 45,
+    "aqua": 81,
+    "snpp": 797,
+    "noaa20": 0
+   },
+   "harmonized": 312.0
+  },
+  {
+   "year": 2017,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 35.0,
+    "A": 58.0,
+    "TA": 89.0,
+    "S": 222.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 42,
+    "aqua": 86,
+    "snpp": 577,
+    "noaa20": 0
+   },
+   "harmonized": 222.0
+  },
+  {
+   "year": 2017,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 25.0,
+    "A": 33.0,
+    "TA": 57.0,
+    "S": 171.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 28,
+    "aqua": 37,
+    "snpp": 529,
+    "noaa20": 0
+   },
+   "harmonized": 171.0
+  },
+  {
+   "year": 2017,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 43.0,
+    "A": 49.0,
+    "TA": 90.0,
+    "S": 216.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 54,
+    "aqua": 67,
+    "snpp": 650,
+    "noaa20": 0
+   },
+   "harmonized": 216.0
+  },
+  {
+   "year": 2017,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 158.0,
+    "A": 159.0,
+    "TA": 303.0,
+    "S": 743.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 252,
+    "aqua": 232,
+    "snpp": 2279,
+    "noaa20": 0
+   },
+   "harmonized": 743.0
+  },
+  {
+   "year": 2017,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 144.0,
+    "A": 200.0,
+    "TA": 328.0,
+    "S": 801.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 234,
+    "aqua": 310,
+    "snpp": 2034,
+    "noaa20": 0
+   },
+   "harmonized": 801.0
+  },
+  {
+   "year": 2017,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 86.0,
+    "A": 154.0,
+    "TA": 231.0,
+    "S": 610.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 127,
+    "aqua": 213,
+    "snpp": 1292,
+    "noaa20": 0
+   },
+   "harmonized": 610.0
+  },
+  {
+   "year": 2017,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 10.0,
+    "A": 33.0,
+    "TA": 42.0,
+    "S": 147.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 13,
+    "aqua": 42,
+    "snpp": 374,
+    "noaa20": 0
+   },
+   "harmonized": 147.0
+  },
+  {
+   "year": 2017,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 6.0,
+    "A": 27.0,
+    "TA": 33.0,
+    "S": 69.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 6,
+    "aqua": 31,
+    "snpp": 274,
+    "noaa20": 0
+   },
+   "harmonized": 69.0
+  },
+  {
+   "year": 2017,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 27,
+    "TA": 4
+   },
+   "cell_days": {
+    "T": 19.0,
+    "A": 14.0,
+    "TA": 32.0,
+    "S": 64.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 20,
+    "aqua": 20,
+    "snpp": 264,
+    "noaa20": 0
+   },
+   "harmonized": 73.9375
+  },
+  {
+   "year": 2018,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 9.0,
+    "A": 24.0,
+    "TA": 33.0,
+    "S": 166.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 42,
+    "aqua": 50,
+    "snpp": 477,
+    "noaa20": 0
+   },
+   "harmonized": 166.0
+  },
+  {
+   "year": 2018,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 28
+   },
+   "cell_days": {
+    "T": 10.0,
+    "A": 52.0,
+    "TA": 62.0,
+    "S": 235.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 16,
+    "aqua": 70,
+    "snpp": 508,
+    "noaa20": 0
+   },
+   "harmonized": 235.0
+  },
+  {
+   "year": 2018,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 14.0,
+    "A": 39.0,
+    "TA": 51.0,
+    "S": 297.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 39,
+    "aqua": 67,
+    "snpp": 725,
+    "noaa20": 0
+   },
+   "harmonized": 297.0
+  },
+  {
+   "year": 2018,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 14.0,
+    "A": 45.0,
+    "TA": 58.0,
+    "S": 263.0,
+    "N": 245.0
+   },
+   "detections": {
+    "terra": 27,
+    "aqua": 63,
+    "snpp": 698,
+    "noaa20": 690
+   },
+   "harmonized": 263.0
+  },
+  {
+   "year": 2018,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 11.0,
+    "A": 25.0,
+    "TA": 36.0,
+    "S": 213.0,
+    "N": 144.0
+   },
+   "detections": {
+    "terra": 45,
+    "aqua": 61,
+    "snpp": 631,
+    "noaa20": 443
+   },
+   "harmonized": 213.0
+  },
+  {
+   "year": 2018,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 69.0,
+    "A": 95.0,
+    "TA": 151.0,
+    "S": 482.0,
+    "N": 466.0
+   },
+   "detections": {
+    "terra": 145,
+    "aqua": 168,
+    "snpp": 1514,
+    "noaa20": 1457
+   },
+   "harmonized": 482.0
+  },
+  {
+   "year": 2018,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 122.0,
+    "A": 123.0,
+    "TA": 226.0,
+    "S": 582.0,
+    "N": 552.0
+   },
+   "detections": {
+    "terra": 202,
+    "aqua": 201,
+    "snpp": 1798,
+    "noaa20": 1654
+   },
+   "harmonized": 582.0
+  },
+  {
+   "year": 2018,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 220.0,
+    "A": 240.0,
+    "TA": 440.0,
+    "S": 1199.0,
+    "N": 1224.0
+   },
+   "detections": {
+    "terra": 339,
+    "aqua": 374,
+    "snpp": 2890,
+    "noaa20": 3009
+   },
+   "harmonized": 1199.0
+  },
+  {
+   "year": 2018,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 29.0,
+    "A": 107.0,
+    "TA": 136.0,
+    "S": 589.0,
+    "N": 545.0
+   },
+   "detections": {
+    "terra": 44,
+    "aqua": 141,
+    "snpp": 1186,
+    "noaa20": 1105
+   },
+   "harmonized": 589.0
+  },
+  {
+   "year": 2018,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 5.0,
+    "A": 11.0,
+    "TA": 15.0,
+    "S": 103.0,
+    "N": 103.0
+   },
+   "detections": {
+    "terra": 10,
+    "aqua": 24,
+    "snpp": 301,
+    "noaa20": 344
+   },
+   "harmonized": 103.0
+  },
+  {
+   "year": 2018,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 4.0,
+    "A": 13.0,
+    "TA": 16.0,
+    "S": 92.0,
+    "N": 68.0
+   },
+   "detections": {
+    "terra": 22,
+    "aqua": 25,
+    "snpp": 322,
+    "noaa20": 299
+   },
+   "harmonized": 92.0
+  },
+  {
+   "year": 2018,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 8.0,
+    "A": 17.0,
+    "TA": 25.0,
+    "S": 91.0,
+    "N": 63.0
+   },
+   "detections": {
+    "terra": 19,
+    "aqua": 31,
+    "snpp": 389,
+    "noaa20": 343
+   },
+   "harmonized": 91.0
+  },
+  {
+   "year": 2019,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 8.0,
+    "A": 18.0,
+    "TA": 24.0,
+    "S": 147.0,
+    "N": 114.0
+   },
+   "detections": {
+    "terra": 15,
+    "aqua": 33,
+    "snpp": 455,
+    "noaa20": 467
+   },
+   "harmonized": 147.0
+  },
+  {
+   "year": 2019,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 28
+   },
+   "cell_days": {
+    "T": 6.0,
+    "A": 51.0,
+    "TA": 57.0,
+    "S": 255.0,
+    "N": 216.0
+   },
+   "detections": {
+    "terra": 16,
+    "aqua": 77,
+    "snpp": 521,
+    "noaa20": 488
+   },
+   "harmonized": 255.0
+  },
+  {
+   "year": 2019,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 21.0,
+    "A": 60.0,
+    "TA": 78.0,
+    "S": 330.0,
+    "N": 339.0
+   },
+   "detections": {
+    "terra": 42,
+    "aqua": 98,
+    "snpp": 807,
+    "noaa20": 960
+   },
+   "harmonized": 330.0
+  },
+  {
+   "year": 2019,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 22.0,
+    "A": 51.0,
+    "TA": 72.0,
+    "S": 268.0,
+    "N": 245.0
+   },
+   "detections": {
+    "terra": 37,
+    "aqua": 85,
+    "snpp": 754,
+    "noaa20": 776
+   },
+   "harmonized": 268.0
+  },
+  {
+   "year": 2019,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 17.0,
+    "A": 26.0,
+    "TA": 40.0,
+    "S": 181.0,
+    "N": 134.0
+   },
+   "detections": {
+    "terra": 28,
+    "aqua": 45,
+    "snpp": 504,
+    "noaa20": 458
+   },
+   "harmonized": 181.0
+  },
+  {
+   "year": 2019,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 115.0,
+    "A": 185.0,
+    "TA": 287.0,
+    "S": 652.0,
+    "N": 613.0
+   },
+   "detections": {
+    "terra": 180,
+    "aqua": 297,
+    "snpp": 2008,
+    "noaa20": 1916
+   },
+   "harmonized": 652.0
+  },
+  {
+   "year": 2019,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 148.0,
+    "A": 102.0,
+    "TA": 239.0,
+    "S": 566.0,
+    "N": 537.0
+   },
+   "detections": {
+    "terra": 231,
+    "aqua": 164,
+    "snpp": 1685,
+    "noaa20": 1581
+   },
+   "harmonized": 566.0
+  },
+  {
+   "year": 2019,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 190.0,
+    "A": 149.0,
+    "TA": 325.0,
+    "S": 972.0,
+    "N": 1080.0
+   },
+   "detections": {
+    "terra": 304,
+    "aqua": 251,
+    "snpp": 2519,
+    "noaa20": 2626
+   },
+   "harmonized": 972.0
+  },
+  {
+   "year": 2019,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 63.0,
+    "A": 128.0,
+    "TA": 187.0,
+    "S": 615.0,
+    "N": 652.0
+   },
+   "detections": {
+    "terra": 96,
+    "aqua": 188,
+    "snpp": 1295,
+    "noaa20": 1259
+   },
+   "harmonized": 615.0
+  },
+  {
+   "year": 2019,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 5.0,
+    "A": 29.0,
+    "TA": 34.0,
+    "S": 91.0,
+    "N": 83.0
+   },
+   "detections": {
+    "terra": 11,
+    "aqua": 37,
+    "snpp": 283,
+    "noaa20": 297
+   },
+   "harmonized": 91.0
+  },
+  {
+   "year": 2019,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 12.0,
+    "A": 13.0,
+    "TA": 25.0,
+    "S": 81.0,
+    "N": 67.0
+   },
+   "detections": {
+    "terra": 16,
+    "aqua": 27,
+    "snpp": 308,
+    "noaa20": 311
+   },
+   "harmonized": 81.0
+  },
+  {
+   "year": 2019,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 6.0,
+    "A": 15.0,
+    "TA": 21.0,
+    "S": 114.0,
+    "N": 85.0
+   },
+   "detections": {
+    "terra": 15,
+    "aqua": 28,
+    "snpp": 329,
+    "noaa20": 320
+   },
+   "harmonized": 114.0
+  },
+  {
+   "year": 2020,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 25.0,
+    "A": 55.0,
+    "TA": 78.0,
+    "S": 293.0,
+    "N": 248.0
+   },
+   "detections": {
+    "terra": 37,
+    "aqua": 76,
+    "snpp": 838,
+    "noaa20": 829
+   },
+   "harmonized": 293.0
+  },
+  {
+   "year": 2020,
+   "month": 2,
+   "days": 29,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 29
+   },
+   "cell_days": {
+    "T": 22.0,
+    "A": 77.0,
+    "TA": 99.0,
+    "S": 324.0,
+    "N": 295.0
+   },
+   "detections": {
+    "terra": 33,
+    "aqua": 101,
+    "snpp": 802,
+    "noaa20": 794
+   },
+   "harmonized": 324.0
+  },
+  {
+   "year": 2020,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 30.0,
+    "A": 79.0,
+    "TA": 106.0,
+    "S": 362.0,
+    "N": 337.0
+   },
+   "detections": {
+    "terra": 49,
+    "aqua": 100,
+    "snpp": 845,
+    "noaa20": 807
+   },
+   "harmonized": 362.0
+  },
+  {
+   "year": 2020,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 26.0,
+    "A": 37.0,
+    "TA": 61.0,
+    "S": 165.0,
+    "N": 185.0
+   },
+   "detections": {
+    "terra": 45,
+    "aqua": 53,
+    "snpp": 531,
+    "noaa20": 442
+   },
+   "harmonized": 165.0
+  },
+  {
+   "year": 2020,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 18.0,
+    "A": 33.0,
+    "TA": 51.0,
+    "S": 194.0,
+    "N": 202.0
+   },
+   "detections": {
+    "terra": 28,
+    "aqua": 49,
+    "snpp": 590,
+    "noaa20": 647
+   },
+   "harmonized": 194.0
+  },
+  {
+   "year": 2020,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 60.0,
+    "A": 87.0,
+    "TA": 136.0,
+    "S": 370.0,
+    "N": 343.0
+   },
+   "detections": {
+    "terra": 100,
+    "aqua": 118,
+    "snpp": 1026,
+    "noaa20": 983
+   },
+   "harmonized": 370.0
+  },
+  {
+   "year": 2020,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 128.0,
+    "A": 191.0,
+    "TA": 299.0,
+    "S": 754.0,
+    "N": 742.0
+   },
+   "detections": {
+    "terra": 207,
+    "aqua": 306,
+    "snpp": 2157,
+    "noaa20": 1828
+   },
+   "harmonized": 754.0
+  },
+  {
+   "year": 2020,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 115.0,
+    "A": 151.0,
+    "TA": 254.0,
+    "S": 982.0,
+    "N": 1012.0
+   },
+   "detections": {
+    "terra": 176,
+    "aqua": 234,
+    "snpp": 2348,
+    "noaa20": 2400
+   },
+   "harmonized": 982.0
+  },
+  {
+   "year": 2020,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 65.0,
+    "A": 99.0,
+    "TA": 160.0,
+    "S": 530.0,
+    "N": 587.0
+   },
+   "detections": {
+    "terra": 109,
+    "aqua": 133,
+    "snpp": 1201,
+    "noaa20": 1336
+   },
+   "harmonized": 530.0
+  },
+  {
+   "year": 2020,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 20.0,
+    "A": 32.0,
+    "TA": 49.0,
+    "S": 173.0,
+    "N": 214.0
+   },
+   "detections": {
+    "terra": 26,
+    "aqua": 41,
+    "snpp": 426,
+    "noaa20": 553
+   },
+   "harmonized": 173.0
+  },
+  {
+   "year": 2020,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 8.0,
+    "A": 10.0,
+    "TA": 17.0,
+    "S": 49.0,
+    "N": 59.0
+   },
+   "detections": {
+    "terra": 14,
+    "aqua": 17,
+    "snpp": 212,
+    "noaa20": 198
+   },
+   "harmonized": 49.0
+  },
+  {
+   "year": 2020,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 8.0,
+    "A": 11.0,
+    "TA": 19.0,
+    "S": 65.0,
+    "N": 80.0
+   },
+   "detections": {
+    "terra": 12,
+    "aqua": 16,
+    "snpp": 290,
+    "noaa20": 279
+   },
+   "harmonized": 65.0
+  },
+  {
+   "year": 2021,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 3.0,
+    "A": 14.0,
+    "TA": 17.0,
+    "S": 109.0,
+    "N": 86.0
+   },
+   "detections": {
+    "terra": 5,
+    "aqua": 28,
+    "snpp": 398,
+    "noaa20": 323
+   },
+   "harmonized": 109.0
+  },
+  {
+   "year": 2021,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 28
+   },
+   "cell_days": {
+    "T": 14.0,
+    "A": 67.0,
+    "TA": 80.0,
+    "S": 230.0,
+    "N": 249.0
+   },
+   "detections": {
+    "terra": 26,
+    "aqua": 86,
+    "snpp": 533,
+    "noaa20": 536
+   },
+   "harmonized": 230.0
+  },
+  {
+   "year": 2021,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 7.0,
+    "A": 43.0,
+    "TA": 49.0,
+    "S": 178.0,
+    "N": 235.0
+   },
+   "detections": {
+    "terra": 18,
+    "aqua": 67,
+    "snpp": 494,
+    "noaa20": 547
+   },
+   "harmonized": 178.0
+  },
+  {
+   "year": 2021,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 34.0,
+    "A": 50.0,
+    "TA": 78.0,
+    "S": 278.0,
+    "N": 312.0
+   },
+   "detections": {
+    "terra": 60,
+    "aqua": 77,
+    "snpp": 739,
+    "noaa20": 842
+   },
+   "harmonized": 278.0
+  },
+  {
+   "year": 2021,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 12.0,
+    "A": 24.0,
+    "TA": 35.0,
+    "S": 167.0,
+    "N": 171.0
+   },
+   "detections": {
+    "terra": 20,
+    "aqua": 45,
+    "snpp": 466,
+    "noaa20": 477
+   },
+   "harmonized": 167.0
+  },
+  {
+   "year": 2021,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 30.0,
+    "A": 60.0,
+    "TA": 85.0,
+    "S": 247.0,
+    "N": 227.0
+   },
+   "detections": {
+    "terra": 54,
+    "aqua": 102,
+    "snpp": 700,
+    "noaa20": 613
+   },
+   "harmonized": 247.0
+  },
+  {
+   "year": 2021,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 165.0,
+    "A": 186.0,
+    "TA": 332.0,
+    "S": 718.0,
+    "N": 735.0
+   },
+   "detections": {
+    "terra": 271,
+    "aqua": 323,
+    "snpp": 2171,
+    "noaa20": 2263
+   },
+   "harmonized": 718.0
+  },
+  {
+   "year": 2021,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 132.0,
+    "A": 236.0,
+    "TA": 350.0,
+    "S": 740.0,
+    "N": 828.0
+   },
+   "detections": {
+    "terra": 203,
+    "aqua": 377,
+    "snpp": 1816,
+    "noaa20": 1917
+   },
+   "harmonized": 740.0
+  },
+  {
+   "year": 2021,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 73.0,
+    "A": 170.0,
+    "TA": 234.0,
+    "S": 654.0,
+    "N": 694.0
+   },
+   "detections": {
+    "terra": 138,
+    "aqua": 260,
+    "snpp": 1491,
+    "noaa20": 1505
+   },
+   "harmonized": 654.0
+  },
+  {
+   "year": 2021,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 7.0,
+    "A": 22.0,
+    "TA": 28.0,
+    "S": 117.0,
+    "N": 133.0
+   },
+   "detections": {
+    "terra": 14,
+    "aqua": 32,
+    "snpp": 314,
+    "noaa20": 297
+   },
+   "harmonized": 117.0
+  },
+  {
+   "year": 2021,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 10.0,
+    "A": 14.0,
+    "TA": 24.0,
+    "S": 63.0,
+    "N": 84.0
+   },
+   "detections": {
+    "terra": 19,
+    "aqua": 22,
+    "snpp": 267,
+    "noaa20": 279
+   },
+   "harmonized": 63.0
+  },
+  {
+   "year": 2021,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 9.0,
+    "A": 26.0,
+    "TA": 34.0,
+    "S": 78.0,
+    "N": 111.0
+   },
+   "detections": {
+    "terra": 12,
+    "aqua": 45,
+    "snpp": 256,
+    "noaa20": 305
+   },
+   "harmonized": 78.0
+  },
+  {
+   "year": 2022,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 25.0,
+    "A": 43.0,
+    "TA": 66.0,
+    "S": 192.0,
+    "N": 205.0
+   },
+   "detections": {
+    "terra": 38,
+    "aqua": 66,
+    "snpp": 580,
+    "noaa20": 555
+   },
+   "harmonized": 192.0
+  },
+  {
+   "year": 2022,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 28
+   },
+   "cell_days": {
+    "T": 20.0,
+    "A": 75.0,
+    "TA": 94.0,
+    "S": 351.0,
+    "N": 439.0
+   },
+   "detections": {
+    "terra": 34,
+    "aqua": 105,
+    "snpp": 843,
+    "noaa20": 965
+   },
+   "harmonized": 351.0
+  },
+  {
+   "year": 2022,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 20.0,
+    "A": 60.0,
+    "TA": 80.0,
+    "S": 346.0,
+    "N": 274.0
+   },
+   "detections": {
+    "terra": 33,
+    "aqua": 89,
+    "snpp": 905,
+    "noaa20": 694
+   },
+   "harmonized": 346.0
+  },
+  {
+   "year": 2022,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 13.0,
+    "A": 6.0,
+    "TA": 19.0,
+    "S": 129.0,
+    "N": 178.0
+   },
+   "detections": {
+    "terra": 21,
+    "aqua": 7,
+    "snpp": 411,
+    "noaa20": 506
+   },
+   "harmonized": 129.0
+  },
+  {
+   "year": 2022,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 15.0,
+    "A": 22.0,
+    "TA": 37.0,
+    "S": 151.0,
+    "N": 165.0
+   },
+   "detections": {
+    "terra": 30,
+    "aqua": 40,
+    "snpp": 448,
+    "noaa20": 455
+   },
+   "harmonized": 151.0
+  },
+  {
+   "year": 2022,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 59.0,
+    "A": 88.0,
+    "TA": 140.0,
+    "S": 353.0,
+    "N": 360.0
+   },
+   "detections": {
+    "terra": 92,
+    "aqua": 137,
+    "snpp": 1051,
+    "noaa20": 1114
+   },
+   "harmonized": 353.0
+  },
+  {
+   "year": 2022,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 26,
+    "N": 5
+   },
+   "cell_days": {
+    "T": 143.0,
+    "A": 193.0,
+    "TA": 327.0,
+    "S": 639.0,
+    "N": 752.0
+   },
+   "detections": {
+    "terra": 225,
+    "aqua": 291,
+    "snpp": 1827,
+    "noaa20": 2010
+   },
+   "harmonized": 781.7032590590527
+  },
+  {
+   "year": 2022,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 21,
+    "N": 10
+   },
+   "cell_days": {
+    "T": 197.0,
+    "A": 258.0,
+    "TA": 446.0,
+    "S": 911.0,
+    "N": 1215.0
+   },
+   "detections": {
+    "terra": 318,
+    "aqua": 402,
+    "snpp": 2109,
+    "noaa20": 2733
+   },
+   "harmonized": 1261.361105000157
+  },
+  {
+   "year": 2022,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 35.0,
+    "A": 106.0,
+    "TA": 140.0,
+    "S": 425.0,
+    "N": 513.0
+   },
+   "detections": {
+    "terra": 58,
+    "aqua": 155,
+    "snpp": 907,
+    "noaa20": 1052
+   },
+   "harmonized": 425.0
+  },
+  {
+   "year": 2022,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 5.0,
+    "A": 14.0,
+    "TA": 19.0,
+    "S": 117.0,
+    "N": 108.0
+   },
+   "detections": {
+    "terra": 6,
+    "aqua": 23,
+    "snpp": 350,
+    "noaa20": 282
+   },
+   "harmonized": 117.0
+  },
+  {
+   "year": 2022,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 3.0,
+    "A": 3.0,
+    "TA": 6.0,
+    "S": 46.0,
+    "N": 50.0
+   },
+   "detections": {
+    "terra": 7,
+    "aqua": 9,
+    "snpp": 180,
+    "noaa20": 158
+   },
+   "harmonized": 46.0
+  },
+  {
+   "year": 2022,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 10.0,
+    "A": 12.0,
+    "TA": 22.0,
+    "S": 92.0,
+    "N": 114.0
+   },
+   "detections": {
+    "terra": 18,
+    "aqua": 21,
+    "snpp": 386,
+    "noaa20": 366
+   },
+   "harmonized": 92.0
+  },
+  {
+   "year": 2023,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 10.0,
+    "A": 25.0,
+    "TA": 35.0,
+    "S": 94.0,
+    "N": 106.0
+   },
+   "detections": {
+    "terra": 14,
+    "aqua": 31,
+    "snpp": 331,
+    "noaa20": 319
+   },
+   "harmonized": 94.0
+  },
+  {
+   "year": 2023,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 28
+   },
+   "cell_days": {
+    "T": 14.0,
+    "A": 87.0,
+    "TA": 100.0,
+    "S": 284.0,
+    "N": 299.0
+   },
+   "detections": {
+    "terra": 17,
+    "aqua": 119,
+    "snpp": 690,
+    "noaa20": 681
+   },
+   "harmonized": 284.0
+  },
+  {
+   "year": 2023,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 13.0,
+    "A": 50.0,
+    "TA": 63.0,
+    "S": 272.0,
+    "N": 322.0
+   },
+   "detections": {
+    "terra": 17,
+    "aqua": 60,
+    "snpp": 646,
+    "noaa20": 700
+   },
+   "harmonized": 272.0
+  },
+  {
+   "year": 2023,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 18.0,
+    "A": 27.0,
+    "TA": 45.0,
+    "S": 153.0,
+    "N": 141.0
+   },
+   "detections": {
+    "terra": 27,
+    "aqua": 39,
+    "snpp": 490,
+    "noaa20": 418
+   },
+   "harmonized": 153.0
+  },
+  {
+   "year": 2023,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 24.0,
+    "A": 28.0,
+    "TA": 50.0,
+    "S": 170.0,
+    "N": 178.0
+   },
+   "detections": {
+    "terra": 27,
+    "aqua": 29,
+    "snpp": 525,
+    "noaa20": 488
+   },
+   "harmonized": 170.0
+  },
+  {
+   "year": 2023,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 59.0,
+    "A": 74.0,
+    "TA": 125.0,
+    "S": 301.0,
+    "N": 306.0
+   },
+   "detections": {
+    "terra": 80,
+    "aqua": 98,
+    "snpp": 1046,
+    "noaa20": 902
+   },
+   "harmonized": 301.0
+  },
+  {
+   "year": 2023,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 97.0,
+    "A": 203.0,
+    "TA": 294.0,
+    "S": 637.0,
+    "N": 551.0
+   },
+   "detections": {
+    "terra": 162,
+    "aqua": 303,
+    "snpp": 1810,
+    "noaa20": 1606
+   },
+   "harmonized": 637.0
+  },
+  {
+   "year": 2023,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 142.0,
+    "A": 243.0,
+    "TA": 360.0,
+    "S": 864.0,
+    "N": 941.0
+   },
+   "detections": {
+    "terra": 225,
+    "aqua": 364,
+    "snpp": 2141,
+    "noaa20": 2234
+   },
+   "harmonized": 864.0
+  },
+  {
+   "year": 2023,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 54.0,
+    "A": 110.0,
+    "TA": 160.0,
+    "S": 591.0,
+    "N": 645.0
+   },
+   "detections": {
+    "terra": 81,
+    "aqua": 172,
+    "snpp": 1341,
+    "noaa20": 1500
+   },
+   "harmonized": 591.0
+  },
+  {
+   "year": 2023,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 9.0,
+    "A": 40.0,
+    "TA": 49.0,
+    "S": 112.0,
+    "N": 104.0
+   },
+   "detections": {
+    "terra": 13,
+    "aqua": 54,
+    "snpp": 283,
+    "noaa20": 273
+   },
+   "harmonized": 112.0
+  },
+  {
+   "year": 2023,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 5.0,
+    "A": 14.0,
+    "TA": 19.0,
+    "S": 37.0,
+    "N": 48.0
+   },
+   "detections": {
+    "terra": 7,
+    "aqua": 23,
+    "snpp": 151,
+    "noaa20": 186
+   },
+   "harmonized": 37.0
+  },
+  {
+   "year": 2023,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 12.0,
+    "A": 29.0,
+    "TA": 40.0,
+    "S": 84.0,
+    "N": 102.0
+   },
+   "detections": {
+    "terra": 15,
+    "aqua": 34,
+    "snpp": 310,
+    "noaa20": 309
+   },
+   "harmonized": 84.0
+  },
+  {
+   "year": 2024,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 36.0,
+    "A": 102.0,
+    "TA": 133.0,
+    "S": 338.0,
+    "N": 351.0
+   },
+   "detections": {
+    "terra": 54,
+    "aqua": 156,
+    "snpp": 986,
+    "noaa20": 1031
+   },
+   "harmonized": 338.0
+  },
+  {
+   "year": 2024,
+   "month": 2,
+   "days": 29,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 29
+   },
+   "cell_days": {
+    "T": 10.0,
+    "A": 112.0,
+    "TA": 121.0,
+    "S": 306.0,
+    "N": 295.0
+   },
+   "detections": {
+    "terra": 21,
+    "aqua": 145,
+    "snpp": 617,
+    "noaa20": 625
+   },
+   "harmonized": 306.0
+  },
+  {
+   "year": 2024,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 31.0,
+    "A": 65.0,
+    "TA": 96.0,
+    "S": 289.0,
+    "N": 288.0
+   },
+   "detections": {
+    "terra": 50,
+    "aqua": 84,
+    "snpp": 722,
+    "noaa20": 723
+   },
+   "harmonized": 289.0
+  },
+  {
+   "year": 2024,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 22.0,
+    "A": 69.0,
+    "TA": 89.0,
+    "S": 219.0,
+    "N": 231.0
+   },
+   "detections": {
+    "terra": 30,
+    "aqua": 106,
+    "snpp": 590,
+    "noaa20": 677
+   },
+   "harmonized": 219.0
+  },
+  {
+   "year": 2024,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 29,
+    "N": 2
+   },
+   "cell_days": {
+    "T": 17.0,
+    "A": 44.0,
+    "TA": 60.0,
+    "S": 143.0,
+    "N": 159.0
+   },
+   "detections": {
+    "terra": 29,
+    "aqua": 76,
+    "snpp": 407,
+    "noaa20": 437
+   },
+   "harmonized": 159.7307269241648
+  },
+  {
+   "year": 2024,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 27,
+    "N": 3
+   },
+   "cell_days": {
+    "T": 74.0,
+    "A": 124.0,
+    "TA": 191.0,
+    "S": 420.0,
+    "N": 443.0
+   },
+   "detections": {
+    "terra": 114,
+    "aqua": 187,
+    "snpp": 1182,
+    "noaa20": 1290
+   },
+   "harmonized": 438.69904773877244
+  },
+  {
+   "year": 2024,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 19,
+    "N": 12
+   },
+   "cell_days": {
+    "T": 207.0,
+    "A": 201.0,
+    "TA": 388.0,
+    "S": 515.0,
+    "N": 885.0
+   },
+   "detections": {
+    "terra": 323,
+    "aqua": 317,
+    "snpp": 1375,
+    "noaa20": 2509
+   },
+   "harmonized": 841.7412552248655
+  },
+  {
+   "year": 2024,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 213.0,
+    "A": 514.0,
+    "TA": 679.0,
+    "S": 1533.0,
+    "N": 1530.0
+   },
+   "detections": {
+    "terra": 332,
+    "aqua": 809,
+    "snpp": 3929,
+    "noaa20": 3686
+   },
+   "harmonized": 1533.0
+  },
+  {
+   "year": 2024,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 36.0,
+    "A": 90.0,
+    "TA": 122.0,
+    "S": 380.0,
+    "N": 422.0
+   },
+   "detections": {
+    "terra": 56,
+    "aqua": 129,
+    "snpp": 779,
+    "noaa20": 893
+   },
+   "harmonized": 380.0
+  },
+  {
+   "year": 2024,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 7.0,
+    "A": 19.0,
+    "TA": 26.0,
+    "S": 114.0,
+    "N": 109.0
+   },
+   "detections": {
+    "terra": 14,
+    "aqua": 33,
+    "snpp": 332,
+    "noaa20": 291
+   },
+   "harmonized": 114.0
+  },
+  {
+   "year": 2024,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 4.0,
+    "A": 13.0,
+    "TA": 16.0,
+    "S": 39.0,
+    "N": 55.0
+   },
+   "detections": {
+    "terra": 8,
+    "aqua": 25,
+    "snpp": 181,
+    "noaa20": 208
+   },
+   "harmonized": 39.0
+  },
+  {
+   "year": 2024,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 8.0,
+    "A": 16.0,
+    "TA": 24.0,
+    "S": 60.0,
+    "N": 77.0
+   },
+   "detections": {
+    "terra": 14,
+    "aqua": 23,
+    "snpp": 283,
+    "noaa20": 284
+   },
+   "harmonized": 60.0
+  },
+  {
+   "year": 2025,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 15.0,
+    "A": 28.0,
+    "TA": 42.0,
+    "S": 91.0,
+    "N": 131.0
+   },
+   "detections": {
+    "terra": 24,
+    "aqua": 39,
+    "snpp": 307,
+    "noaa20": 337
+   },
+   "harmonized": 91.0
+  },
+  {
+   "year": 2025,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 28
+   },
+   "cell_days": {
+    "T": 14.0,
+    "A": 73.0,
+    "TA": 86.0,
+    "S": 251.0,
+    "N": 280.0
+   },
+   "detections": {
+    "terra": 22,
+    "aqua": 93,
+    "snpp": 614,
+    "noaa20": 562
+   },
+   "harmonized": 251.0
+  },
+  {
+   "year": 2025,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 10.0,
+    "A": 60.0,
+    "TA": 70.0,
+    "S": 241.0,
+    "N": 202.0
+   },
+   "detections": {
+    "terra": 18,
+    "aqua": 81,
+    "snpp": 564,
+    "noaa20": 429
+   },
+   "harmonized": 241.0
+  },
+  {
+   "year": 2025,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 12.0,
+    "A": 38.0,
+    "TA": 49.0,
+    "S": 144.0,
+    "N": 140.0
+   },
+   "detections": {
+    "terra": 22,
+    "aqua": 59,
+    "snpp": 388,
+    "noaa20": 373
+   },
+   "harmonized": 144.0
+  },
+  {
+   "year": 2025,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 9.0,
+    "A": 48.0,
+    "TA": 57.0,
+    "S": 171.0,
+    "N": 166.0
+   },
+   "detections": {
+    "terra": 15,
+    "aqua": 74,
+    "snpp": 530,
+    "noaa20": 482
+   },
+   "harmonized": 171.0
+  },
+  {
+   "year": 2025,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 18.0,
+    "A": 86.0,
+    "TA": 102.0,
+    "S": 243.0,
+    "N": 272.0
+   },
+   "detections": {
+    "terra": 38,
+    "aqua": 136,
+    "snpp": 695,
+    "noaa20": 716
+   },
+   "harmonized": 243.0
+  },
+  {
+   "year": 2025,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 97.0,
+    "A": 155.0,
+    "TA": 246.0,
+    "S": 571.0,
+    "N": 600.0
+   },
+   "detections": {
+    "terra": 151,
+    "aqua": 247,
+    "snpp": 1833,
+    "noaa20": 1851
+   },
+   "harmonized": 571.0
+  },
+  {
+   "year": 2025,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 223.0,
+    "A": 360.0,
+    "TA": 563.0,
+    "S": 1352.0,
+    "N": 1322.0
+   },
+   "detections": {
+    "terra": 363,
+    "aqua": 554,
+    "snpp": 3494,
+    "noaa20": 3598
+   },
+   "harmonized": 1352.0
+  },
+  {
+   "year": 2025,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 73.0,
+    "A": 211.0,
+    "TA": 278.0,
+    "S": 573.0,
+    "N": 534.0
+   },
+   "detections": {
+    "terra": 112,
+    "aqua": 312,
+    "snpp": 1335,
+    "noaa20": 1203
+   },
+   "harmonized": 573.0
+  },
+  {
+   "year": 2025,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 38.0,
+    "A": 84.0,
+    "TA": 118.0,
+    "S": 225.0,
+    "N": 222.0
+   },
+   "detections": {
+    "terra": 61,
+    "aqua": 120,
+    "snpp": 583,
+    "noaa20": 560
+   },
+   "harmonized": 225.0
+  },
+  {
+   "year": 2025,
+   "month": 11,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 4.0,
+    "A": 14.0,
+    "TA": 18.0,
+    "S": 42.0,
+    "N": 57.0
+   },
+   "detections": {
+    "terra": 6,
+    "aqua": 25,
+    "snpp": 229,
+    "noaa20": 223
+   },
+   "harmonized": 42.0
+  },
+  {
+   "year": 2025,
+   "month": 12,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 4.0,
+    "A": 11.0,
+    "TA": 14.0,
+    "S": 74.0,
+    "N": 57.0
+   },
+   "detections": {
+    "terra": 10,
+    "aqua": 21,
+    "snpp": 268,
+    "noaa20": 265
+   },
+   "harmonized": 74.0
+  }
+ ]
+}
