@@ -23,6 +23,7 @@ const SECTIONS = [
   ["zones", "Calage par zone"],
   ["anomalies", "Périodes inhabituelles"],
   ["limites", "Limites"],
+  ["geographie", "Géographie"],
   ["sources", "Sources"],
 ] as const;
 
@@ -322,6 +323,24 @@ export default function MethodologyPage() {
             <strong>Affichage.</strong> Au-delà de {fmtInt(POINT_CAP)} détections, la carte n'affiche pas les points plutôt que d'en montrer un échantillon ; la grille harmonisée et l'export restent complets.
           </li>
         </ul>
+      </Section>
+
+      <Section id="geographie" title="Géographie d'exploration : globe, départements, localités">
+        <p>
+          La carte s'ouvre sur un globe pour situer le Gabon dans le monde. <strong>Seul le Gabon dispose de détections chargées</strong> : les autres pays sont des repères de navigation (Natural Earth, 1:110 000 000, domaine public) et leur fiche le dit, sans aucun chiffre.
+        </p>
+        <p>
+          Au Gabon, l'analyse descend sous la province. Les <strong>{store.geography.departments.length} départements</strong> viennent de geoBoundaries ({String(store.geography.sources.departments.license)}, état représenté : {String(store.geography.sources.departments.year)}). Chaque détection est rattachée à son département par un test point dans polygone ; {fmtInt(store.geography.outside_departments)} détections tombent hors des polygones et ne comptent que dans les totaux nationaux. Les départements (2018) et les provinces (2005) ne s'emboîtent pas exactement : chaque département est rattaché à la province qui couvre la plus grande part de sa surface, et la somme des départements d'une province peut différer de quelques pour cent du total de la province.
+        </p>
+        <p>
+          Les <strong>localités</strong> viennent de GeoNames (CC BY 4.0) : {fmtInt(store.geography.places.length)} lieux habités, dont {store.geography.towns.length} villes avec population connue ou fonction administrative. Un point n'a pas de surface : l'analyse d'une localité porte sur un <strong>disque de {store.geography.place_radius_km} km</strong> autour d'elle, annoncé comme tel partout. Ce disque peut chevaucher plusieurs départements.
+        </p>
+        <Notice title="Ce que la granularité ne change pas">
+          Une zone plus petite contient moins de détections : la référence saisonnière y est plus fragile, le calage MODIS vers VIIRS aussi, et un écart peut tenir à quelques pixels. Les indicateurs par département ou par localité servent à repérer où regarder et à prioriser des vérifications de terrain. Ce ne sont ni des incendies confirmés, ni des prédictions.
+        </Notice>
+        <p>
+          À l'écran, les détections sont regroupées en vue continentale ou mondiale (anneaux dont la couleur donne la part de chaque capteur), puis affichées une à une dès l'échelle du pays. Le regroupement est un choix d'affichage : il ne modifie aucun calcul.
+        </p>
       </Section>
 
       <Section id="sources" title="Sources, versions et vérifications">

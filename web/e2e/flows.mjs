@@ -51,7 +51,7 @@ browser = await chromium.launch({ channel: process.env.BROWSER_CHANNEL ?? "chrom
   const newContext = browser.newContext.bind(browser);
   browser.newContext = async (options) => {
     const context = await newContext(options);
-    await context.addInitScript(() => window.localStorage.setItem("hotspot.welcomed", "1"));
+    await context.addInitScript(() => { window.localStorage.setItem("hotspot.welcomed", "1"); window.localStorage.setItem("hotspot.globe.seen", "1"); });
     return context;
   };
 }
@@ -121,10 +121,12 @@ await test("T-05", "Cliquer une détection ouvre sa fiche avec la source", async
 await test("T-05b", "Filtrer par satellite ne garde que ce capteur", async () => {
   const { page, context } = await open("/map");
   await mapReady(page);
+  // Attente posee avant les clics : la derniere reponse peut arriver avant la fin de la boucle.
+  const filtered = page.waitForResponse((r) => r.url().includes("/api/detections") && r.url().includes("sats=snpp&"));
   for (const name of ["MODIS Terra", "MODIS Aqua", "VIIRS NOAA-20"]) {
     await page.getByRole("complementary", { name: "Filtres de la carte" }).getByText(name, { exact: false }).first().click();
   }
-  await page.waitForResponse((r) => r.url().includes("/api/detections") && r.url().includes("sats=snpp&"));
+  await filtered;
   await page.waitForTimeout(600);
   const status = await page.getByRole("status").first().innerText();
   const expected = await api("/api/detections?zone=country&from=2025-01-01&to=2025-12-31&sats=snpp&conf=low,nominal,high&types=all&dn=all");

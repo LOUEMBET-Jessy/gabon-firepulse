@@ -103,6 +103,18 @@ export interface QualityFile {
   warnings: { file: string; field: string; count: number; action: string }[];
 }
 
+/** Geographie d'exploration (pipeline/geography.py) : departements et localites du Gabon. */
+export interface GeographyFile {
+  built_at: string;
+  rows: number;
+  place_radius_km: number;
+  departments: { index: number; name: string; province: number; label: [number, number] }[];
+  places: { id: number; name: string; lat: number; lon: number; kind: "capital" | "admin" | "town" | "village"; pop: number; province: number; department: number }[];
+  towns: number[];
+  sources: Record<string, Record<string, string | number | null | undefined>>;
+  outside_departments: number;
+}
+
 export interface Store {
   n: number;
   nDays: number;
@@ -129,6 +141,8 @@ export interface Store {
   version: Uint8Array;
   src: Uint8Array;
   province: Int8Array;
+  /** Departement de chaque detection (-1 hors polygone). */
+  department: Int8Array;
   eligible: Uint8Array;
   /** Indice de la premiere ligne de chaque jour (longueur nDays + 1). */
   dayStart: Uint32Array;
@@ -156,6 +170,11 @@ export interface Store {
   provinceAreaKm2: number[];
   countryAreaKm2: number;
   provinceBbox: [number, number, number, number][];
+  geography: GeographyFile;
+  departmentAreaKm2: number[];
+  departmentBbox: [number, number, number, number][];
+  /** Localites par identifiant GeoNames. */
+  placeById: Map<number, GeographyFile["places"][number]>;
 }
 
 function readJson<T>(file: string): T {
@@ -270,6 +289,17 @@ function load(): Store {
     path.join(GEO_DIR, "provinces.geojson"),
   );
   const countryGeo = readJson<{ features: { geometry: { type: string; coordinates: unknown } }[] }>(path.join(GEO_DIR, "country.geojson"));
+  const geography = readJson<GeographyFile>(path.join(DATA_DIR, "geography.json"));
+  if (geography.rows !== meta.count) throw new Error("geography.json ne correspond pas aux detections : relancez pipeline/geography.py");
+  const departmentBuffer = fs.readFileSync(path.join(DATA_DIR, "departments.bin"));
+  const department = new Int8Array(departmentBuffer.buffer.slice(departmentBuffer.byteOffset, departmentBuffer.byteOffset + departmentBuffer.byteLength));
+  const departmentsGeo = readJson<{ features: { properties: { index: number }; geometry: { type: string; coordinates: unknown } }[] }>(path.join(GEO_DIR, "departments.geojson"));
+  const departmentAreaKm2: number[] = [];
+  const departmentBbox: [number, number, number, number][] = [];
+  for (const feature of departmentsGeo.features) {
+    departmentAreaKm2[feature.properties.index] = geometryArea(feature.geometry);
+    departmentBbox[feature.properties.index] = geometryBbox(feature.geometry);
+  }
   const provinceAreaKm2: number[] = [];
   const provinceBbox: [number, number, number, number][] = [];
   for (const feature of provincesGeo.features) {
@@ -302,6 +332,7 @@ function load(): Store {
     version: u8("version"),
     src: u8("src"),
     province: column("province", (ab) => new Int8Array(ab)),
+    department,
     eligible: u8("eligible"),
     dayStart,
     yearOfDay,
@@ -321,11 +352,15 @@ function load(): Store {
     provinceAreaKm2,
     countryAreaKm2: countryGeo.features.reduce((acc, f) => acc + geometryArea(f.geometry), 0),
     provinceBbox,
+    geography,
+    departmentAreaKm2,
+    departmentBbox,
+    placeById: new Map(geography.places.map((p) => [p.id, p])),
   };
 }
 
 /** A incrementer quand la forme de Store change : evite de reutiliser un cache perime en developpement. */
-const STORE_SCHEMA = 3;
+const STORE_SCHEMA = 4;
 const globalStore = globalThis as unknown as { __hotspotStore?: { schema: number; store: Store } };
 
 export function getStore(): Store {

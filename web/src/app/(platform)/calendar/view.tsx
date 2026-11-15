@@ -44,7 +44,7 @@ export function CalendarView() {
   const [span, setSpan] = useState<{ from: string; to: string } | null>(null);
   const daily = useDaily(zone, granularity === "week" || granularity === "day");
   const data = calendar.data;
-  const zoneName = zoneLabel(zone, meta.data?.provinces);
+  const zoneName = zoneLabel(zone, meta.data);
 
   const monthBreaks = useMemo(() => (data ? activityBreaks(data.months.filter((m) => m.complete).map((m) => m.harmonized)) : []), [data]);
   const dayBreaks = useMemo(() => (daily.data ? activityBreaks(daily.data.harmonized) : []), [daily.data]);

@@ -264,7 +264,7 @@ export function Popover({
   useLayoutEffect(() => () => setOpen(false), []);
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative min-w-0">
       {trigger({ open, toggle: () => setOpen((o) => !o) })}
       {open ? (
         <div

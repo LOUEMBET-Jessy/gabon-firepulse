@@ -172,7 +172,7 @@ export function CompareView() {
         lead={
           <>
             Deux familles de capteurs voient le même feu différemment. Pourquoi on ne les additionne pas, et comment Hot-Spot les rend comparables pour{" "}
-            <span className="font-medium text-ink">{zoneLabel(zone, meta.data?.provinces)}</span>.
+            <span className="font-medium text-ink">{zoneLabel(zone, meta.data)}</span>.
           </>
         }
       />

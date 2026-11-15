@@ -341,6 +341,35 @@ export function regions(first: number, last: number, store: Store = getStore()):
   return { from: dayToIso(store, first), to: dayToIso(store, last), regions: rows, outsideProvinces: outside, provenance: provenance(store) };
 }
 
+/** Activite par departement, pour tout le pays ou une province. Meme forme que l'activite par province. */
+export function departmentRegions(first: number, last: number, province: number | null, store: Store = getStore()): RegionsResponse {
+  const rows = store.geography.departments
+    .filter((d) => province === null || d.province === province)
+    .map((d) => {
+      const zone: ZoneSpec = { kind: "department", index: d.index };
+      const sum = summarizeRange(zoneDaily(zone, store), first, last, store);
+      const area = store.departmentAreaKm2[d.index];
+      return {
+        index: d.index,
+        name: d.name,
+        iso: "",
+        areaKm2: area,
+        harmonized: sum.harmonized,
+        density: area > 0 ? (sum.harmonized / area) * 1000 : 0,
+        share: 0,
+        detections: sum.detections,
+        window: assessWindow(zone, first, last, store),
+      };
+    });
+  const total = rows.reduce((a, r) => a + r.harmonized, 0);
+  for (const r of rows) r.share = total > 0 ? r.harmonized / total : 0;
+  const outside = emptyPerSat();
+  for (let row = store.dayStart[first]; row < store.dayStart[last + 1]; row++) {
+    if (store.department[row] === -1 && (province === null || store.province[row] === province)) outside[SATELLITE_KEYS[store.sat[row]]]++;
+  }
+  return { from: dayToIso(store, first), to: dayToIso(store, last), regions: rows, outsideProvinces: outside, provenance: provenance(store) };
+}
+
 /** Iterateur des lignes retenues par un filtre, pour l'export. */
 export function* matchingRows(filter: DetectionFilter, store: Store = getStore()): Generator<number> {
   const match = rowMatcher(filter, store);

@@ -252,6 +252,104 @@ body {
   mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 28px), transparent);
 }
 
+/*
+ * Globe : fond d'espace (degrade et quelques etoiles fixes, sans animation), anneaux de regroupement,
+ * etiquettes HTML (aucune police distante) et infobulle.
+ */
+.space-bg {
+  background:
+    radial-gradient(1px 1px at 12% 18%, rgb(244 247 250 / 0.5), transparent 60%),
+    radial-gradient(1px 1px at 72% 12%, rgb(244 247 250 / 0.35), transparent 60%),
+    radial-gradient(1.5px 1.5px at 86% 64%, rgb(244 247 250 / 0.4), transparent 60%),
+    radial-gradient(1px 1px at 34% 82%, rgb(244 247 250 / 0.3), transparent 60%),
+    radial-gradient(1px 1px at 58% 44%, rgb(244 247 250 / 0.25), transparent 60%),
+    radial-gradient(1.5px 1.5px at 22% 56%, rgb(244 247 250 / 0.3), transparent 60%),
+    radial-gradient(120% 90% at 60% 40%, #0c1d38 0%, #050c1a 70%);
+}
+.cluster-marker {
+  position: relative;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  border-radius: 9999px;
+  transition: transform 0.2s var(--ease-out-expo);
+}
+.cluster-marker:hover {
+  transform: scale(1.08);
+}
+.cluster-marker svg {
+  position: absolute;
+  inset: 0;
+}
+.cluster-marker span {
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.map-label {
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  text-shadow: 0 1px 3px #081226, 0 0 2px #081226;
+}
+.map-label-continent {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: rgb(185 198 216 / 0.75);
+}
+.map-label-department {
+  font-size: 10.5px;
+  font-style: italic;
+  color: rgb(142 160 185 / 0.9);
+}
+.map-label-capital,
+.map-label-town {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-ink);
+  padding-left: 9px;
+  position: relative;
+}
+.map-label-capital::before,
+.map-label-town::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  margin-top: -2.5px;
+  border-radius: 9999px;
+  background: var(--color-ink);
+  box-shadow: 0 0 0 1.5px #081226;
+}
+.map-label-capital {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.map-tooltip .maplibregl-popup-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line-strong);
+  color: var(--color-ink);
+  font-size: 12.5px;
+  box-shadow: 0 12px 32px -8px rgb(0 0 0 / 0.7);
+}
+.map-tooltip .maplibregl-popup-content span {
+  font-size: 11.5px;
+  color: var(--color-ink-3);
+}
+.map-tooltip .maplibregl-popup-tip {
+  display: none;
+}
+
 /* Conversation vocale : pulsation pendant la parole, rotation pendant le traitement. */
 .voice-pulse {
   animation: voice-pulse 1.4s ease-in-out infinite;

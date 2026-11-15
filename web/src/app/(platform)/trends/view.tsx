@@ -103,7 +103,7 @@ export function TrendsView() {
   const [yearA, setYearA] = useState<number | null>(null);
   const [yearB, setYearB] = useState<number | null>(null);
   const data = calendar.data;
-  const zoneName = zoneLabel(zone, meta.data?.provinces);
+  const zoneName = zoneLabel(zone, meta.data);
   const completeYears = data ? data.years.filter((y) => y.complete).map((y) => y.year) : [];
   const b = yearB ?? lastYear;
   const a = yearA ?? (completeYears.includes(b - 1) ? b - 1 : (completeYears[completeYears.length - 2] ?? b));

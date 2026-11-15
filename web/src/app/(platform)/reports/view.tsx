@@ -35,7 +35,7 @@ export function ReportsView() {
   const regions = useRegions(from, to);
   const [generatedAt, setGeneratedAt] = useState<string | null>(null);
   const [sections, setSections] = useState({ charts: true, regions: true, method: true });
-  const zoneName = zoneLabel(zone, meta.data?.provinces);
+  const zoneName = zoneLabel(zone, meta.data);
   const year = Number(to.slice(0, 4));
   const o = overview.data;
   const c = calendar.data;

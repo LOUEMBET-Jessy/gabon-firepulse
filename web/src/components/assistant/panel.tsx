@@ -425,7 +425,7 @@ export function AssistantPanel() {
   // Ce que l'assistant voit de l'ecran, affiche en tete du panneau (le meme contexte part avec chaque question).
   const { zone, from, to } = useFilters();
   const meta = useMetadata();
-  const zoneName = zoneLabel(zone, meta.data?.provinces);
+  const zoneName = zoneLabel(zone, meta.data);
 
   // Conversation de l'onglet, etat du service, premiere visite.
   useEffect(() => {

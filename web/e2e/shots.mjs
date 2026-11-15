@@ -14,7 +14,7 @@ mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ channel: process.env.BROWSER_CHANNEL ?? "chrome" });
 const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 1, locale: "fr-FR" });
 // Accueil de premiere visite masque, sauf demande explicite (SHOW_WELCOME=1).
-if (!process.env.SHOW_WELCOME) await context.addInitScript(() => window.localStorage.setItem("hotspot.welcomed", "1"));
+if (!process.env.SHOW_WELCOME) await context.addInitScript(() => { window.localStorage.setItem("hotspot.welcomed", "1"); window.localStorage.setItem("hotspot.globe.seen", "1"); });
 let failures = 0;
 
 for (const route of pages) {

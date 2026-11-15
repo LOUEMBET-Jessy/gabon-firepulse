@@ -40,7 +40,7 @@ export function DashboardView() {
   const grid = useGrid(zone, from, to);
   const o = overview.data;
   const year = Number(to.slice(0, 4));
-  const zoneName = zoneLabel(zone, meta.data?.provinces);
+  const zoneName = zoneLabel(zone, meta.data);
   const flagged = calendar.data
     ? calendar.data.months.filter((m) => ["strong_high", "high", "low"].includes(m.assessment.status)).slice(-6).reverse()
     : [];

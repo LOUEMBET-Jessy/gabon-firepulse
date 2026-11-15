@@ -26,7 +26,7 @@ const browser = await chromium.launch({ channel: process.env.BROWSER_CHANNEL ?? 
 
 async function open(route, { welcomed = true, viewport = { width: 1440, height: 900 }, available = null } = {}) {
   const context = await browser.newContext({ viewport, locale: "fr-FR", acceptDownloads: true });
-  if (welcomed) await context.addInitScript(() => window.localStorage.setItem("hotspot.welcomed", "1"));
+  if (welcomed) await context.addInitScript(() => { window.localStorage.setItem("hotspot.welcomed", "1"); window.localStorage.setItem("hotspot.globe.seen", "1"); });
   const page = await context.newPage();
   page.setDefaultTimeout(15_000);
   const errors = [];

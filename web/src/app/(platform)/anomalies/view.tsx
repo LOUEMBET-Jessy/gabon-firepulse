@@ -39,7 +39,7 @@ export function AnomaliesView() {
   const picked = useView((v) => v.anomalies.month);
   const setPicked = (m: { year: number; month: number } | null) => updateView("anomalies", { month: m });
   const data = calendar.data;
-  const zoneName = zoneLabel(zone, meta.data?.provinces);
+  const zoneName = zoneLabel(zone, meta.data);
 
   const flagged = useMemo(() => {
     if (!data) return [];

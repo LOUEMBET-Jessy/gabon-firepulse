@@ -1,21 +1,34 @@
 "use client";
 
-import { CalendarBlank, Check, Database, MapPinArea, PencilSimpleLine } from "@phosphor-icons/react/dist/ssr";
+import { CalendarBlank, Check, Database, MagnifyingGlass, MapPinArea, PencilSimpleLine } from "@phosphor-icons/react/dist/ssr";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button, Field, Popover, SelectButton, cx, inputClass } from "@/components/ui";
 import { useMetadata } from "@/lib/api";
 import { fmtCoord, fmtDateShort, fmtDateTimeUtc, fmtInt, fmtPeriod, lastDayOfMonth, pad2 } from "@/lib/format";
-import type { ZoneSpec } from "@/lib/types";
+import type { MetadataResponse, ZoneSpec } from "@/lib/types";
 import { useFilters } from "@/state/filters";
 
 export const DRAW_FLAG = "hotspot.draw";
 export const DRAW_EVENT = "hotspot:draw";
 
-export function zoneLabel(zone: ZoneSpec, provinces: { index: number; name: string }[] | undefined): string {
+/** Noms des localites choisies sur la carte (villages absents de la liste des villes servie par l'API). */
+const placeNames = new Map<number, string>();
+export function rememberPlace(id: number, name: string) {
+  placeNames.set(id, name);
+}
+
+type GeoMeta = Pick<MetadataResponse, "provinces"> & Partial<Pick<MetadataResponse, "departments" | "towns" | "placeRadiusKm">>;
+
+export function zoneLabel(zone: ZoneSpec, meta: GeoMeta | undefined): string {
   if (zone.kind === "country") return "Gabon";
-  if (zone.kind === "province") return provinces?.find((p) => p.index === zone.index)?.name ?? "Province";
+  if (zone.kind === "province") return meta?.provinces.find((p) => p.index === zone.index)?.name ?? "Province";
+  if (zone.kind === "department") return meta?.departments?.find((d) => d.index === zone.index)?.name ?? "Département";
+  if (zone.kind === "place") {
+    const name = meta?.towns?.find((t) => t.id === zone.id)?.name ?? placeNames.get(zone.id) ?? "Localité";
+    return `${name} (${meta?.placeRadiusKm ?? 15} km)`;
+  }
   const [w, s, e, n] = zone.bbox;
   return `Zone ${fmtCoord(w, 2)}° à ${fmtCoord(e, 2)}° E, ${fmtCoord(s, 2)}° à ${fmtCoord(n, 2)}° N`;
 }
@@ -44,6 +57,10 @@ export function ZonePicker() {
   const router = useRouter();
   const [coords, setCoords] = useState({ w: "", s: "", e: "", n: "" });
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const norm = (v: string) => v.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const q = norm(query.trim());
+  const match = (name: string) => !q || norm(name).includes(q);
 
   const applyCoords = (close: () => void) => {
     const parse = (v: string) => Number(v.trim().replace(",", "."));
@@ -75,12 +92,17 @@ export function ZonePicker() {
       width={340}
       trigger={({ open, toggle }) => (
         <SelectButton open={open} onClick={toggle} icon={<MapPinArea size={16} />} label="Zone d'analyse" tour="zone-picker">
-          {zoneLabel(zone, meta?.provinces)}
+          {zoneLabel(zone, meta)}
         </SelectButton>
       )}
     >
       {(close) => (
         <div className="flex flex-col gap-3">
+          <label className="relative block">
+            <span className="sr-only">Rechercher une province, un département ou une localité</span>
+            <MagnifyingGlass size={15} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-3" />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Province, département, ville…" className={cx(inputClass, "pl-8")} autoFocus />
+          </label>
           <div>
             <p className="px-2.5 pb-1 text-[11.5px] font-medium text-ink-3">Territoire</p>
             <OptionRow active={zone.kind === "country"} onClick={() => (setZone({ kind: "country" }), close())} detail={meta ? `${fmtInt(Math.round(meta.countryAreaKm2 / 1000) * 1000)} km²` : undefined}>
@@ -91,7 +113,7 @@ export function ZonePicker() {
             <p className="px-2.5 pb-1 text-[11.5px] font-medium text-ink-3">Provinces</p>
             <div className="grid max-h-[230px] grid-cols-1 overflow-y-auto">
               {meta
-                ? meta.provinces.map((p) => (
+                ? meta.provinces.filter((p) => match(p.name)).map((p) => (
                     <OptionRow
                       key={p.index}
                       active={zone.kind === "province" && zone.index === p.index}
@@ -104,6 +126,30 @@ export function ZonePicker() {
                 : [0, 1, 2, 3].map((i) => <div key={i} className="skeleton mx-2.5 my-1 h-6" />)}
             </div>
           </div>
+          {meta && q ? (
+            <>
+              <div>
+                <p className="px-2.5 pb-1 text-[11.5px] font-medium text-ink-3">Départements</p>
+                <div className="grid max-h-[160px] grid-cols-1 overflow-y-auto">
+                  {meta.departments.filter((d) => match(d.name)).slice(0, 20).map((d) => (
+                    <OptionRow key={d.index} active={zone.kind === "department" && zone.index === d.index} onClick={() => (setZone({ kind: "department", index: d.index }), close())} detail={meta.provinces[d.province]?.name}>
+                      {d.name}
+                    </OptionRow>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="px-2.5 pb-1 text-[11.5px] font-medium text-ink-3">Villes (rayon de {meta.placeRadiusKm} km)</p>
+                <div className="grid max-h-[160px] grid-cols-1 overflow-y-auto">
+                  {meta.towns.filter((t) => match(t.name)).slice(0, 20).map((t) => (
+                    <OptionRow key={t.id} active={zone.kind === "place" && zone.id === t.id} onClick={() => (setZone({ kind: "place", id: t.id }), close())} detail={t.pop ? `${fmtInt(t.pop)} hab.` : undefined}>
+                      {t.name}
+                    </OptionRow>
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : null}
           <div className="border-t border-line pt-3">
             <p className="px-2.5 pb-2 text-[11.5px] font-medium text-ink-3">Zone personnalisée</p>
             <div className="px-2.5">

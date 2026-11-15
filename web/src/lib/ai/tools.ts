@@ -24,7 +24,7 @@ import { ANOMALY_SETTINGS } from "../science/anomaly";
 import { calendar } from "../server/engine";
 import { overview, regions } from "../server/queries";
 import { dayToIso, getStore, isoToDay, type Store } from "../server/store";
-import { BadRequest, parseZone, zoneInfo } from "../server/zone";
+import { BadRequest, parseZone, zoneInfo, zoneKey } from "../server/zone";
 import { SATELLITE_KEYS, type SatelliteKey, type ZoneSpec } from "../types";
 
 type Tool = Anthropic.Beta.Messages.BetaTool;
@@ -48,7 +48,7 @@ export function resolveZone(raw: unknown, store: Store): ZoneSpec {
   const value = raw.trim();
   const plain = normalize(value);
   if (["country", "gabon", "pays", "pays entier", "tout le gabon"].includes(plain)) return { kind: "country" };
-  if (value.startsWith("bbox:") || value.startsWith("province:")) {
+  if (["bbox:", "province:", "department:", "place:"].some((prefix) => value.startsWith(prefix))) {
     try {
       return parseZone(value, store);
     } catch (error) {
@@ -57,8 +57,17 @@ export function resolveZone(raw: unknown, store: Store): ZoneSpec {
   }
   const match = store.meta.provinces.find((p) => normalize(p.name) === plain || normalize(p.name).replace(/ /g, "") === plain.replace(/ /g, ""));
   if (match) return { kind: "province", index: match.index };
+  // Departement (« departement de la Mpassa » ou « Mpassa »), puis ville. Les villages ne sont pas resolus par
+  // leur nom : beaucoup portent des noms de villes etrangeres (trois « Paris » au Gabon) ; on les atteint par la carte.
+  const bare = plain.replace(/^(departement|dept)( de la| du| de l'| de| des)? /, "");
+  const dept = store.geography.departments.find((d) => normalize(d.name) === bare || normalize(d.name).replace(/ /g, "") === bare.replace(/ /g, ""));
+  if (dept) return { kind: "department", index: dept.index };
+  const town = store.geography.places
+    .filter((p) => p.kind !== "village" && normalize(p.name) === bare.replace(/^(ville de|ville d'|commune de|autour de) /, ""))
+    .sort((a, b) => b.pop - a.pop)[0];
+  if (town) return { kind: "place", id: town.id };
   throw new ToolInputError(
-    `zone inconnue : « ${value.slice(0, 60)} ». Zones possibles : country, ${store.meta.provinces.map((p) => p.name).join(", ")}, ou bbox:ouest,sud,est,nord.`,
+    `zone inconnue : « ${value.slice(0, 60)} ». Zones possibles : country, une province (${store.meta.provinces.map((p) => p.name).join(", ")}), un département du Gabon, une localité (zone de ${store.geography.place_radius_km} km autour), ou bbox:ouest,sud,est,nord.`,
   );
 }
 
@@ -118,6 +127,8 @@ export function validateContext(raw: unknown, store: Store = getStore()): Assist
   const z = asObject(o.zone);
   try {
     if (z.kind === "province") zone = parseZone(`province:${Number(z.index)}`, store);
+    else if (z.kind === "department") zone = parseZone(`department:${Number(z.index)}`, store);
+    else if (z.kind === "place") zone = parseZone(`place:${Number(z.id)}`, store);
     else if (z.kind === "bbox" && Array.isArray(z.bbox)) zone = parseZone(`bbox:${(z.bbox as unknown[]).map(Number).join(",")}`, store);
   } catch {
     zone = { kind: "country" };
@@ -164,7 +175,7 @@ export function describeContext(ctx: AssistantContext, store: Store = getStore()
   const lines = [
     "Contexte applicatif actuel (fourni par l'interface Hot-Spot, à jour) :",
     `- page ouverte : ${ctx.page}`,
-    `- zone d'analyse : ${zone.label}${ctx.zone.kind === "province" ? ` (province:${ctx.zone.index})` : ctx.zone.kind === "bbox" ? ` (bbox:${ctx.zone.bbox.join(",")})` : " (country)"}`,
+    `- zone d'analyse : ${zone.label} (${zoneKey(ctx.zone)})`,
     `- période sélectionnée : du ${ctx.from} au ${ctx.to}`,
     `- données disponibles : du ${dayToIso(store, store.firstDay)} au ${dayToIso(store, store.lastDay)}`,
   ];
@@ -181,7 +192,7 @@ export function describeContext(ctx: AssistantContext, store: Store = getStore()
 
 /* ------------------------------------------------------------------ Definitions */
 
-const ZONE_DESC = "Zone : « country » pour le Gabon entier, le nom d'une province (ex. « Haut-Ogooué »), ou « bbox:ouest,sud,est,nord » en degrés décimaux. Par défaut : la zone sélectionnée dans l'interface.";
+const ZONE_DESC = "Zone : « country » pour le Gabon entier, le nom d'une province (ex. « Haut-Ogooué »), d'un département (ex. « Mpassa ») ou d'une localité du Gabon (ex. « Franceville » : analyse dans un rayon de 15 km), ou « bbox:ouest,sud,est,nord » en degrés décimaux. Seul le Gabon dispose de données. Par défaut : la zone sélectionnée dans l'interface.";
 const DATE_DESC = "Date au format AAAA-MM-JJ.";
 
 const schema = (properties: Record<string, unknown>, required: string[] = []): Tool["input_schema"] => ({
