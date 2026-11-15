@@ -26,7 +26,7 @@ const browser = await chromium.launch({ channel: process.env.BROWSER_CHANNEL ?? 
 
 async function open(route, { welcomed = true, viewport = { width: 1440, height: 900 }, available = null } = {}) {
   const context = await browser.newContext({ viewport, locale: "fr-FR", acceptDownloads: true });
-  if (welcomed) await context.addInitScript(() => window.localStorage.setItem("hotspot.welcomed", "1"));
+  if (welcomed) await context.addInitScript(() => { window.localStorage.setItem("hotspot.welcomed", "1"); window.localStorage.setItem("hotspot.globe.seen", "1"); });
   const page = await context.newPage();
   page.setDefaultTimeout(15_000);
   const errors = [];
@@ -52,8 +52,8 @@ const panel = (page) => page.getByRole("complementary", { name: "Hot-Spot AI" })
 await test("A-01", "Première visite : accueil et proposition de visite guidée", async () => {
   const { page, context } = await open("/dashboard", { welcomed: false });
   await panel(page).getByText("Bienvenue dans Hot-Spot").waitFor();
-  expect(await panel(page).getByRole("button", { name: "Commencer la visite guidée" }).isVisible(), "bouton de visite absent");
-  await panel(page).getByRole("button", { name: "Explorer seul" }).click();
+  expect(await panel(page).getByRole("button", { name: "Voir la visite guidée" }).isVisible(), "bouton de visite absent");
+  await panel(page).getByRole("button", { name: "Poser une question" }).click();
   expect(await page.evaluate(() => window.localStorage.getItem("hotspot.welcomed")) === "1", "l'accueil réapparaîtrait");
   await context.close();
   return "accueil affiché une fois, passable";
@@ -74,13 +74,13 @@ await test("A-02", "Sans fournisseur IA : état honnête et aide hors ligne util
 
 await test("A-03", "Visite guidée : étapes, actions proposées, mise en évidence, reprise", async () => {
   const { page, context } = await open("/dashboard");
-  await page.getByRole("button", { name: "Lancer la visite guidée" }).first().click();
+  await page.getByRole("button", { name: "Visite guidée", exact: true }).first().click();
   const dialog = page.getByRole("dialog", { name: /Bienvenue dans Hot-Spot/ });
   await dialog.waitFor();
   await page.getByRole("button", { name: "Suivant" }).click();
-  await page.getByRole("heading", { name: "1. Choisir le territoire" }).waitFor();
+  await page.getByRole("heading", { name: /Choisir le territoire/ }).waitFor();
   await page.getByRole("button", { name: "Suivant" }).click();
-  await page.getByRole("heading", { name: "2. Choisir une période" }).waitFor();
+  await page.getByRole("heading", { name: /Choisir une période/ }).waitFor();
   await page.getByRole("button", { name: "Juin à septembre 2025" }).click();
   await page.getByRole("button", { name: "Période", exact: true }).filter({ hasText: "Juin à septembre 2025" }).waitFor();
   // L'element cible est entoure : le cadre est positionne sur le selecteur de periode.

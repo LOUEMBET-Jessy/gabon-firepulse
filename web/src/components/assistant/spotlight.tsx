@@ -7,7 +7,7 @@
 
 import { ArrowLeft, ArrowRight, X } from "@phosphor-icons/react/dist/ssr";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { AssistantMark } from "@/components/brand";
 import { Button } from "@/components/ui";
@@ -31,41 +31,48 @@ function useTargetBox(target: string | null): Box | null {
   const [measured, setMeasured] = useState<{ target: string; box: Box | null } | null>(null);
   useLayoutEffect(() => {
     if (!target) return;
-    const setBox = (box: Box | null) => setMeasured({ target, box });
     let element: HTMLElement | null = null;
     let frame = 0;
     let tries = 0;
-    const measure = () => {
-      element = Array.from(document.querySelectorAll<HTMLElement>(`[data-tour="${target}"]`)).find((el) => el.offsetParent !== null || el.getClientRects().length > 0) ?? null;
-      if (!element) {
+    let observer: ResizeObserver | null = null;
+    const update = () => {
+      const next = Array.from(document.querySelectorAll<HTMLElement>(`[data-tour="${target}"]`)).find((el) => el.offsetParent !== null || el.getClientRects().length > 0) ?? null;
+      if (!next) {
+        element = null;
+        setMeasured({ target, box: null });
         // L'element peut apparaitre apres une navigation ou un chargement : on reessaie quelques secondes.
-        if (tries++ < 40) frame = window.setTimeout(measure, 100);
-        else setBox(null);
+        if (tries++ < 40 && !frame) {
+          frame = window.setTimeout(() => {
+            frame = 0;
+            update();
+          }, 100);
+        }
         return;
       }
+      if (frame) window.clearTimeout(frame);
+      frame = 0;
+      tries = 0;
+      if (next !== element) {
+        observer?.disconnect();
+        element = next;
+        observer?.observe(next);
+      }
       const r = element.getBoundingClientRect();
-      if (r.width === 0 && r.height === 0) return setBox(null);
-      setBox({ top: r.top, left: r.left, width: r.width, height: r.height });
+      if (r.width === 0 && r.height === 0) return setMeasured({ target, box: null });
+      setMeasured({ target, box: { top: r.top, left: r.left, width: r.width, height: r.height } });
     };
-    measure();
+    observer = new ResizeObserver(update);
+    update();
     const firstScroll = window.setTimeout(() => {
       if (!element) return;
       const r = element.getBoundingClientRect();
       if (r.top < 80 || r.bottom > window.innerHeight - 40) element.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     }, 120);
-    const update = () => {
-      if (!element) return;
-      const r = element.getBoundingClientRect();
-      setBox({ top: r.top, left: r.left, width: r.width, height: r.height });
-    };
     window.addEventListener("scroll", update, true);
     window.addEventListener("resize", update);
-    const observer = new ResizeObserver(update);
-    const watch = window.setInterval(() => element && observer.observe(element), 300);
     return () => {
       window.clearTimeout(frame);
       window.clearTimeout(firstScroll);
-      window.clearInterval(watch);
       observer.disconnect();
       window.removeEventListener("scroll", update, true);
       window.removeEventListener("resize", update);
@@ -93,13 +100,36 @@ function Ring({ box, dim }: { box: Box; dim: boolean }) {
 }
 
 /** Place la bulle sous l'element, ou au-dessus s'il n'y a pas la place. */
-function bubbleStyle(box: Box | null, width: number): React.CSSProperties {
-  if (!box || typeof window === "undefined") return { left: "50%", top: "50%", transform: "translate(-50%, -50%)", width };
-  const w = Math.min(width, window.innerWidth - 24);
+function bubbleStyle(box: Box | null, width: number, height = 220): React.CSSProperties {
+  if (typeof window === "undefined") return { width };
+  const margin = 12;
+  const w = Math.min(width, window.innerWidth - margin * 2);
+  const maxHeight = window.innerHeight - margin * 2;
+  if (!box) {
+    return {
+      left: "50%",
+      top: "50%",
+      transform: "translate(-50%, -50%)",
+      width: w,
+      maxHeight,
+      overflowY: "auto",
+    };
+  }
+  const h = Math.min(height, maxHeight);
   const left = Math.min(Math.max(12, box.left + box.width / 2 - w / 2), window.innerWidth - w - 12);
   const below = box.top + box.height + PAD + 14;
-  if (below + 220 < window.innerHeight) return { left, top: below, width: w };
-  return { left, top: Math.max(12, box.top - PAD - 14), transform: "translateY(-100%)", width: w };
+  const above = box.top - PAD - 14 - h;
+  const roomBelow = window.innerHeight - margin - below;
+  const roomAbove = box.top - PAD - 14 - margin;
+  const top =
+    roomBelow >= h
+      ? below
+      : roomAbove >= h
+        ? above
+        : roomBelow >= roomAbove
+          ? Math.min(Math.max(margin, below), window.innerHeight - h - margin)
+          : Math.min(Math.max(margin, above), window.innerHeight - h - margin);
+  return { left, top: Math.min(Math.max(margin, top), window.innerHeight - h - margin), width: w, maxHeight, overflowY: "auto" };
 }
 
 /** Mise en evidence demandee par l'assistant : disparait seule au bout de quelques secondes. */
@@ -124,7 +154,7 @@ export function AssistantSpotlight() {
     <>
       <Ring box={box} dim={false} />
       {spotlight.caption ? (
-        <div role="status" className="fixed z-40 animate-fade-up rounded-control border border-accent/50 bg-surface-2 px-3 py-2 text-[13px] text-ink shadow-[0_12px_32px_-8px_rgb(0_0_0/0.7)]" style={bubbleStyle(box, 280)}>
+        <div role="status" className="fixed z-40 animate-fade-up rounded-control border border-accent/50 bg-surface-2 px-3 py-2 text-[13px] text-ink shadow-[0_12px_32px_-8px_rgb(0_0_0/0.7)]" style={bubbleStyle(box, 280, 72)}>
           <span className="flex items-start gap-2">
             <AssistantMark size={18} className="mt-px shrink-0" />
             {spotlight.caption}
@@ -141,10 +171,35 @@ export function GuidedTour() {
   const pathname = usePathname();
   const router = useRouter();
   const run = useActionRunner();
+  const assistantOpen = useAssistant((s) => s.open);
   const current = step === null ? null : TOUR[step];
   const onPage = current ? PAGES[current.page].path === pathname : false;
   const box = useTargetBox(current && onPage ? current.target : null);
   const [applied, setApplied] = useState<number | null>(null);
+  const bubbleRef = useRef<HTMLDivElement>(null);
+  const [bubbleHeight, setBubbleHeight] = useState(220);
+
+  useEffect(() => {
+    if (step !== null && assistantOpen) setAssistant({ open: false });
+  }, [step, assistantOpen]);
+
+  useLayoutEffect(() => {
+    const bubble = bubbleRef.current;
+    if (!bubble) return;
+    bubble.scrollTop = 0;
+    const measure = () => {
+      const height = bubble.getBoundingClientRect().height;
+      setBubbleHeight((currentHeight) => (currentHeight === height ? currentHeight : height));
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(bubble);
+    window.addEventListener("resize", measure);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [step]);
 
   // Ouvre la page de l'etape si besoin.
   useEffect(() => {
@@ -171,11 +226,12 @@ export function GuidedTour() {
     <>
       {box ? <Ring box={box} dim /> : <div aria-hidden className="pointer-events-none fixed inset-0 z-40 bg-bg-deep/60" />}
       <div
+        ref={bubbleRef}
         role="dialog"
         aria-modal="false"
         aria-labelledby="tour-title"
-        className="fixed z-50 animate-fade-up rounded-panel border border-line-strong bg-surface p-5 shadow-[0_24px_64px_-12px_rgb(0_0_0/0.8)]"
-        style={bubbleStyle(box, 380)}
+        className="fixed z-50 animate-fade-up overflow-y-auto rounded-panel border border-line-strong bg-surface p-5 shadow-[0_24px_64px_-12px_rgb(0_0_0/0.8)]"
+        style={bubbleStyle(box, 380, bubbleHeight)}
       >
         <div className="flex items-start justify-between gap-3">
           <p className="flex items-center gap-2 text-[12px] font-medium text-ink-3">

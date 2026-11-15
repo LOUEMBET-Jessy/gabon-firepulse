@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 import { AnnualChart, SeasonalChart } from "@/components/charts";
 import { zoneLabel } from "@/components/shell/pickers";
+import { pageIcon } from "@/components/shell/shell";
 import { Button, Checkbox, ErrorState, PageHeader, Panel, PanelHeader, Skeleton, StatusBadge, buttonClass } from "@/components/ui";
 import { exportUrl, useCalendar, useMetadata, useOverview, useRegions } from "@/lib/api";
 import { fmt1, fmtArea, fmtDate, fmtDateTimeUtc, fmtDelta, fmtInt, fmtPct, fmtPeriod, fmtScore, MONTHS, monthLabel } from "@/lib/format";
@@ -34,7 +35,7 @@ export function ReportsView() {
   const regions = useRegions(from, to);
   const [generatedAt, setGeneratedAt] = useState<string | null>(null);
   const [sections, setSections] = useState({ charts: true, regions: true, method: true });
-  const zoneName = zoneLabel(zone, meta.data?.provinces);
+  const zoneName = zoneLabel(zone, meta.data);
   const year = Number(to.slice(0, 4));
   const o = overview.data;
   const c = calendar.data;
@@ -78,10 +79,11 @@ export function ReportsView() {
     <>
       <div className="no-print flex flex-col gap-5">
         <PageHeader
+          icon={pageIcon("/reports")}
           title="Rapports et exports"
           lead={
             <>
-              Synthèse imprimable et fichiers de données pour <span className="text-ink">{zoneName}</span>, {fmtPeriod(from, to).toLowerCase()}. Tout correspond à la zone et à la période sélectionnées en haut de l'écran.
+              Un rapport imprimable et les fichiers de données pour <span className="font-medium text-ink">{zoneName}</span>, {fmtPeriod(from, to).toLowerCase()}. Tout suit la zone et la période choisies en haut de l'écran.
             </>
           }
         />

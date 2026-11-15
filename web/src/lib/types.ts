@@ -13,10 +13,15 @@ export const CONFIG_KEYS: ConfigKey[] = ["T", "A", "TA", "S", "N"];
 export type PerSatellite<T = number> = Record<SatelliteKey, T>;
 export type PerConfig<T = number> = Record<ConfigKey, T>;
 
-/** Zone d'analyse : pays entier, province, ou rectangle [ouest, sud, est, nord]. */
+/**
+ * Zone d'analyse : pays entier, province, departement, localite (disque de rayon fixe autour du lieu,
+ * identifiant GeoNames), ou rectangle [ouest, sud, est, nord].
+ */
 export type ZoneSpec =
   | { kind: "country" }
   | { kind: "province"; index: number }
+  | { kind: "department"; index: number }
+  | { kind: "place"; id: number }
   | { kind: "bbox"; bbox: [number, number, number, number] };
 
 /** Origine de la valeur harmonisee d'une periode. */
@@ -361,6 +366,17 @@ export interface SourceFile {
   rows_rejected: number;
 }
 
+export interface PlaceInfo {
+  id: number;
+  name: string;
+  lat: number;
+  lon: number;
+  kind: "capital" | "admin" | "town" | "village";
+  pop: number;
+  province: number;
+  department: number;
+}
+
 export interface MetadataResponse {
   dataKind: "real" | "simulated";
   dataKindLabel: string;
@@ -371,6 +387,12 @@ export interface MetadataResponse {
   satellites: SatelliteMeta[];
   provinces: { index: number; iso: string; name: string; areaKm2: number }[];
   countryAreaKm2: number;
+  departments: { index: number; name: string; province: number; label: [number, number]; areaKm2: number }[];
+  /** Villes et chefs-lieux (lieux habites avec population connue ou fonction administrative). */
+  towns: PlaceInfo[];
+  /** Rayon de la zone d'analyse autour d'une localite. */
+  placeRadiusKm: number;
+  geography: { sources: Record<string, Record<string, string | number | null | undefined>>; outsideDepartments: number };
   versions: string[];
   sources: SourceFile[];
   missingYears: { dataset: string; year: number; url: string; http_status: number }[];

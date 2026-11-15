@@ -1,6 +1,6 @@
 "use client";
 
-import { CaretDown, CloudSlash, Info, Warning, WarningOctagon, ArrowUp, ArrowDown, Minus, Question } from "@phosphor-icons/react/dist/ssr";
+import { CaretDown, CloudSlash, Database, Info, Warning, WarningOctagon, ArrowUp, ArrowDown, Minus, Question } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 
 import { ApiError } from "@/lib/api";
@@ -14,9 +14,20 @@ export { buttonClass, cx };
 
 /* ------------------------------------------------------------------ Panneaux */
 
-export function Panel({ className, children, ...rest }: React.HTMLAttributes<HTMLElement>) {
+/**
+ * Panneau : une surface, un sujet. Bordure fine et reflet en haut pour la profondeur, sans ombre portee.
+ * `interactive` eclaire la bordure au survol quand le panneau entier invite a l'action.
+ */
+export function Panel({ className, children, interactive, ...rest }: React.HTMLAttributes<HTMLElement> & { interactive?: boolean }) {
   return (
-    <section className={cx("rounded-panel bg-surface shadow-[inset_0_0_0_1px_rgb(255_255_255/0.035)]", className)} {...rest}>
+    <section
+      className={cx(
+        "relative rounded-panel border border-line/80 bg-surface shadow-[inset_0_1px_0_rgb(255_255_255/0.035)]",
+        interactive && "panel-hover",
+        className,
+      )}
+      {...rest}
+    >
       {children}
     </section>
   );
@@ -27,35 +38,106 @@ export function PanelHeader({
   subtitle,
   help,
   actions,
+  icon,
 }: {
   title: string;
   subtitle?: React.ReactNode;
   help?: string;
   actions?: React.ReactNode;
+  icon?: React.ReactNode;
 }) {
   return (
     <header className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2 px-5 pt-5">
-      <div className="min-w-0">
-        <h2 className="flex items-center gap-1.5 text-[16px] font-semibold leading-snug tracking-[-0.01em] text-ink">
-          <span className="text-balance">{title}</span>
-          {help ? <InfoTip text={help} /> : null}
-        </h2>
-        {subtitle ? <p className="mt-1 text-[13px] leading-snug text-ink-3">{subtitle}</p> : null}
+      <div className="flex min-w-0 gap-3">
+        {icon ? <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-control bg-surface-2 text-accent">{icon}</span> : null}
+        <div className="min-w-0">
+          <h2 className="flex items-center gap-1.5 text-[16px] font-semibold leading-snug tracking-[-0.015em] text-ink">
+            <span className="text-balance">{title}</span>
+            {help ? <InfoTip text={help} /> : null}
+          </h2>
+          {subtitle ? <p className="mt-1 max-w-[70ch] text-[13px] leading-snug text-ink-3">{subtitle}</p> : null}
+        </div>
       </div>
       {actions ? <div className="flex max-w-full flex-wrap items-center gap-2">{actions}</div> : null}
     </header>
   );
 }
 
-/** Reference des donnees sous chaque graphique : capteur, produit, periode, date d'acces (exigence F-14). */
+/**
+ * Reference des donnees sous chaque graphique : capteur, produit, periode, date d'acces (exigence F-14).
+ * Une ligne visible ; l'intitule complet du produit et les precisions propres au graphique se deplient.
+ */
 export function SourceNote({ provenance, extra }: { provenance: Provenance | undefined; extra?: string }) {
+  const [open, setOpen] = useState(false);
+  const id = useId();
   if (!provenance) return null;
   return (
-    <footer className="mt-1 border-t border-line/70 px-5 py-3 text-[11.5px] leading-relaxed text-ink-3">
-      <span className="text-ink-2">Source :</span> {provenance.source}, MODIS (Terra, Aqua) et VIIRS (Suomi-NPP, NOAA-20). Données du{" "}
-      {fmtDateShort(provenance.dataFirstDate)} au {fmtDateShort(provenance.dataLastDate)}, consultées le {fmtDateTimeUtc(provenance.accessedAt)}.
-      {extra ? ` ${extra}` : ""}
+    <footer className="mt-1 border-t border-line/60 px-5 py-2.5 text-[11.5px] leading-relaxed text-ink-3">
+      <p className="flex items-start gap-2">
+        <Database size={12} className="mt-[3px] shrink-0 text-ink-3" aria-hidden />
+        <span className="min-w-0 flex-1">
+          <span className="text-ink-2">Source :</span> NASA FIRMS, MODIS et VIIRS. Données du {fmtDateShort(provenance.dataFirstDate)} au {fmtDateShort(provenance.dataLastDate)}, consultées le{" "}
+          {fmtDateTimeUtc(provenance.accessedAt)}.
+        </span>
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={id}
+          onClick={() => setOpen((o) => !o)}
+          className="no-print inline-flex shrink-0 items-center gap-0.5 rounded-full px-1.5 text-ink-3 transition-colors hover:text-ink"
+        >
+          Précisions
+          <CaretDown size={10} weight="bold" className={cx("transition-transform duration-200", open && "rotate-180")} />
+        </button>
+      </p>
+      <div id={id} className="collapse" data-open={open}>
+        <div>
+          <p className="pt-1.5">
+            {provenance.source}, MODIS (Terra, Aqua) et VIIRS (Suomi-NPP, NOAA-20).{extra ? ` ${extra}` : ""}
+          </p>
+        </div>
+      </div>
     </footer>
+  );
+}
+
+/**
+ * Bloc repliable : garde les informations d'expert a portee sans les imposer.
+ * Le contenu reste dans le document (recherche, impression) mais n'est pas focalisable une fois replie.
+ */
+export function Disclosure({
+  title,
+  summary,
+  icon,
+  defaultOpen = false,
+  children,
+}: {
+  title: string;
+  summary?: React.ReactNode;
+  icon?: React.ReactNode;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  const id = useId();
+  return (
+    <Panel interactive={!open}>
+      <button type="button" aria-expanded={open} aria-controls={id} onClick={() => setOpen((o) => !o)} className="flex w-full items-center gap-3 rounded-panel px-5 py-4 text-left">
+        {icon ? <span className="flex size-8 shrink-0 items-center justify-center rounded-control bg-surface-2 text-ink-2">{icon}</span> : null}
+        <span className="min-w-0 flex-1">
+          <span className="block text-[15px] font-semibold tracking-[-0.01em] text-ink">{title}</span>
+          {summary ? <span className="mt-0.5 block text-[13px] text-ink-3">{summary}</span> : null}
+        </span>
+        <span className={cx("flex size-8 shrink-0 items-center justify-center rounded-full border border-line-strong text-ink-2 transition-transform duration-300", open && "rotate-180")}>
+          <CaretDown size={13} weight="bold" />
+        </span>
+      </button>
+      <div id={id} className="collapse" data-open={open} inert={!open}>
+        <div>
+          <div className="border-t border-line/70">{children}</div>
+        </div>
+      </div>
+    </Panel>
   );
 }
 
@@ -182,7 +264,7 @@ export function Popover({
   useLayoutEffect(() => () => setOpen(false), []);
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative min-w-0">
       {trigger({ open, toggle: () => setOpen((o) => !o) })}
       {open ? (
         <div
@@ -382,12 +464,23 @@ export function SensorMark({ color, shape, size = 10 }: { color: string; shape: 
   );
 }
 
-export function PageHeader({ title, lead, actions }: { title: string; lead?: React.ReactNode; actions?: React.ReactNode }) {
+/**
+ * En-tete d'ecran. Le titre dit ou l'on est, la phrase d'accroche dit ce que l'ecran repond.
+ * `icon` reprend le pictogramme de la navigation : le meme signe guide de la barre laterale a la page.
+ */
+export function PageHeader({ title, lead, actions, icon }: { title: string; lead?: React.ReactNode; actions?: React.ReactNode; icon?: React.ReactNode }) {
   return (
-    <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+    <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4 pb-1">
       <div className="min-w-0">
-        <h1 className="text-[26px] font-semibold tracking-[-0.03em] text-ink md:text-[34px]">{title}</h1>
-        {lead ? <p className="mt-2 max-w-[72ch] text-[15px] leading-relaxed text-ink-2">{lead}</p> : null}
+        <h1 className="flex items-center gap-3 text-[28px] font-semibold leading-[1.1] tracking-[-0.035em] text-ink md:text-[36px]">
+          {icon ? (
+            <span aria-hidden className="no-print hidden size-10 shrink-0 items-center justify-center rounded-[12px] border border-line-strong bg-surface-2 text-accent md:flex">
+              {icon}
+            </span>
+          ) : null}
+          {title}
+        </h1>
+        {lead ? <p className="mt-3 max-w-[64ch] text-[15px] leading-relaxed text-ink-2">{lead}</p> : null}
       </div>
       {actions ? <div className="no-print flex flex-wrap items-center gap-2">{actions}</div> : null}
     </div>

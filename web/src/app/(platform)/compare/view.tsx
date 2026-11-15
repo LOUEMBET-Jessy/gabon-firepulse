@@ -4,7 +4,8 @@ import { CartesianGrid, ComposedChart, Line, ReferenceLine, ResponsiveContainer,
 
 import { SensorCompareChart, TooltipCard, TooltipRow } from "@/components/charts";
 import { zoneLabel } from "@/components/shell/pickers";
-import { ChartSkeleton, ErrorState, InfoTip, Notice, PageHeader, Panel, PanelHeader, Segmented, SensorMark, SourceNote } from "@/components/ui";
+import { pageIcon } from "@/components/shell/shell";
+import { ChartSkeleton, ErrorState, InfoTip, Notice, PageHeader, Panel, PanelHeader, SensorMark, SourceNote, cx } from "@/components/ui";
 import { useCalendar, useMetadata, useOverview } from "@/lib/api";
 import { fmt1, fmt2, fmtInt, fmtPct, fmtPeriod } from "@/lib/format";
 import { CONFIG_LABEL, SATELLITES, SENSOR_COLOR } from "@/lib/labels";
@@ -35,6 +36,119 @@ const ROW_STYLE: Record<ConfigKey, { color: string; shape: "square" | "circle" }
   N: { color: SENSOR_COLOR.noaa20, shape: "circle" },
 };
 
+const STEPS: { value: CompareUnit; label: string }[] = [
+  { value: "detections", label: "Détections brutes" },
+  { value: "celldays", label: "Cellules-jour" },
+  { value: "calibrated", label: "Après calage" },
+];
+
+/** Les trois unites, presentees comme les etapes d'un raisonnement plutot que comme des onglets. */
+function Stepper({ value, onChange }: { value: CompareUnit; onChange: (u: CompareUnit) => void }) {
+  const current = STEPS.findIndex((s) => s.value === value);
+  return (
+    <div role="radiogroup" aria-label="Unité de comparaison" className="grid grid-cols-3 gap-2">
+      {STEPS.map((step, i) => {
+        const active = i === current;
+        const done = i < current;
+        return (
+          <button
+            key={step.value}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            onClick={() => onChange(step.value)}
+            className={cx(
+              "group relative flex items-center gap-2.5 rounded-control border px-3 py-2.5 text-left text-[13px] font-medium transition-colors duration-200",
+              active ? "border-accent/70 bg-accent/10 text-ink" : "border-line-strong bg-surface-2/60 text-ink-2 hover:border-ink-3 hover:text-ink",
+            )}
+          >
+            <span
+              aria-hidden
+              className={cx(
+                "num flex size-6 shrink-0 items-center justify-center rounded-full border text-[11.5px] transition-colors",
+                active ? "border-accent bg-accent text-accent-ink" : done ? "border-accent/60 text-accent" : "border-line-strong text-ink-3",
+              )}
+            >
+              {i + 1}
+            </span>
+            <span className="min-w-0 truncate">{step.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * Les capteurs cote a cote : la taille de pixel dessinee a l'echelle (1 km contre 375 m),
+ * puis les annees de service sur une meme frise. C'est ce qui explique qu'on ne les additionne pas.
+ */
+function SensorLineup() {
+  const first = 2000;
+  const last = 2026;
+  const pos = (year: number) => `${((year - first) / (last - first)) * 100}%`;
+  const rows = [
+    { name: "MODIS Terra et Aqua", detail: "Pixel de 1 km. La longue série historique, moins sensible aux petits feux.", from: 2000.83, color: SENSOR_COLOR.modis, shape: "square" as const },
+    { name: "VIIRS Suomi-NPP", detail: "Pixel de 375 m. La référence : les autres capteurs sont convertis dans son unité.", from: 2012, color: SENSOR_COLOR.snpp, shape: "circle" as const },
+    { name: "VIIRS NOAA-20", detail: "Même instrument, autre satellite. Prend le relais quand Suomi-NPP est interrompu.", from: 2018.25, color: SENSOR_COLOR.noaa20, shape: "circle" as const },
+  ];
+  // Echelle du dessin : 1 km = 132 px, donc 375 m = 49,5 px.
+  const modisPx = 132;
+  const viirsPx = modisPx * 0.375;
+  return (
+    <Panel className="overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,300px)_minmax(0,1fr)]">
+        <figure className="flex flex-col items-center gap-4 border-b border-line/70 p-6 lg:border-b-0 lg:border-r">
+          <div className="relative" style={{ width: modisPx, height: modisPx }} aria-hidden>
+            <div className="absolute inset-0 rounded-[3px] border-2" style={{ borderColor: SENSOR_COLOR.modis, backgroundColor: `${SENSOR_COLOR.modis}1f` }} />
+            <div
+              className="absolute inset-0 rounded-[3px]"
+              style={{
+                backgroundImage: `linear-gradient(to right, ${SENSOR_COLOR.snpp}66 1px, transparent 1px), linear-gradient(to bottom, ${SENSOR_COLOR.snpp}66 1px, transparent 1px)`,
+                backgroundSize: `${viirsPx}px ${viirsPx}px`,
+              }}
+            />
+            <div className="absolute left-0 top-0 rounded-[2px] border-2" style={{ width: viirsPx, height: viirsPx, borderColor: SENSOR_COLOR.snpp, backgroundColor: `${SENSOR_COLOR.snpp}40` }} />
+          </div>
+          <figcaption className="text-center text-[12.5px] leading-relaxed text-ink-2">
+            Un pixel MODIS couvre environ <span className="num text-ink">7</span> pixels VIIRS. Pour un même feu, VIIRS signale donc bien plus de points.
+          </figcaption>
+        </figure>
+        <div className="flex flex-col justify-center gap-5 p-6">
+          {rows.map((r) => (
+            <div key={r.name} className="grid grid-cols-1 gap-2 md:grid-cols-[220px_minmax(0,1fr)] md:items-center md:gap-5">
+              <div>
+                <p className="flex items-center gap-2 text-[14px] font-medium text-ink">
+                  <SensorMark color={r.color} shape={r.shape} size={10} />
+                  {r.name}
+                </p>
+                <p className="mt-0.5 text-[12.5px] leading-snug text-ink-3">{r.detail}</p>
+              </div>
+              <div className="relative h-9">
+                <span className="absolute bottom-[5px] left-0 right-0 h-1 rounded-full bg-surface-3" />
+                <span className="absolute bottom-[3px] h-2 rounded-full" style={{ left: pos(r.from), right: `calc(100% - ${pos(2026)})`, backgroundColor: r.color }} />
+                <span className="num absolute top-0 text-[11px] text-ink-2" style={{ left: pos(r.from) }}>
+                  depuis {Math.floor(r.from)}
+                </span>
+              </div>
+            </div>
+          ))}
+          <div className="grid grid-cols-1 md:grid-cols-[220px_minmax(0,1fr)] md:gap-5">
+            <span className="hidden md:block" />
+            <div className="num flex justify-between text-[10.5px] text-ink-3">
+              <span>2000</span>
+              <span>2006</span>
+              <span>2012</span>
+              <span>2018</span>
+              <span>2025</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Panel>
+  );
+}
+
 export function CompareView() {
   const { zone, from, to } = useFilters();
   const meta = useMetadata();
@@ -53,56 +167,30 @@ export function CompareView() {
   return (
     <>
       <PageHeader
+        icon={pageIcon("/compare")}
         title="Comparer MODIS et VIIRS"
         lead={
           <>
-            Deux familles de capteurs, deux façons de voir le même feu. Cette page montre pourquoi on ne peut pas les additionner, et comment Hot-Spot les rend comparables pour{" "}
-            <span className="text-ink">{zoneLabel(zone, meta.data?.provinces)}</span>.
+            Deux familles de capteurs voient le même feu différemment. Pourquoi on ne les additionne pas, et comment Hot-Spot les rend comparables pour{" "}
+            <span className="font-medium text-ink">{zoneLabel(zone, meta.data)}</span>.
           </>
         }
       />
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        {(
-          [
-            ["MODIS", "Terra et Aqua, depuis 2000", "Pixel de 1 km au nadir. Longue série historique, moins sensible aux petits feux.", SENSOR_COLOR.modis, "square"],
-            ["VIIRS Suomi-NPP", "Depuis janvier 2012", "Pixel de 375 m. Référence de l'harmonisation : les autres capteurs sont exprimés dans son unité.", SENSOR_COLOR.snpp, "circle"],
-            ["VIIRS NOAA-20", "Depuis avril 2018", "Même instrument, autre satellite. Prend le relais quand Suomi-NPP est interrompu.", SENSOR_COLOR.noaa20, "circle"],
-          ] as const
-        ).map(([name, since, body, color, shape]) => (
-          <Panel key={name} className="flex flex-col gap-2 p-5">
-            <p className="flex items-center gap-2 text-[15px] font-medium text-ink">
-              <SensorMark color={color} shape={shape} size={11} />
-              {name}
-            </p>
-            <p className="text-[12.5px] text-ink-3">{since}</p>
-            <p className="text-[13.5px] leading-relaxed text-ink-2">{body}</p>
-          </Panel>
-        ))}
-      </div>
+      <SensorLineup />
 
       <Panel data-tour="compare-chart">
-        <PanelHeader
-          title="Ce que l'harmonisation corrige"
-          subtitle="Totaux annuels sur les années complètes de chaque capteur, dans trois unités successives."
-          actions={
-            <Segmented
-              label="Unité de comparaison"
-              value={unit}
-              onChange={(u) => updateView("compare", { unit: u })}
-              options={[
-                { value: "detections", label: "Détections brutes" },
-                { value: "celldays", label: "Cellules-jour" },
-                { value: "calibrated", label: "Après calage" },
-              ]}
-            />
-          }
-        />
+        <PanelHeader title="Ce que l'harmonisation corrige" subtitle="Totaux annuels sur les années complètes de chaque capteur. Suivez les trois étapes : les courbes se rapprochent jusqu'à se superposer." />
+        <div className="px-5 pt-4">
+          <Stepper value={unit} onChange={(u) => updateView("compare", { unit: u })} />
+        </div>
         <div className="grid grid-cols-1 gap-x-6 xl:grid-cols-12">
           <div className="xl:col-span-8">{calendar.error ? <ErrorState error={calendar.error} onRetry={() => calendar.mutate()} compact /> : data ? <SensorCompareChart calendar={data} factors={factors} unit={unit} /> : <ChartSkeleton height={280} />}</div>
           <div className="flex flex-col gap-3 px-5 pb-5 pt-4 xl:col-span-4 xl:pl-0">
-            <p className="text-[14px] font-medium text-ink">{UNIT_TEXT[unit].title}</p>
-            <p className="text-[13.5px] leading-relaxed text-ink-2">{UNIT_TEXT[unit].body}</p>
+            <div key={unit} className="animate-fade-up">
+              <p className="text-[14px] font-medium text-ink">{UNIT_TEXT[unit].title}</p>
+              <p className="mt-2 text-[13.5px] leading-relaxed text-ink-2">{UNIT_TEXT[unit].body}</p>
+            </div>
             {cal?.TA ? (
               <dl className="mt-1 flex flex-col text-[13px]">
                 {(

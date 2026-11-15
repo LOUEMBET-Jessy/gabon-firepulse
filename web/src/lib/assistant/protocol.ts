@@ -102,6 +102,8 @@ export interface ChatTurn {
 export interface AssistantRequest {
   messages: ChatTurn[];
   context: AssistantContext;
+  /** "voice" : la reponse sera lue a voix haute (courte, sans mise en forme). */
+  mode?: "text" | "voice";
 }
 
 export interface AssistantReply {
@@ -120,6 +122,8 @@ export interface AssistantStatus {
   reason: string | null;
   model: string | null;
   provider?: "anthropic" | "gemini" | null;
+  /** Le serveur sait-il transcrire un enregistrement vocal (repli pour les navigateurs sans dictee integree) ? */
+  transcription?: boolean;
 }
 
 export const LIMITS = {

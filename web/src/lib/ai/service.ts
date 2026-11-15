@@ -15,7 +15,7 @@ import { getStore } from "../server/store";
 import { aiConfig, type AiConfig } from "./config";
 import { AssistantUnavailable } from "./errors";
 import { runGemini, type GenerateContent } from "./gemini";
-import { SYSTEM_PROMPT } from "./prompt";
+import { SYSTEM_PROMPT, VOICE_PROMPT } from "./prompt";
 import { TOOL_DEFINITIONS, describeContext, runTool } from "./tools";
 
 type Beta = Anthropic.Beta.Messages.BetaMessage;
@@ -56,13 +56,13 @@ export function sanitizeHistory(raw: unknown): ChatTurn[] {
 export async function runAssistant(
   history: ChatTurn[],
   context: AssistantContext,
-  options: { createMessage?: CreateMessage; generateContent?: GenerateContent; config?: AiConfig; signal?: AbortSignal } = {},
+  options: { createMessage?: CreateMessage; generateContent?: GenerateContent; config?: AiConfig; signal?: AbortSignal; voice?: boolean } = {},
 ): Promise<AssistantReply> {
   const config = options.config ?? aiConfig();
   const injected = Boolean(options.createMessage || options.generateContent);
   if (!config.enabled && !injected) throw new AssistantUnavailable(config.reason ?? "Assistant indisponible.", 503);
   if (!history.length || history[history.length - 1].role !== "user") throw new AssistantUnavailable("Le dernier message doit venir de l'utilisateur.", 400);
-  if (config.provider === "gemini") return runGemini(history, context, config, { generate: options.generateContent, signal: options.signal });
+  if (config.provider === "gemini") return runGemini(history, context, config, { generate: options.generateContent, signal: options.signal, voice: options.voice });
 
   const create = options.createMessage ?? defaultCreateMessage();
   const store = getStore();
@@ -72,7 +72,7 @@ export async function runAssistant(
 
   const messages: BetaMessageParam[] = history.map((t) => ({ role: t.role, content: t.text }));
   // Contexte de l'application : apres le dernier message utilisateur, avant la reponse.
-  messages.push({ role: "system", content: describeContext(ctx, store) });
+  messages.push({ role: "system", content: `${describeContext(ctx, store)}${options.voice ? `\n\n${VOICE_PROMPT}` : ""}` });
 
   for (let round = 0; round < config.maxToolRounds; round++) {
     let response: Beta;

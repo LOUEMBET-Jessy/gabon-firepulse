@@ -6,7 +6,7 @@ export class BadRequest extends Error {}
 /** Emprise dans laquelle un rectangle personnalise est accepte. */
 const LIMITS = { west: 7.5, south: -5, east: 15.5, north: 3.5 };
 
-/** Analyse le parametre `zone` : "country", "province:3" ou "bbox:ouest,sud,est,nord". */
+/** Analyse le parametre `zone` : "country", "province:3", "department:12", "place:2399697" ou "bbox:ouest,sud,est,nord". */
 export function parseZone(raw: string | null, store: Store): ZoneSpec {
   if (!raw || raw === "country") return { kind: "country" };
   if (raw.startsWith("province:")) {
@@ -15,6 +15,16 @@ export function parseZone(raw: string | null, store: Store): ZoneSpec {
       throw new BadRequest("Province inconnue.");
     }
     return { kind: "province", index };
+  }
+  if (raw.startsWith("department:")) {
+    const index = Number(raw.slice(11));
+    if (!Number.isInteger(index) || index < 0 || index >= store.geography.departments.length) throw new BadRequest("Département inconnu.");
+    return { kind: "department", index };
+  }
+  if (raw.startsWith("place:")) {
+    const id = Number(raw.slice(6));
+    if (!Number.isInteger(id) || !store.placeById.has(id)) throw new BadRequest("Localité inconnue.");
+    return { kind: "place", id };
   }
   if (raw.startsWith("bbox:")) {
     const parts = raw.slice(5).split(",").map(Number);
@@ -36,6 +46,8 @@ export function parseZone(raw: string | null, store: Store): ZoneSpec {
 export function zoneKey(zone: ZoneSpec): string {
   if (zone.kind === "country") return "country";
   if (zone.kind === "province") return `province:${zone.index}`;
+  if (zone.kind === "department") return `department:${zone.index}`;
+  if (zone.kind === "place") return `place:${zone.id}`;
   return `bbox:${zone.bbox.map((v) => v.toFixed(4)).join(",")}`;
 }
 
@@ -46,6 +58,28 @@ export function zoneMatcher(zone: ZoneSpec, store: Store): (row: number) => bool
     const { province } = store;
     const index = zone.index;
     return (row) => province[row] === index;
+  }
+  if (zone.kind === "department") {
+    const { department } = store;
+    const index = zone.index;
+    return (row) => department[row] === index;
+  }
+  if (zone.kind === "place") {
+    // Disque de rayon fixe autour de la localite : prefiltre rectangulaire, puis distance sur la sphere.
+    const place = store.placeById.get(zone.id)!;
+    const radius = store.geography.place_radius_km;
+    const rad = Math.PI / 180;
+    const dLat = radius / 111.32;
+    const dLon = radius / (111.32 * Math.cos(place.lat * rad));
+    const { lon, lat } = store;
+    const cosLat0 = Math.cos(place.lat * rad);
+    return (row) => {
+      const y = lat[row];
+      const x = lon[row];
+      if (Math.abs(y - place.lat) > dLat || Math.abs(x - place.lon) > dLon) return false;
+      const a = Math.sin(((y - place.lat) * rad) / 2) ** 2 + cosLat0 * Math.cos(y * rad) * Math.sin(((x - place.lon) * rad) / 2) ** 2;
+      return 2 * 6371.0088 * Math.asin(Math.sqrt(a)) <= radius;
+    };
   }
   const [w, s, e, n] = zone.bbox;
   const { lon, lat } = store;
@@ -69,6 +103,23 @@ export function zoneInfo(zone: ZoneSpec, store: Store): ZoneInfo {
       kind: "province",
       areaKm2: store.provinceAreaKm2[zone.index],
       bbox: store.provinceBbox[zone.index],
+    };
+  }
+  if (zone.kind === "department") {
+    const d = store.geography.departments[zone.index];
+    return { key: zoneKey(zone), label: d.name, kind: "department", areaKm2: store.departmentAreaKm2[zone.index], bbox: store.departmentBbox[zone.index] };
+  }
+  if (zone.kind === "place") {
+    const place = store.placeById.get(zone.id)!;
+    const r = store.geography.place_radius_km;
+    const dLat = r / 111.32;
+    const dLon = r / (111.32 * Math.cos((place.lat * Math.PI) / 180));
+    return {
+      key: zoneKey(zone),
+      label: `${place.name} (rayon de ${r} km)`,
+      kind: "place",
+      areaKm2: Math.PI * r * r,
+      bbox: [place.lon - dLon, place.lat - dLat, place.lon + dLon, place.lat + dLat],
     };
   }
   const [w, s, e, n] = zone.bbox;

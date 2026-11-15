@@ -48,6 +48,8 @@ const config: SWRConfiguration = { revalidateOnFocus: false, revalidateIfStale: 
 export function zoneParam(zone: ZoneSpec): string {
   if (zone.kind === "country") return "country";
   if (zone.kind === "province") return `province:${zone.index}`;
+  if (zone.kind === "department") return `department:${zone.index}`;
+  if (zone.kind === "place") return `place:${zone.id}`;
   return `bbox:${zone.bbox.join(",")}`;
 }
 
@@ -87,6 +89,13 @@ export function useOverview(zone: ZoneSpec, from: string, to: string) {
 
 export function useRegions(from: string, to: string) {
   return useSWR<RegionsResponse, ApiError>(`/api/regions?${new URLSearchParams({ from, to })}`, fetchJson, config);
+}
+
+/** Activite par departement d'une province (ou de tout le pays). `enabled` a false : aucune requete. */
+export function useDepartmentRegions(from: string, to: string, province: number | null, enabled = true) {
+  const p = new URLSearchParams({ from, to, level: "department" });
+  if (province !== null) p.set("province", String(province));
+  return useSWR<RegionsResponse, ApiError>(enabled ? `/api/regions?${p}` : null, fetchJson, config);
 }
 
 export function useDetections(zone: ZoneSpec, from: string, to: string, filters: MapFilters, enabled = true) {

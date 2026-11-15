@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarCheck, DownloadSimple, MapTrifold } from "@phosphor-icons/react/dist/ssr";
+import { CalendarCheck, DownloadSimple, Info, MapTrifold } from "@phosphor-icons/react/dist/ssr";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
@@ -8,7 +8,8 @@ import { AssessmentDetail, KindNote } from "@/components/blocks";
 import { SeasonalChart } from "@/components/charts";
 import { HeatmapKey, MonthHeatmap, ScaleLegend } from "@/components/heatmaps";
 import { zoneLabel } from "@/components/shell/pickers";
-import { Button, ChartSkeleton, EmptyState, ErrorState, Notice, PageHeader, Panel, PanelHeader, ReliabilityBadge, Segmented, SourceNote, StatusBadge, buttonClass, cx } from "@/components/ui";
+import { pageIcon } from "@/components/shell/shell";
+import { Button, ChartSkeleton, EmptyState, ErrorState, PageHeader, Panel, PanelHeader, ReliabilityBadge, Segmented, SourceNote, StatusBadge, buttonClass, cx } from "@/components/ui";
 import { exportUrl, useCalendar, useMetadata } from "@/lib/api";
 import { fmtDelta, fmtInt, fmtScore, lastDayOfMonth, MONTHS, monthLabel, pad2 } from "@/lib/format";
 import { DEFINITIONS, KIND_LABEL } from "@/lib/labels";
@@ -38,7 +39,7 @@ export function AnomaliesView() {
   const picked = useView((v) => v.anomalies.month);
   const setPicked = (m: { year: number; month: number } | null) => updateView("anomalies", { month: m });
   const data = calendar.data;
-  const zoneName = zoneLabel(zone, meta.data?.provinces);
+  const zoneName = zoneLabel(zone, meta.data);
 
   const flagged = useMemo(() => {
     if (!data) return [];
@@ -75,10 +76,11 @@ export function AnomaliesView() {
   return (
     <>
       <PageHeader
+        icon={pageIcon("/anomalies")}
         title="Périodes inhabituelles"
         lead={
           <>
-            Mois dont l'activité détectée pour <span className="text-ink">{zoneName}</span> s'écarte de la référence saisonnière. Chaque signalement expose sa valeur, sa référence, sa méthode et ses limites.
+            Les mois où l'activité détectée pour <span className="font-medium text-ink">{zoneName}</span> s'écarte des mêmes mois des autres années. Chaque signalement montre sa valeur, sa référence et ses limites.
           </>
         }
         actions={
@@ -89,9 +91,33 @@ export function AnomaliesView() {
         }
       />
 
-      <Notice title="Comment lire cette page">
-        Une période inhabituelle est un <span className="text-ink">écart statistique</span> par rapport aux mêmes mois des autres années. Ce n'est ni un incendie exceptionnel confirmé, ni une prédiction. Une hausse des détections peut refléter une activité réelle, des conditions d'observation différentes, un changement de capteur, ou plusieurs de ces facteurs.
-      </Notice>
+      {/* Le bilan d'abord, puis l'avertissement de lecture, sur une seule bande. */}
+      <Panel className="overflow-hidden">
+        <dl className="grid grid-cols-2 md:grid-cols-4">
+          {(
+            [
+              ["Très supérieurs", counts.strong, "var(--color-critical)"],
+              ["Supérieurs", counts.high, "var(--color-warning)"],
+              ["Inférieurs", counts.low, "var(--color-div-n2)"],
+              ["Non évalués", counts.notAssessed, "var(--color-ink-3)"],
+            ] as const
+          ).map(([label, value, color], i) => (
+            <div key={label} className={cx("flex flex-col gap-1 px-5 py-4", i > 0 && "md:border-l md:border-line/70", i % 2 === 1 && "border-l border-line/70 md:border-l", i > 1 && "border-t border-line/70 md:border-t-0")}>
+              <dt className="flex items-center gap-2 text-[12.5px] text-ink-3">
+                <span aria-hidden className="size-2 rounded-full" style={{ backgroundColor: color }} />
+                {label}
+              </dt>
+              <dd className="num text-[26px] font-semibold leading-none tracking-[-0.03em] text-ink">{data ? value : "…"}</dd>
+            </div>
+          ))}
+        </dl>
+        <p className="flex items-start gap-2.5 border-t border-line/70 bg-surface-2/40 px-5 py-3 text-[13px] leading-relaxed text-ink-2">
+          <Info size={16} weight="fill" className="mt-0.5 shrink-0 text-accent" />
+          <span>
+            Un mois inhabituel est un <span className="text-ink">écart statistique</span>, pas un incendie confirmé ni une prédiction. Il peut refléter une activité réelle, des conditions d'observation différentes ou un changement de capteur.
+          </span>
+        </p>
+      </Panel>
 
       {calendar.error ? (
         <Panel>

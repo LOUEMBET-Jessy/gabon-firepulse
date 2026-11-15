@@ -14,6 +14,7 @@ Prérequis : Python 3.11 ou plus récent avec `numpy` et `pandas`, Node.js 20 ou
 # 1. Données (déjà présentes dans le dépôt ; à relancer seulement pour les régénérer)
 python pipeline/acquire.py     # télécharge les archives FIRMS et les limites administratives dans data/raw/
 python pipeline/build.py       # contrôle, harmonise et écrit web/data/ et web/public/geo/
+python pipeline/geography.py   # pays du monde, départements et localités du Gabon (après build.py)
 
 # 2. Application
 cd web
@@ -24,6 +25,17 @@ pnpm dev                       # ou : npm run dev   ->  http://localhost:3210
 Pour une version de production : `pnpm build` puis `pnpm start`.
 
 L'application lit une copie locale des données : elle fonctionne sans connexion. Seuls le fond de carte « relief NASA Blue Marble » (désactivé par défaut) et l'assistant IA ont besoin du réseau.
+
+## Explorer depuis le globe
+
+La carte s'ouvre sur un globe 3D (MapLibre, projection globe, atmosphère). À la première visite, elle part de l'espace et rejoint le Gabon.
+
+- **Navigation** : un fil d'Ariane (Terre, continent, pays, province, département, localité) et une recherche de lieux. Un clic sur un pays fait voyager le globe ; au Gabon, un clic sur une province, un département ou un village ouvre sa fiche sans déplacer la carte.
+- **Niveaux de détail** : continents en vue Terre, provinces à l'échelle du pays, départements et villes en se rapprochant, villages au plus près. Les détections sont regroupées en anneaux (part de chaque capteur MODIS, Suomi-NPP, NOAA-20) en vue lointaine, puis affichées une à une.
+- **Fiche du territoire** : indice de la période et statut saisonnier, détections par capteur, totaux annuels depuis 2000 et tendance, derniers mois inhabituels, classement des sous-territoires. « Analyser ce territoire » en fait la zone de tous les écrans.
+- **Nouvelles zones d'analyse** : les 49 départements (`department:<indice>`) et les localités (`place:<identifiant GeoNames>`, disque de 15 km). Calendrier, tendances, périodes inhabituelles, exports et assistant s'y appliquent.
+
+Sources : Natural Earth (pays, domaine public), geoBoundaries ADM2 (départements, CC BY 3.0, état 2018), GeoNames (localités, CC BY 4.0), copies dans `data/raw/world`, `data/raw/boundaries`, `data/raw/places`. **Seul le Gabon a des détections chargées** : les autres pays servent de repères et leur fiche le dit. Les indicateurs locaux aident à prioriser des vérifications de terrain ; ils ne prédisent rien.
 
 ## Activer l'assistant IA
 
@@ -58,7 +70,17 @@ Hot-Spot AI fonctionne avec **Google Gemini** ou **Anthropic Claude**, appelés 
 - **Préparer un export** : le téléchargement attend toujours la confirmation de l'utilisateur.
 - **Interpréter** : il lit les vrais chiffres par des outils serveur (synthèse d'une période, historique, détail d'un mois, classement des provinces, faits de méthode) et structure sa réponse en « Observé, Interprétation, Limites ».
 
+- **Converser à voix haute** : le bouton micro du panneau ouvre une conversation vocale. Vous parlez, l'assistant applique les actions demandées, répond en 1 à 3 phrases lues à voix haute, puis vous écoute de nouveau. Chaque échange reste écrit dans la conversation, et chaque réponse écrite a aussi un bouton « Écouter ».
+
 Il ne peut ni modifier les données ni changer un paramètre scientifique. Ses règles (pas d'incendie confirmé, pas de prédiction, pas de total MODIS plus VIIRS, aucun chiffre inventé) sont dans `web/src/lib/ai/prompt.ts`.
+
+### Conversation vocale
+
+- **Reconnaissance de la parole.** Dans Chrome et Edge, la dictée intégrée du navigateur transcrit en direct (`fr-FR`). Si elle manque ou échoue (Firefox, Safari, service de dictée injoignable), le navigateur enregistre la question, détecte la fin de la parole (1,3 s de silence), puis l'envoie à `/api/assistant/transcribe`, qui la fait transcrire par Gemini. Ce repli n'existe qu'avec le fournisseur Gemini. Pour le forcer, exécutez `localStorage.setItem("hotspot.voice.engine", "server")` dans la console du navigateur.
+- **Réponse parlée.** Elle passe par la synthèse vocale du navigateur, avec une voix française si le système en a une. En mode vocal, l'assistant reçoit une consigne de réponse courte, sans mise en forme.
+- **Contrôles.** « J'ai fini » pour envoyer sans attendre le silence, « Couper la parole », « Pause », « Reprendre », « Terminer » (ou la touche Échap). Après deux silences de suite, la conversation se met en pause.
+- **Confidentialité.** Le micro n'est ouvert que pendant l'écoute. L'audio n'est ni conservé ni journalisé. Une transcription compte dans les mêmes limites de requêtes que les questions. Les envois sont limités à 2 Mo, au format webm, ogg, mp4, mpeg, aac ou wav.
+- **Prérequis.** Le micro exige une page sécurisée : HTTPS, ou `localhost` en développement.
 
 ### Sécurité
 
@@ -71,7 +93,7 @@ Il ne peut ni modifier les données ni changer un paramètre scientifique. Ses r
 
 ```
 pipeline/            traitement scientifique en Python (acquisition, contrôle, harmonisation) et ses tests
-data/raw/            fichiers sources NASA FIRMS et geoBoundaries, avec manifeste de provenance
+data/raw/            fichiers sources NASA FIRMS, geoBoundaries, Natural Earth et GeoNames, avec manifeste de provenance
 web/data/            données traitées lues par l'application
 web/src/lib/server/  moteur d'agrégation par zone, requêtes, API internes
 web/src/lib/science/ statistiques robustes et évaluation des périodes inhabituelles
@@ -87,11 +109,13 @@ web/e2e/             parcours de test dans un vrai navigateur
 ```bash
 python -m unittest discover -s pipeline/tests   # 13 tests du pipeline
 cd web
-pnpm test                                       # 54 tests : statistiques, moteur, cohérence avec le pipeline, assistant (Claude et Gemini)
+pnpm test                                       # 65 tests : statistiques, moteur, cohérence avec le pipeline, géographie, assistant (Claude, Gemini, voix)
 pnpm dev                                        # puis, dans un autre terminal :
 node e2e/flows.mjs                              # 20 parcours d'acceptation (Chrome installé requis)
 node e2e/assistant.mjs                          # 9 parcours de l'assistant
 node e2e/assistant-live.mjs                     # 8 essais avec le vrai fournisseur IA (clé requise, requêtes facturées)
+node e2e/voice-live.mjs question.wav            # conversation vocale complète : un fichier WAV sert de micro (clé requise)
+node e2e/globe.mjs                              # 4 parcours du globe : anneaux par capteur, département, localité, arrivée depuis l'espace
 ```
 
 Les tests unitaires et navigateur de l'assistant n'appellent pas le fournisseur IA : un client simulé rejoue des réponses du modèle, ou la réponse réseau de `/api/assistant` est remplacée. Ils vérifient la boucle d'outils, la validation, l'exécution des actions et les confirmations. Le comportement du vrai modèle (refus d'une suppression, résistance à une injection, export non annoncé comme téléchargé, données 2026 absentes) est vérifié par `e2e/assistant-live.mjs`.

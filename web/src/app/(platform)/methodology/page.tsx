@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 
+import { Flask } from "@phosphor-icons/react/dist/ssr";
+
+import { MethodToc } from "@/components/method-toc";
 import { Notice, PageHeader, Panel, SensorMark } from "@/components/ui";
 import { fmt1, fmt2, fmtDate, fmtDateTimeUtc, fmtInt, fmtPct, MONTHS_SHORT } from "@/lib/format";
 import { CONFIG_LABEL, SATELLITES } from "@/lib/labels";
@@ -20,15 +23,29 @@ const SECTIONS = [
   ["zones", "Calage par zone"],
   ["anomalies", "Périodes inhabituelles"],
   ["limites", "Limites"],
+  ["geographie", "Géographie"],
   ["sources", "Sources"],
 ] as const;
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
     <Panel id={id} className="scroll-mt-24 px-5 py-5 md:px-7 md:py-6">
-      <h2 className="text-[18px] font-semibold tracking-[-0.01em] text-ink">{title}</h2>
-      <div className="mt-3 flex flex-col gap-3.5 text-[14px] leading-relaxed text-ink-2 [&_strong]:font-medium [&_strong]:text-ink">{children}</div>
+      <h2 className="text-[20px] font-semibold tracking-[-0.02em] text-ink">{title}</h2>
+      <div className="mt-3 flex flex-col gap-3.5 text-[14px] leading-relaxed text-ink-2 [&_strong]:font-medium [&_strong]:text-ink [&>p]:max-w-[78ch]">{children}</div>
     </Panel>
+  );
+}
+
+/** Tableau long replie par defaut : le texte se lit d'un trait, le detail reste a un clic (et a l'impression). */
+function Fold({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <details className="group rounded-control border border-line bg-bg/30 open:bg-transparent">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-[13.5px] font-medium text-ink transition-colors hover:text-accent-strong [&::-webkit-details-marker]:hidden">
+        {label}
+        <span aria-hidden className="text-[18px] leading-none text-ink-3 transition-transform duration-200 group-open:rotate-45">+</span>
+      </summary>
+      <div className="px-4 pb-4">{children}</div>
+    </details>
   );
 }
 
@@ -83,17 +100,14 @@ export default function MethodologyPage() {
   return (
     <>
       <PageHeader
+        icon={<Flask size={20} weight="duotone" />}
         title="Méthode et données"
-        lead="Comment les chiffres de Hot-Spot sont obtenus, ce qui a été vérifié, et ce que ces chiffres ne permettent pas de dire. Les valeurs de cette page sont lues dans les fichiers produits par le traitement."
+        lead="Comment les chiffres sont obtenus, ce qui a été vérifié, et ce qu'ils ne permettent pas de dire. Toutes les valeurs de cette page sont lues dans les fichiers produits par le traitement."
       />
 
-      <nav aria-label="Sections de la page" className="no-print -mx-1 flex flex-wrap gap-1.5">
-        {SECTIONS.map(([id, label]) => (
-          <a key={id} href={`#${id}`} className="rounded-full border border-line-strong bg-surface-2 px-3 py-1 text-[12.5px] font-medium text-ink-2 transition-colors hover:border-ink-3 hover:text-ink">
-            {label}
-          </a>
-        ))}
-      </nav>
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[200px_minmax(0,1fr)] xl:gap-10">
+        <MethodToc sections={SECTIONS} />
+        <div className="flex min-w-0 flex-col gap-6">
 
       <Section id="resume" title="En bref">
         <p>
@@ -179,19 +193,22 @@ export default function MethodologyPage() {
         <p>
           <strong>4. Un seul capteur par jour.</strong> Chaque jour est alimenté par la première configuration en service dans cet ordre : {h.relay_priority.map((c) => CONFIG_LABEL[c]).join(", ")}. Aucun total MODIS plus VIIRS n'est donc jamais calculé, et la même activité ne peut pas être comptée deux fois.
         </p>
-        <p>Chronologie réelle du relais :</p>
-        <Table
+        <Fold label={`Chronologie réelle du relais (${relay.length} périodes)`}>
+          <Table
           head={["Du", "Au", "Source de l'indice"]}
           rows={relay.map((r) => [fmtDate(r.start), fmtDate(r.end), r.config ? CONFIG_LABEL[r.config] : <span key="n" className="text-warning">Aucun capteur en service : pas de valeur</span>])}
         />
+        </Fold>
         <p>
           <strong>Interruptions.</strong> Une série de jours consécutifs sans aucune détection d'un satellite est traitée comme une interruption si elle dure assez longtemps et si le nombre de détections attendu sur ces jours est élevé. Pour VIIRS, l'autre satellite sert de témoin : s'il n'a presque rien vu non plus, le silence est attribué aux nuages et n'est pas signalé.
         </p>
-        <Table
+        <Fold label={`Interruptions détectées (${h.gaps.length})`}>
+          <Table
           head={["Satellite", "Du", "Au", "Jours", "Détections attendues", "Vues par le témoin"]}
           numeric={[3, 4, 5]}
           rows={h.gaps.map((g) => [SATELLITES[g.satellite].name, fmtDate(g.start), fmtDate(g.end), g.days, fmtInt(g.expected_detections), g.witness_detections === null ? "sans témoin" : fmtInt(g.witness_detections)])}
         />
+        </Fold>
         <p className="text-[13px] text-ink-3">Ces interruptions sont déduites des données, pas d'un journal officiel d'exploitation des satellites. Sans témoin, une longue période très nuageuse pourrait être prise pour une panne.</p>
       </Section>
 
@@ -225,11 +242,13 @@ export default function MethodologyPage() {
         <p>
           <strong>Le rapport entre capteurs n'est pas stable dans le temps.</strong> Rapport annuel entre VIIRS Suomi-NPP et chaque configuration, sur les jours communs :
         </p>
-        <Table
+        <Fold label={`Rapport annuel par configuration (${h.diagnostics.yearly_ratio.length} années)`}>
+          <Table
           head={["Année", "Terra + Aqua", "Aqua seul", "Terra seul", "NOAA-20"]}
           numeric={[1, 2, 3, 4]}
           rows={h.diagnostics.yearly_ratio.map((r) => [r.year, r.TA === null ? "" : fmt2(r.TA), r.A === null ? "" : fmt2(r.A), r.T === null ? "" : fmt2(r.T), r.N === null ? "" : fmt2(r.N)])}
         />
+        </Fold>
         <p>
           Le rapport Terra + Aqua varie de {fmt2(Math.min(...h.diagnostics.yearly_ratio.map((r) => r.TA ?? Infinity)))} à {fmt2(Math.max(...h.diagnostics.yearly_ratio.map((r) => r.TA ?? -Infinity)))} selon les années, et il est plus bas en fin de période. Les données chargées ne permettent pas d'en établir la cause. Deux explications sont plausibles et non vérifiées ici : la dérive des orbites de Terra et d'Aqua, qui déplace leur heure de passage, et les interruptions de Suomi-NPP en 2024. Conséquence : les valeurs d'avant 2012 reposent sur un facteur moyen, et leur incertitude réelle peut dépasser la bande affichée.
         </p>
@@ -306,6 +325,24 @@ export default function MethodologyPage() {
         </ul>
       </Section>
 
+      <Section id="geographie" title="Géographie d'exploration : globe, départements, localités">
+        <p>
+          La carte s'ouvre sur un globe pour situer le Gabon dans le monde. <strong>Seul le Gabon dispose de détections chargées</strong> : les autres pays sont des repères de navigation (Natural Earth, 1:110 000 000, domaine public) et leur fiche le dit, sans aucun chiffre.
+        </p>
+        <p>
+          Au Gabon, l'analyse descend sous la province. Les <strong>{store.geography.departments.length} départements</strong> viennent de geoBoundaries ({String(store.geography.sources.departments.license)}, état représenté : {String(store.geography.sources.departments.year)}). Chaque détection est rattachée à son département par un test point dans polygone ; {fmtInt(store.geography.outside_departments)} détections tombent hors des polygones et ne comptent que dans les totaux nationaux. Les départements (2018) et les provinces (2005) ne s'emboîtent pas exactement : chaque département est rattaché à la province qui couvre la plus grande part de sa surface, et la somme des départements d'une province peut différer de quelques pour cent du total de la province.
+        </p>
+        <p>
+          Les <strong>localités</strong> viennent de GeoNames (CC BY 4.0) : {fmtInt(store.geography.places.length)} lieux habités, dont {store.geography.towns.length} villes avec population connue ou fonction administrative. Un point n'a pas de surface : l'analyse d'une localité porte sur un <strong>disque de {store.geography.place_radius_km} km</strong> autour d'elle, annoncé comme tel partout. Ce disque peut chevaucher plusieurs départements.
+        </p>
+        <Notice title="Ce que la granularité ne change pas">
+          Une zone plus petite contient moins de détections : la référence saisonnière y est plus fragile, le calage MODIS vers VIIRS aussi, et un écart peut tenir à quelques pixels. Les indicateurs par département ou par localité servent à repérer où regarder et à prioriser des vérifications de terrain. Ce ne sont ni des incendies confirmés, ni des prédictions.
+        </Notice>
+        <p>
+          À l'écran, les détections sont regroupées en vue continentale ou mondiale (anneaux dont la couleur donne la part de chaque capteur), puis affichées une à une dès l'échelle du pays. Le regroupement est un choix d'affichage : il ne modifie aucun calcul.
+        </p>
+      </Section>
+
       <Section id="sources" title="Sources, versions et vérifications">
         <p>
           <strong>Détections.</strong> NASA FIRMS, archives annuelles par pays, Gabon. Fichiers téléchargés entre le {fmtDateTimeUtc(meta.firms.accessed_first)} et le {fmtDateTimeUtc(meta.firms.accessed_last)}, depuis <span className="num break-all">{meta.firms.base_url}</span>. D'après la documentation consultée, les données FIRMS sont partagées ouvertement, sans restriction, selon les règles d'usage et de citation de l'EOSDIS.
@@ -352,6 +389,8 @@ export default function MethodologyPage() {
           Données traitées le {fmtDateTimeUtc(meta.built_at)}. Projet étudiant indépendant réalisé pour le NASA Space Apps Challenge 2026, défi « Harmonization of MODIS and VIIRS Hot Spots ». Hot-Spot n'est ni un produit officiel de la NASA ni un service opérationnel d'alerte incendie.
         </p>
       </Section>
+        </div>
+      </div>
     </>
   );
 }

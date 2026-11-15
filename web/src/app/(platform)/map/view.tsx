@@ -1,16 +1,17 @@
 "use client";
 
 import { ArrowSquareOut, DownloadSimple, Faders, PencilSimpleLine, X } from "@phosphor-icons/react/dist/ssr";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { FireMap } from "@/components/blocks";
+import { CONTINENTS, GABON_BBOX, Navigator, TerritoryCard, isGabon, territoryFromZone, territoryZone, type Territory } from "@/components/map/explorer";
 import { ScaleLegend, activityBreaks } from "@/components/heatmaps";
 import { DRAW_EVENT, DRAW_FLAG, zoneLabel } from "@/components/shell/pickers";
 import { Button, Checkbox, ErrorState, Notice, Segmented, SensorMark, Skeleton, buttonClass, cx } from "@/components/ui";
 import { exportUrl, useDetection, useDetections, useGrid, useMetadata, type MapFilters } from "@/lib/api";
 import { fmtCoord, fmtDateTimeUtc, fmtInt, fmtPeriod } from "@/lib/format";
 import { CONF_LABEL, DEFINITIONS, SATELLITES } from "@/lib/labels";
-import type { DetectionDetail, GridCell } from "@/lib/types";
+import type { DetectionDetail, GridCell, ZoneSpec } from "@/lib/types";
 import { SATELLITE_KEYS } from "@/lib/types";
 import { useFilters } from "@/state/filters";
 import { updateView, useView, type MapMode } from "@/state/view";
@@ -156,6 +157,74 @@ export function MapView() {
   const [basemapError, setBasemapError] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
 
+  // Exploration du globe : territoire montre (pas forcement la zone d'analyse), vols, niveau de zoom.
+  const [territory, setTerritory] = useState<Territory>(() => territoryFromZone(zone) ?? { kind: "world" });
+  const [cardOpen, setCardOpen] = useState(false);
+  const [flight, setFlight] = useState<{ key: number; bbox: [number, number, number, number] | null; maxZoom?: number } | null>(null);
+  const [zoomLevel, setZoomLevel] = useState(6);
+  // Arrivee depuis l'espace : une fois par navigateur, jamais si l'utilisateur limite les animations.
+  // Lecture sans ecriture a l'initialisation (React peut l'executer deux fois) ; la marque est posee apres coup.
+  const [intro] = useState(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return window.localStorage.getItem("hotspot.globe.seen") !== "1" && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    } catch {
+      return false;
+    }
+  });
+  useEffect(() => {
+    try {
+      window.localStorage.setItem("hotspot.globe.seen", "1");
+    } catch {
+      /* stockage indisponible : l'arrivee depuis l'espace se rejouera, sans consequence */
+    }
+  }, []);
+
+  // La zone d'analyse choisie ailleurs (selecteur, assistant) devient le territoire montre.
+  useEffect(() => {
+    const t = territoryFromZone(zone);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- le territoire suit la zone d'analyse quand elle change
+    if (t) setTerritory(t);
+  }, [zone]);
+
+  const fly = (bbox: [number, number, number, number] | null, maxZoom?: number) => setFlight({ key: Date.now(), bbox, maxZoom });
+  const sameZone = (a: ZoneSpec, b: ZoneSpec) => JSON.stringify(a) === JSON.stringify(b);
+
+  /** Navigation explicite (fil d'Ariane, recherche, fiche) : on se deplace, et la zone suit pour le Gabon. */
+  const go = useCallback(
+    (t: Territory) => {
+      setTerritory(t);
+      setCardOpen(true);
+      setSelected(null);
+      setCell(null);
+      if (t.kind === "world") return fly(null);
+      if (t.kind === "continent") return fly(CONTINENTS.find((c) => c.name === t.name)?.bbox ?? null, 4);
+      if (t.kind === "country" && t.iso !== "GAB") return fly(t.bbox, 5.5);
+      const z = territoryZone(t)!;
+      // Meme zone : un nouvel objet relance le cadrage (on a pu s'en eloigner en naviguant).
+      if (sameZone(z, zone)) return z.kind === "country" ? fly(GABON_BBOX, 7) : setZone({ ...z });
+      setZone(z);
+    },
+    [zone, setZone],
+  );
+
+  /** Clic sur le globe : un pays fait voyager ; dans le Gabon, le clic montre la fiche sans deplacer la carte. */
+  const onPickArea = (pick: Parameters<NonNullable<React.ComponentProps<typeof FireMap>["onPickArea"]>>[0]) => {
+    if (!pick) return;
+    if (pick.kind === "country" && (pick.iso !== "GAB" || zoomLevel < 4.4)) return go(pick);
+    if (pick.kind === "country") return;
+    setTerritory(pick);
+    setCardOpen(true);
+  };
+  const highlight =
+    territory.kind === "country" && territory.iso !== "GAB"
+      ? { country: territory.iso }
+      : territory.kind === "province"
+        ? { province: territory.index }
+        : territory.kind === "department"
+          ? { department: territory.index }
+          : {};
+
   const detections = useDetections(zone, from, to, filters, mode === "points");
   const grid = useGrid(zone, from, to, mode === "grid");
   const noSatellite = !Object.values(filters.sats).some(Boolean);
@@ -262,7 +331,8 @@ export function MapView() {
       )}
 
       <Group title="Zone d'analyse">
-        <p className="text-[12.5px] text-ink">{zoneLabel(zone, meta.data?.provinces)}</p>
+        <p className="text-[12.5px] text-ink">{zoneLabel(zone, meta.data)}</p>
+        {zone.kind === "place" ? <p className="text-[11.5px] text-ink-3">Disque de {meta.data?.placeRadiusKm ?? 15} km autour de la localité : un point n'a pas de surface propre.</p> : null}
         <div className="mt-1 flex flex-wrap gap-2">
           <Button size="sm" variant={drawing ? "primary" : "secondary"} onClick={() => (setDrawing((v) => !v), setPanelOpen(false))}>
             <PencilSimpleLine size={15} />
@@ -290,7 +360,9 @@ export function MapView() {
           Relief NASA Blue Marble (en ligne)
         </Checkbox>
         {basemap && basemapError ? <p className="text-[11.5px] text-warning">Fond en ligne indisponible. La carte continue de fonctionner avec les limites locales.</p> : null}
-        <p className="text-[11.5px] leading-relaxed text-ink-3">Limites : geoBoundaries (CC BY-SA 3.0), état représenté : 2005. Elles servent de repère, pas de référence juridique.</p>
+        <p className="text-[11.5px] leading-relaxed text-ink-3">
+          Provinces : geoBoundaries (CC BY-SA 3.0, état 2005). Départements : geoBoundaries (CC BY 3.0, état 2018). Localités : GeoNames (CC BY 4.0). Pays du monde : Natural Earth. Repères, pas références juridiques.
+        </p>
       </Group>
 
       <Group title="Exporter la sélection" hint="L'export contient exactement les détections retenues par les filtres ci-dessus, avec le renvoi à leur ligne source.">
@@ -309,7 +381,7 @@ export function MapView() {
   );
 
   return (
-    <div className="relative flex h-full">
+    <div className="relative flex h-full space-bg">
       {/* Panneau de filtres (ordinateur) */}
       <aside aria-label="Filtres de la carte" data-tour="map-filters" className="hidden w-[304px] shrink-0 overflow-y-auto border-r border-line bg-surface lg:block">
         {controls}
@@ -317,6 +389,13 @@ export function MapView() {
 
       <div className="relative min-w-0 flex-1">
         <FireMap
+          globe
+          intro={intro}
+          highlight={highlight}
+          flight={flight}
+          onPickArea={onPickArea}
+          onZoom={setZoomLevel}
+          placeRadiusKm={meta.data?.placeRadiusKm}
           mode={mode}
           points={noSatellite || noConfidence ? null : d?.points}
           grid={grid.data}
@@ -336,10 +415,10 @@ export function MapView() {
           className="absolute inset-0"
         />
 
-        {/* Bandeau d'etat */}
-        <div className="pointer-events-none absolute inset-x-3 top-3 flex flex-col items-start gap-2 pr-12">
+        {/* Etat, navigation et fiche du territoire */}
+        <div className="pointer-events-none absolute bottom-24 left-3 right-14 top-3 flex flex-col items-start gap-2 md:right-auto">
           <div className="pointer-events-auto flex max-w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-control border border-line-strong bg-surface/95 px-3 py-2 text-[12.5px] backdrop-blur" role="status" aria-live="polite">
-            <button type="button" onClick={() => setPanelOpen(true)} className="flex items-center gap-1.5 font-medium text-accent lg:hidden">
+            <button type="button" data-tour="map-filters" onClick={() => setPanelOpen(true)} className="flex items-center gap-1.5 font-medium text-accent lg:hidden">
               <Faders size={15} />
               Filtres
             </button>
@@ -363,6 +442,18 @@ export function MapView() {
               </span>
             )}
           </div>
+
+          <Navigator territory={territory} onGo={go} />
+          {cardOpen && !(selected !== null || cell) ? (
+            <div className="mt-auto flex max-h-[48%] min-h-0 flex-col md:mt-0 md:max-h-none md:flex-1">
+              <TerritoryCard territory={territory} from={from} to={to} activeZone={zone} onClose={() => setCardOpen(false)} onGo={go} onAnalyse={setZone} />
+            </div>
+          ) : null}
+          {!isGabon(territory) && !cardOpen ? (
+            <button type="button" onClick={() => setCardOpen(true)} className="pointer-events-auto rounded-full border border-line-strong bg-surface/90 px-3 py-1.5 text-[12px] text-ink-2 backdrop-blur-md hover:text-ink">
+              Que montre cette vue ?
+            </button>
+          ) : null}
 
           {drawing ? (
             <div className="pointer-events-auto max-w-[420px]">
@@ -398,6 +489,12 @@ export function MapView() {
           <div data-tour="map-legend" className="pointer-events-auto max-w-full rounded-control border border-line-strong bg-surface/95 px-3 py-2 backdrop-blur">
             {mode === "points" ? (
               <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-ink-2">
+                {zoomLevel < 5.4 ? (
+                  <li className="flex items-center gap-1.5 text-ink-3">
+                    <span aria-hidden className="inline-block size-3 rounded-full border-[3px] border-l-snpp border-t-modis border-r-noaa20 border-b-snpp" />
+                    Anneau : part de chaque capteur dans un groupe de détections
+                  </li>
+                ) : null}
                 <li className="flex items-center gap-1.5">
                   <SensorMark color={SATELLITES.terra.color} shape="square" /> MODIS Terra et Aqua, pixel de 1 km
                 </li>
