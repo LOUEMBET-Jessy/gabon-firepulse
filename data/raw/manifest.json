@@ -488,8 +488,8 @@
       "year": 2026,
       "url": "https://firms.modaps.eosdis.nasa.gov/api/area/csv/CLE_MASQUEE/{source}/{'lon_min': 8.0, 'lon_max': 15.0, 'lat_min': -4.5, 'lat_max': 3.0}/5/{date}",
       "path": "data/raw/firms/modis/modis_2026_Gabon.csv",
-      "bytes": 230332,
-      "sha256": "e0a4c17a11c10fb12eb14ef83084046c32c11aba99f2689381581a451b4feed6",
+      "bytes": 231395,
+      "sha256": "cb98e3dbb4cf5de01c3b384a163df8f104cdee4a653b46a264a1046763ae08c1",
       "rows": 2825,
       "accessed_at": "2026-11-15T08:25:38Z",
       "api": true,
@@ -509,8 +509,8 @@
       "year": 2026,
       "url": "https://firms.modaps.eosdis.nasa.gov/api/area/csv/CLE_MASQUEE/{source}/{'lon_min': 8.0, 'lon_max': 15.0, 'lat_min': -4.5, 'lat_max': 3.0}/5/{date}",
       "path": "data/raw/firms/viirs-snpp/viirs-snpp_2026_Gabon.csv",
-      "bytes": 805881,
-      "sha256": "63ffe11ea5d40bb68a493c23aaa42d45ca976fc9337a9ab8e83a6cc28c143b8e",
+      "bytes": 815109,
+      "sha256": "c87ab44dc88683c0867f8417b4c154ec95a61a171b113fa005c60f1176a8223e",
       "rows": 10100,
       "accessed_at": "2026-11-15T08:27:34Z",
       "api": true,
@@ -530,8 +530,8 @@
       "year": 2026,
       "url": "https://firms.modaps.eosdis.nasa.gov/api/area/csv/CLE_MASQUEE/{source}/{'lon_min': 8.0, 'lon_max': 15.0, 'lat_min': -4.5, 'lat_max': 3.0}/5/{date}",
       "path": "data/raw/firms/viirs-jpss1/viirs-jpss1_2026_Gabon.csv",
-      "bytes": 880776,
-      "sha256": "fba38e6979c2c054dc7813c821a733c8caf41eb0262da61916e4107328a10ffd",
+      "bytes": 890367,
+      "sha256": "6299adbdd07e4e0c3b72ab9bc4e188579928655fb43408ddc6cab16c7d29fc03",
       "rows": 10771,
       "accessed_at": "2026-11-15T08:36:38Z",
       "api": true,
@@ -646,7 +646,7 @@
         },
         "kept": 2825,
         "outside": 11801,
-        "type_inferred": 0
+        "type_inferred": 752
       },
       "viirs-snpp": {
         "ranges": {
@@ -661,7 +661,7 @@
         },
         "kept": 10100,
         "outside": 37882,
-        "type_inferred": 0
+        "type_inferred": 3339
       },
       "viirs-jpss1": {
         "ranges": {
@@ -676,7 +676,7 @@
         },
         "kept": 10771,
         "outside": 40908,
-        "type_inferred": 0
+        "type_inferred": 3481
       }
     },
     "provisional_from": "2026-08-01"

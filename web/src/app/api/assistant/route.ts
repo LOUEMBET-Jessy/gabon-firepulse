@@ -4,7 +4,7 @@ import { AssistantUnavailable, runAssistant, sanitizeHistory } from "@/lib/ai/se
 import { validateContext } from "@/lib/ai/tools";
 
 /**
- * POST /api/assistant : un tour de conversation avec Hot-Spot AI.
+ * POST /api/assistant : un tour de conversation avec Hot-Spots AI.
  * Corps : { messages: [{ role, text }], context: { page, zone, from, to, ... } }.
  * Reponse : { text, actions, sources }. Les actions sont appliquees par le navigateur.
  * Rien n'est journalise du contenu des messages.

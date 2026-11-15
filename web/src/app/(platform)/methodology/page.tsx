@@ -120,7 +120,7 @@ export default function MethodologyPage() {
           MODIS observe les feux actifs depuis 2000, VIIRS depuis 2012. Les deux capteurs ne comptent pas la même chose : au Gabon, VIIRS signale environ <strong>{fmt1(unit.raw_detections.factor_global)} fois plus</strong> de détections que MODIS pour la même activité. Mettre leurs séries bout à bout produirait une fausse hausse en 2012.
         </p>
         <p>
-          Hot-Spot ramène les deux capteurs à une même unité, la <strong>cellule-jour active en équivalent VIIRS Suomi-NPP</strong>, et n'utilise jamais qu'un seul capteur par jour. Le résultat est une série continue du {fmtDate(dayToIso(store, store.firstDay))} au {fmtDate(dayToIso(store, store.lastDay))}, sur laquelle reposent le calendrier, les tendances et les périodes inhabituelles.
+          Hot-Spots ramène les deux capteurs à une même unité, la <strong>cellule-jour active en équivalent VIIRS Suomi-NPP</strong>, et n'utilise jamais qu'un seul capteur par jour. Le résultat est une série continue du {fmtDate(dayToIso(store, store.firstDay))} au {fmtDate(dayToIso(store, store.lastDay))}, sur laquelle reposent le calendrier, les tendances et les périodes inhabituelles.
         </p>
         <Notice title="Ce que la plateforme n'affirme pas">
           Une détection n'est pas un incendie confirmé. Un indice élevé n'est pas une surface brûlée. Une période inhabituelle n'est pas une prédiction. La plateforme ne désigne aucune cause et ne remplace aucun système d'alerte.
@@ -425,7 +425,7 @@ export default function MethodologyPage() {
           </div>
         </details>
         <p className="text-[13px] text-ink-3">
-          Données traitées le {fmtDateTimeUtc(meta.built_at)}. Projet étudiant indépendant réalisé pour le NASA Space Apps Challenge 2026, défi « Harmonization of MODIS and VIIRS Hot Spots ». Hot-Spot n'est ni un produit officiel de la NASA ni un service opérationnel d'alerte incendie.
+          Données traitées le {fmtDateTimeUtc(meta.built_at)}. Projet étudiant indépendant réalisé pour le NASA Space Apps Challenge 2026, défi « Harmonization of MODIS and VIIRS Hot Spots ». Hot-Spots n'est ni un produit officiel de la NASA ni un service opérationnel d'alerte incendie.
         </p>
       </Section>
         </div>

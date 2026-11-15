@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Panneau de Hot-Spot AI : conversation, actions appliquees, confirmations, aide hors ligne.
+ * Panneau de Hot-Spots AI : conversation, actions appliquees, confirmations, aide hors ligne.
  * Non modal sur ordinateur (la page reste visible et utilisable pendant l'echange), plein ecran sur telephone.
  */
 
@@ -361,7 +361,7 @@ function Intro({
 
       <p className="flex items-start gap-2 text-[12px] leading-relaxed text-ink-3">
         <ShieldCheck size={15} className="mt-px shrink-0 text-good" />
-        Archives NASA FIRMS jusqu'au 31 décembre 2025. Je ne confirme pas d'incendie, je ne fais pas de prédiction, et je n'invente aucun chiffre.
+        Archives NASA FIRMS depuis 2000, mois les plus récents provisoires. Je ne confirme pas d'incendie, je ne fais pas de prédiction, et je n'invente aucun chiffre.
       </p>
     </div>
   );
@@ -433,7 +433,7 @@ export function AssistantPanel() {
     fetch("/api/assistant/status")
       .then((r) => r.json() as Promise<AssistantStatus>)
       .then((s) => setAssistant({ status: s }))
-      .catch(() => setAssistant({ status: { available: false, reason: "Le serveur Hot-Spot ne répond pas.", model: null } }));
+      .catch(() => setAssistant({ status: { available: false, reason: "Le serveur Hot-Spots ne répond pas.", model: null } }));
     try {
       // Question venue de la page d'accueil (?ask=...) : pre-remplie, l'utilisateur l'envoie lui-meme.
       const ask = new URLSearchParams(window.location.search).get("ask");
@@ -532,7 +532,7 @@ export function AssistantPanel() {
       return { text: body.text };
     } catch (error) {
       const aborted = error instanceof DOMException && error.name === "AbortError";
-      const message = aborted ? "Demande interrompue." : "Le serveur Hot-Spot ne répond pas. Vérifiez votre connexion.";
+      const message = aborted ? "Demande interrompue." : "Le serveur Hot-Spots ne répond pas. Vérifiez votre connexion.";
       pushMessage({ id: uid("e"), role: "assistant", text: message, error: true });
       return { text: message, error: true };
     } finally {

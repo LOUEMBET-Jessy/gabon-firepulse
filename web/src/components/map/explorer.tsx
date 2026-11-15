@@ -287,9 +287,9 @@ export function TerritoryCard({
             <p className="text-[13px] leading-relaxed text-ink-2">
               {territory.kind === "country"
                 ? hasArchive(territory.iso)
-                  ? "Ce pays a son archive NASA FIRMS 2000 à 2025 : passez-y pour en voir les chiffres, tendances et périodes inhabituelles."
-                  : "Aucune détection n'est chargée pour ce pays. Hot-Spot traite les archives NASA FIRMS du Gabon et de la France métropolitaine : chiffres, tendances et périodes inhabituelles n'existent que là."
-                : "Faites tourner le globe et choisissez une région. Les archives chargées couvrent le Gabon et la France métropolitaine (NASA FIRMS, 2000 à 2025)."}
+                  ? "Ce pays a son archive NASA FIRMS depuis 2000 : passez-y pour en voir les chiffres, tendances et périodes inhabituelles."
+                  : "Aucune détection n'est chargée pour ce pays. Hot-Spots traite les archives NASA FIRMS du Gabon et de la France métropolitaine : chiffres, tendances et périodes inhabituelles n'existent que là."
+                : "Faites tourner le globe et choisissez une région. Les archives chargées couvrent le Gabon et la France métropolitaine (NASA FIRMS, depuis 2000)."}
             </p>
             <div className="flex flex-wrap gap-2">
               <Button size="sm" variant="primary" onClick={() => onGo(archiveCountry("GAB"))}>
@@ -345,8 +345,8 @@ export function TerritoryCard({
               </p>
               {c ? <MiniYears years={c.years} /> : <Skeleton className="h-12 w-full" />}
               <p className="mt-1 flex justify-between text-[10.5px] text-ink-3">
-                <span>2000</span>
-                <span>2025</span>
+                <span>{c?.years[0]?.year ?? 2000}</span>
+                <span>{c?.years[c.years.length - 1]?.year ?? ""}</span>
               </p>
               {weakCalibration ? (
                 <p className="mt-1.5 text-[11.5px] leading-relaxed text-warning">Calage MODIS fragile sur ce territoire : avant 2012, les valeurs sont peu sûres. Comparez avec « VIIRS seul » dans Tendances.</p>

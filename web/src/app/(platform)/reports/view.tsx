@@ -116,7 +116,7 @@ export function ReportsView() {
                 [
                   ["Détections de la période (CSV)", "Toutes les détections natives de la zone et de la période, tous capteurs.", exportUrl("detections", "csv", zone, from, to)],
                   ["Détections de la période (GeoJSON)", "Points pour un logiciel SIG. Limité à 100 000 détections.", exportUrl("detections", "geojson", zone, from, to)],
-                  ["Calendrier mensuel harmonisé (CSV)", "Série complète 2000 à 2025 de la zone : indice, référence, score, origine.", exportUrl("monthly", "csv", zone)],
+                  ["Calendrier mensuel harmonisé (CSV)", "Série complète de la zone depuis 2000 : indice, référence, score, origine (mois récents provisoires signalés).", exportUrl("monthly", "csv", zone)],
                   ["Périodes inhabituelles (CSV)", "Mois signalés avec le détail du calcul et les réserves.", exportUrl("anomalies", "csv", zone)],
                 ] as const
               ).map(([title, detail, href]) => (
@@ -158,7 +158,7 @@ export function ReportsView() {
         ) : o && c && meta.data ? (
           <>
             <header className="border-b border-line pb-4">
-              <p className="text-[12px] font-medium text-ink-3">Hot-Spot · Rapport d'activité des feux détectée par satellite</p>
+              <p className="text-[12px] font-medium text-ink-3">Hot-Spots · Rapport d'activité des feux détectée par satellite</p>
               <h1 className="mt-1.5 text-[24px] font-semibold tracking-[-0.02em] text-ink">
                 {zoneName}, {fmtPeriod(from, to).toLowerCase()}
               </h1>

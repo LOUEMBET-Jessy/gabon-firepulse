@@ -42,7 +42,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
     items: [
       { href: "/dashboard", label: "Vue d'ensemble", short: "Synthèse", hint: "La période en un coup d'œil", icon: Gauge },
       { href: "/map", label: "Carte des détections", short: "Carte", hint: "Chaque détection, à sa position", icon: MapTrifold },
-      { href: "/calendar", label: "Calendrier d'activité", short: "Calendrier", hint: "25 ans, mois par mois", icon: CalendarDots },
+      { href: "/calendar", label: "Calendrier d'activité", short: "Calendrier", hint: "Depuis 2000, mois par mois", icon: CalendarDots },
     ],
   },
   {

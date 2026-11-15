@@ -1,1 +1,1 @@
-"""Hot-Spot - traitement scientifique (acquisition, controle, harmonisation)."""
+"""Hot-Spots - traitement scientifique (acquisition, controle, harmonisation)."""

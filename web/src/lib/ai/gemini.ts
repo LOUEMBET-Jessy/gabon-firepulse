@@ -1,5 +1,5 @@
 /**
- * Boucle d'outils de Hot-Spot AI avec Google Gemini (SDK officiel @google/genai).
+ * Boucle d'outils de Hot-Spots AI avec Google Gemini (SDK officiel @google/genai).
  *
  * Memes outils, memes validations et memes regles que le fournisseur Anthropic :
  * seule la forme des messages change. Le contexte applicatif est ajoute aux instructions

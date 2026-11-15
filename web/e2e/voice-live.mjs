@@ -29,7 +29,7 @@ const transcription = page.waitForResponse((r) => r.url().includes("/api/assista
 const answer = page.waitForResponse((r) => r.url().endsWith("/api/assistant") && r.request().method() === "POST", { timeout: 150_000 });
 
 await page.goto(`${base}/dashboard`, { waitUntil: "load" });
-await page.getByRole("button", { name: "Ouvrir Hot-Spot AI" }).click();
+await page.getByRole("button", { name: "Ouvrir Hot-Spots AI" }).click();
 await page.getByText("Prêt à vous aider").waitFor({ timeout: 15_000 });
 await page.getByRole("button", { name: "Démarrer une conversation vocale" }).click();
 await page.getByText("Je vous écoute").waitFor();

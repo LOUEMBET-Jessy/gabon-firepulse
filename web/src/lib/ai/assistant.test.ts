@@ -140,7 +140,9 @@ describe("outils et validation", () => {
     const ok = runTool("set_period", { from: "1999-01-01", to: "2000-12-31" }, c, store);
     expect(ok.action).toEqual({ type: "set_period", from: "2000-11-01", to: "2000-12-31" });
     expect(ok.content).toContain("bornée");
-    expect(runTool("set_period", { from: "2026-01-01", to: "2026-03-01" }, c, store).isError).toBe(true);
+    expect(runTool("set_period", { from: "2027-01-01", to: "2027-03-01" }, c, store).isError).toBe(true);
+    // 2026 fait partie des donnees depuis le prolongement par l API FIRMS.
+    expect(runTool("set_period", { from: "2026-01-01", to: "2026-03-01" }, c, store).isError).toBeFalsy();
   });
 
   it("n'expose aucune action non prevue", () => {

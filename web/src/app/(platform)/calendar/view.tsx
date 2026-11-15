@@ -103,7 +103,7 @@ export function CalendarView() {
         title="Calendrier d'activité"
         lead={
           <>
-            Vingt-cinq ans d'activité détectée pour <span className="font-medium text-ink">{zoneName}</span>, dans une même unité. Repérez la saison, comparez les années, ouvrez un mois.
+            Depuis 2000, l'activité détectée pour <span className="font-medium text-ink">{zoneName}</span>, dans une même unité, jusqu'aux derniers jours disponibles. Repérez la saison, comparez les années, ouvrez un mois.
           </>
         }
         actions={

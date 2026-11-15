@@ -1,4 +1,4 @@
-// Parcours de l'assistant Hot-Spot AI dans Chrome. Usage : node e2e/assistant.mjs (serveur sur :3210).
+// Parcours de l'assistant Hot-Spots AI dans Chrome. Usage : node e2e/assistant.mjs (serveur sur :3210).
 // Les tests A-04 a A-06 remplacent la reponse reseau de /api/assistant par une reponse fixe :
 // ils verifient l'execution des actions dans l'interface, pas la qualite du modele.
 import { chromium } from "playwright-core";
@@ -47,11 +47,11 @@ async function stubReply(page, reply) {
   return seen;
 }
 
-const panel = (page) => page.getByRole("complementary", { name: "Hot-Spot AI" });
+const panel = (page) => page.getByRole("complementary", { name: "Hot-Spots AI" });
 
 await test("A-01", "Première visite : accueil et proposition de visite guidée", async () => {
   const { page, context } = await open("/dashboard", { welcomed: false });
-  await panel(page).getByText("Bienvenue dans Hot-Spot").waitFor();
+  await panel(page).getByText("Bienvenue dans Hot-Spots").waitFor();
   expect(await panel(page).getByRole("button", { name: "Voir la visite guidée" }).isVisible(), "bouton de visite absent");
   await panel(page).getByRole("button", { name: "Poser une question" }).click();
   expect(await page.evaluate(() => window.localStorage.getItem("hotspot.welcomed")) === "1", "l'accueil réapparaîtrait");
@@ -61,7 +61,7 @@ await test("A-01", "Première visite : accueil et proposition de visite guidée"
 
 await test("A-02", "Sans fournisseur IA : état honnête et aide hors ligne utilisable", async () => {
   const { page, context } = await open("/dashboard", { available: false });
-  await page.getByRole("button", { name: "Ouvrir Hot-Spot AI" }).click();
+  await page.getByRole("button", { name: "Ouvrir Hot-Spots AI" }).click();
   await panel(page).getByText("Assistant IA indisponible").waitFor();
   expect(await page.locator("#assistant-input").isDisabled(), "la saisie reste active sans service");
   expect((await page.locator("#assistant-input").getAttribute("placeholder")).includes("non configuré"), "placeholder trompeur");
@@ -75,7 +75,7 @@ await test("A-02", "Sans fournisseur IA : état honnête et aide hors ligne util
 await test("A-03", "Visite guidée : étapes, actions proposées, mise en évidence, reprise", async () => {
   const { page, context } = await open("/dashboard");
   await page.getByRole("button", { name: "Visite guidée", exact: true }).first().click();
-  const dialog = page.getByRole("dialog", { name: /Bienvenue dans Hot-Spot/ });
+  const dialog = page.getByRole("dialog", { name: /Bienvenue dans Hot-Spots/ });
   await dialog.waitFor();
   await page.getByRole("button", { name: "Suivant" }).click();
   await page.getByRole("heading", { name: /Choisir le territoire/ }).waitFor();
@@ -112,7 +112,7 @@ await test("A-04", "Actions de l'assistant appliquées avec les vraies fonctions
     ],
     sources: [],
   });
-  await page.getByRole("button", { name: "Ouvrir Hot-Spot AI" }).click();
+  await page.getByRole("button", { name: "Ouvrir Hot-Spots AI" }).click();
   await page.locator("#assistant-input").fill("Montre le Haut-Ogooué de janvier à juin 2025, VIIRS seulement");
   const detections = page.waitForResponse((r) => r.url().includes("/api/detections") && r.url().includes("zone=province%3A1") && r.url().includes("sats=snpp%2Cnoaa20") && r.url().includes("to=2025-06-30"));
   await page.keyboard.press("Enter");
@@ -132,7 +132,7 @@ await test("A-05", "Export : rien n'est téléchargé sans confirmation (répons
   await stubReply(page, { text: "L'export est prêt.", actions: [{ type: "export", kind: "detections", format: "csv", label: "Détections CSV, Gabon, du 2025-01-01 au 2025-12-31" }], sources: [] });
   let downloads = 0;
   page.on("download", () => downloads++);
-  await page.getByRole("button", { name: "Ouvrir Hot-Spot AI" }).click();
+  await page.getByRole("button", { name: "Ouvrir Hot-Spots AI" }).click();
   await page.locator("#assistant-input").fill("Exporte les résultats actuels");
   await page.keyboard.press("Enter");
   await panel(page).getByText("Export préparé").waitFor();
@@ -150,7 +150,7 @@ await test("A-05", "Export : rien n'est téléchargé sans confirmation (répons
 await test("A-06", "Mise en évidence d'un élément et contexte de page (réponse simulée)", async () => {
   const { page, context } = await open("/calendar", { available: true });
   const seen = await stubReply(page, { text: "Le pas de temps se choisit ici.", actions: [{ type: "highlight", target: "calendar-granularity", caption: "Choisissez ici mois, semaine, jour ou année" }], sources: [] });
-  await page.getByRole("button", { name: "Ouvrir Hot-Spot AI" }).click();
+  await page.getByRole("button", { name: "Ouvrir Hot-Spots AI" }).click();
   await page.locator("#assistant-input").fill("Comment passer en vue journalière ?");
   await page.keyboard.press("Enter");
   await page.getByText("Choisissez ici mois, semaine, jour ou année").first().waitFor();
@@ -162,7 +162,7 @@ await test("A-06", "Mise en évidence d'un élément et contexte de page (répon
 await test("A-07", "Erreur du service : message clair, pas de réponse inventée", async () => {
   const { page, context } = await open("/dashboard", { available: true });
   await page.route("**/api/assistant", (r) => r.fulfill({ status: 429, json: { error: "Vous avez envoyé beaucoup de messages en peu de temps. Patientez quelques minutes." } }));
-  await page.getByRole("button", { name: "Ouvrir Hot-Spot AI" }).click();
+  await page.getByRole("button", { name: "Ouvrir Hot-Spots AI" }).click();
   await page.locator("#assistant-input").fill("Bonjour");
   await page.keyboard.press("Enter");
   await panel(page).getByText("Patientez quelques minutes").waitFor();
@@ -181,7 +181,7 @@ await test("A-08", "Question venue de l'accueil : pré-remplie, non envoyée", a
 
 await test("A-09", "Téléphone : panneau plein écran, fermeture", async () => {
   const { page, context } = await open("/dashboard", { viewport: { width: 390, height: 844 } });
-  await page.getByRole("button", { name: "Ouvrir Hot-Spot AI" }).click();
+  await page.getByRole("button", { name: "Ouvrir Hot-Spots AI" }).click();
   const box = await panel(page).boundingBox();
   expect(box.width >= 388, `panneau trop étroit : ${box.width}`);
   await panel(page).getByRole("button", { name: "Fermer l'assistant" }).click();

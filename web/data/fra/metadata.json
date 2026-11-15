@@ -1,24 +1,24 @@
 {
- "built_at": "2026-11-15T06:26:18Z",
+ "built_at": "2026-11-15T09:22:15Z",
  "data_kind": "real",
  "data_kind_label": "Donnees NASA FIRMS reelles (archives annuelles par pays), figees a la date d'acces indiquee",
  "country": "France",
  "coverage": {
   "first_date": "2000-11-02",
-  "last_date": "2025-12-31"
+  "last_date": "2026-11-15"
  },
  "rows": {
-  "read": 338449,
-  "kept": 338449,
+  "read": 376098,
+  "kept": 376098,
   "rejected": 0,
-  "eligible": 138800,
-  "outside_provinces": 984
+  "eligible": 162316,
+  "outside_provinces": 1266
  },
  "by_satellite": {
-  "terra": 27026,
-  "aqua": 29218,
-  "snpp": 182174,
-  "noaa20": 100031
+  "terra": 28629,
+  "aqua": 31174,
+  "snpp": 198674,
+  "noaa20": 117621
  },
  "envelope": {
   "lon_min": -5.8,
@@ -26,33 +26,71 @@
   "lat_min": 41.0,
   "lat_max": 51.4
  },
+ "recent": {
+  "generated_at": "2026-11-15T08:45:01Z",
+  "start": "2026-01-01",
+  "mask_validation": {
+   "test_year": 2025,
+   "rows": 22315,
+   "static_precision": 0.8548,
+   "static_recall": 0.9862,
+   "vegetation_precision": 0.9833,
+   "agreement": 0.9042
+  },
+  "datasets": {
+   "modis": {
+    "ranges": {
+     "SP": [
+      "2026-01-01",
+      "2026-08-31"
+     ],
+     "NRT": [
+      "2026-09-01",
+      "2026-11-15"
+     ]
+    },
+    "kept": 3559,
+    "outside": 4591,
+    "type_inferred": 560
+   },
+   "viirs-snpp": {
+    "ranges": {
+     "SP": [
+      "2026-01-01",
+      "2026-07-31"
+     ],
+     "NRT": [
+      "2026-08-01",
+      "2026-11-02"
+     ]
+    },
+    "kept": 16500,
+    "outside": 18816,
+    "type_inferred": 4181
+   },
+   "viirs-jpss1": {
+    "ranges": {
+     "SP": [
+      "2026-01-01",
+      "2026-07-31"
+     ],
+     "NRT": [
+      "2026-08-01",
+      "2026-11-15"
+     ]
+    },
+    "kept": 17590,
+    "outside": 20802,
+    "type_inferred": 4753
+   }
+  },
+  "provisional_from": "2026-08-01"
+ },
  "firms": {
   "base_url": "https://firms.modaps.eosdis.nasa.gov/data/country",
-  "missing_years": [
-   {
-    "dataset": "modis",
-    "year": 2026,
-    "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2026/modis_2026_France.csv",
-    "http_status": 404,
-    "checked_at": "2026-11-15T06:23:58Z"
-   },
-   {
-    "dataset": "viirs-snpp",
-    "year": 2026,
-    "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2026/viirs-snpp_2026_France.csv",
-    "http_status": 404,
-    "checked_at": "2026-11-15T06:24:43Z"
-   },
-   {
-    "dataset": "viirs-jpss1",
-    "year": 2026,
-    "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2026/viirs-jpss1_2026_France.csv",
-    "http_status": 404,
-    "checked_at": "2026-11-15T06:25:07Z"
-   }
-  ],
+  "missing_years": [],
   "accessed_first": "2026-11-15T06:23:01Z",
-  "accessed_last": "2026-11-15T06:25:06Z"
+  "accessed_last": "2026-11-15T09:09:47Z"
  },
  "boundaries": [
   {

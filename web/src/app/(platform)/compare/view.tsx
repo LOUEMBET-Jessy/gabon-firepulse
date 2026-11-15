@@ -24,7 +24,7 @@ const UNIT_TEXT: Record<CompareUnit, { title: string; body: string }> = {
   },
   calibrated: {
     title: "Étape 2 : caler MODIS sur VIIRS",
-    body: "MODIS est converti en équivalent Suomi-NPP par un facteur mesuré sur les années communes. Les courbes se superposent : c'est ce qui autorise une série continue de 2000 à 2025.",
+    body: "MODIS est converti en équivalent Suomi-NPP par un facteur mesuré sur les années communes. Les courbes se superposent : c'est ce qui autorise une série continue de 2000 à aujourd'hui.",
   },
 };
 
@@ -140,7 +140,7 @@ function SensorLineup() {
               <span>2006</span>
               <span>2012</span>
               <span>2018</span>
-              <span>2025</span>
+              <span>2026</span>
             </div>
           </div>
         </div>
@@ -171,7 +171,7 @@ export function CompareView() {
         title="Comparer MODIS et VIIRS"
         lead={
           <>
-            Deux familles de capteurs voient le même feu différemment. Pourquoi on ne les additionne pas, et comment Hot-Spot les rend comparables pour{" "}
+            Deux familles de capteurs voient le même feu différemment. Pourquoi on ne les additionne pas, et comment Hot-Spots les rend comparables pour{" "}
             <span className="font-medium text-ink">{zoneLabel(zone, meta.data)}</span>.
           </>
         }

@@ -1,4 +1,4 @@
-"""Construit les donnees traitees de Hot-Spot a partir de data/raw/.
+"""Construit les donnees traitees de Hot-Spots a partir de data/raw/.
 
 Sorties (web/data/, lues cote serveur par l'application) :
   detections.bin + detections.meta.json  detections normalisees, format colonne

@@ -42,6 +42,17 @@ export function isValidFilters(value: unknown, coverage: Coverage): value is Fil
   return true;
 }
 
-export function initialFilters(raw: unknown, coverage: Coverage): FiltersState {
-  return isValidFilters(raw, coverage) ? raw : { country: "GAB", zone: { kind: "country" }, ...defaultPeriod(coverage) };
+/** Couverture de chaque pays : les archives peuvent s'arreter a des dates differentes. */
+export type Coverages = Record<"GAB" | "FRA", Coverage>;
+
+export function initialFilters(raw: unknown, coverages: Coverages): FiltersState {
+  const country = raw && typeof raw === "object" && (raw as FiltersState).country === "FRA" ? "FRA" : "GAB";
+  return isValidFilters(raw, coverages[country]) ? raw : { country: "GAB", zone: { kind: "country" }, ...defaultPeriod(coverages.GAB) };
+}
+
+/** Borne une periode a la couverture d'un pays ; si elle en sort entierement, revient a la derniere annee complete. */
+export function clampPeriod(from: string, to: string, coverage: Coverage): { from: string; to: string } {
+  const a = from < coverage.first ? coverage.first : from;
+  const b = to > coverage.last ? coverage.last : to;
+  return a <= b ? { from: a, to: b } : defaultPeriod(coverage);
 }

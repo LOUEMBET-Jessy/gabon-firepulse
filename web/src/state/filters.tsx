@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import { setApiCountry } from "@/lib/api";
-import { FILTERS_COOKIE, initialFilters, type Coverage, type FiltersState } from "@/lib/filters-shared";
+import { FILTERS_COOKIE, clampPeriod, initialFilters, type Coverage, type Coverages, type FiltersState } from "@/lib/filters-shared";
 import type { ZoneSpec } from "@/lib/types";
 
 export { defaultPeriod, type Coverage, type FiltersState } from "@/lib/filters-shared";
@@ -24,8 +24,9 @@ interface FiltersContext extends FiltersState {
 
 const Context = createContext<FiltersContext | null>(null);
 
-export function FiltersProvider({ coverage, initial, children }: { coverage: Coverage; initial?: unknown; children: React.ReactNode }) {
-  const [state, setState] = useState<FiltersState>(() => initialFilters(initial, coverage));
+export function FiltersProvider({ coverages, initial, children }: { coverages: Coverages; initial?: unknown; children: React.ReactNode }) {
+  const [state, setState] = useState<FiltersState>(() => initialFilters(initial, coverages));
+  const coverage: Coverage = coverages[state.country];
   // Le pays est transmis aux adresses d'API avant le rendu des ecrans.
   setApiCountry(state.country);
 
@@ -39,7 +40,11 @@ export function FiltersProvider({ coverage, initial, children }: { coverage: Cov
   }, [state]);
 
   const setZone = useCallback((zone: ZoneSpec) => setState((s) => ({ ...s, zone })), []);
-  const setCountry = useCallback((country: "GAB" | "FRA") => setState((s) => (s.country === country ? s : { ...s, country, zone: { kind: "country" } })), []);
+  // Changer de pays garde la periode si elle existe dans l'autre archive, sinon la borne a sa couverture.
+  const setCountry = useCallback(
+    (country: "GAB" | "FRA") => setState((s) => (s.country === country ? s : { ...s, country, zone: { kind: "country" }, ...clampPeriod(s.from, s.to, coverages[country]) })),
+    [coverages],
+  );
   const setPeriod = useCallback(
     (from: string, to: string) => {
       // La periode est bornee a la couverture reelle des donnees.

@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Conversation vocale avec Hot-Spot AI : la personne parle, l'assistant repond a voix haute,
+ * Conversation vocale avec Hot-Spots AI : la personne parle, l'assistant repond a voix haute,
  * puis ecoute de nouveau. Chaque echange apparait aussi par ecrit dans la conversation.
  * Le micro n'est ouvert que pendant l'ecoute ; rien n'est enregistre au-dela de la question en cours.
  */

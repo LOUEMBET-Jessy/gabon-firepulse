@@ -1,5 +1,5 @@
 /**
- * Identite Hot-Spot : symbole et logotype.
+ * Identite Hot-Spots : symbole et logotype.
  * Le symbole reprend ce que fait le produit : une orbite de satellite (cyan) qui croise
  * un point de detection (orange) pose sur une cellule de grille. Composant serveur, sans etat.
  */
@@ -7,9 +7,9 @@
 import { cx } from "@/lib/classes";
 
 export const BRAND = {
-  name: "Hot-Spot",
+  name: "Hot-Spots",
   signature: "Observer. Comprendre. Préserver.",
-  assistant: "Hot-Spot AI",
+  assistant: "Hot-Spots AI",
 } as const;
 
 export function BrandMark({ size = 32, className }: { size?: number; className?: string }) {
@@ -32,7 +32,7 @@ export function BrandMark({ size = 32, className }: { size?: number; className?:
 export function Wordmark({ className }: { className?: string }) {
   return (
     <span className={cx("font-semibold tracking-[-0.03em] text-ink", className)}>
-      Hot<span className="text-ember">-</span>Spot
+      Hot<span className="text-ember">-</span>Spots
     </span>
   );
 }

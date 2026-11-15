@@ -27,7 +27,8 @@ export function ProvisionalBanner() {
     );
   }
   const year = Number(meta.coverage.lastDate.slice(0, 4));
-  if (!recent && to.slice(0, 4) >= String(year) && year < new Date().getUTCFullYear()) {
+  // Archive arretee a la fin d'une annee civile, sans prolongement : l'annee suivante n'est pas encore publiee.
+  if (!recent && meta.coverage.lastDate.endsWith("-12-31") && to.slice(0, 4) >= String(year)) {
     return (
       <p className="mx-auto mb-5 flex w-full max-w-[1320px] items-start gap-2.5 rounded-control border border-line-strong bg-surface-2/60 px-4 py-2.5 text-[12.5px] leading-relaxed text-ink-2">
         <Info size={16} weight="fill" className="mt-0.5 shrink-0 text-accent" />
