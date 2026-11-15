@@ -6,10 +6,10 @@ import { Map as MapLibre, Marker, NavigationControl, Popup, ScaleControl, setWor
 import { useEffect, useRef, useState } from "react";
 
 import { activityBreaks } from "@/components/heatmaps";
-import { HEAT, SENSOR_COLOR } from "@/lib/labels";
+import { HEAT, LIVE_SATELLITE_INFO, SENSOR_COLOR } from "@/lib/labels";
 
 import { attachSatellites, type SatelliteLayer } from "./satellites";
-import type { DetectionsResponse, GridResponse, ZoneSpec } from "@/lib/types";
+import type { DetectionsResponse, GridResponse, LiveDetection, ZoneSpec } from "@/lib/types";
 
 export const GABON_BOUNDS: [[number, number], [number, number]] = [
   [8.45, -4.1],
@@ -52,6 +52,11 @@ export interface FireMapProps {
   placeRadiusKm?: number;
   /** Satellites MODIS et VIIRS en orbite (illustration, vue Terre seulement). */
   showSatellites?: boolean;
+  /** Observatoire temps reel : detections NASA FIRMS recentes, limites francaises, selection d'une detection. */
+  liveMode?: boolean;
+  live?: LiveDetection[] | null;
+  selectedLiveId?: string | null;
+  onSelectLive?: (id: string | null) => void;
 }
 
 const empty = { type: "FeatureCollection" as const, features: [] };
@@ -92,7 +97,7 @@ function squareIcon(): ImageData {
 /* ------------------------------------------------------------------ Globe : style, niveaux de detail, regroupement */
 
 /** Zoom en dessous duquel les detections sont regroupees (vue continent et Terre). */
-export const CLUSTER_MAX_ZOOM = 5.4;
+export const CLUSTER_MAX_ZOOM = 5;
 /** Seuils de detail : departements, villes, villages. */
 const ZOOM_DEPARTMENTS = 6.6;
 const ZOOM_TOWNS = 6.2;
@@ -104,12 +109,15 @@ export type AreaPick =
   | { kind: "country"; iso: string; name: string; continent: string; bbox: Bbox }
   | { kind: "province"; index: number }
   | { kind: "department"; index: number }
-  | { kind: "place"; id: number; name: string; province?: number; department?: number };
+  | { kind: "place"; id: number; name: string; province?: number; department?: number }
+  /** Subdivision francaise (observatoire temps reel) : region (niveau 1) ou departement (niveau 2). */
+  | { kind: "subdivision"; territory: "FRA"; level: 1 | 2; name: string; bbox: Bbox };
 
 export interface Highlight {
   country?: string | null;
   province?: number | null;
   department?: number | null;
+  subdivision?: { level: 1 | 2; name: string } | null;
 }
 
 /** Couches propres au globe, inserees sous les limites du Gabon. */
@@ -247,6 +255,32 @@ function globeStyle(): StyleSpecification {
     { id: "zone-fill", type: "fill", source: "zone", paint: { "fill-color": "#12bfd2", "fill-opacity": 0.08 } },
   );
   layers.push(
+    { id: "fra-regions-pick", type: "fill", source: "fra_regions", layout: { visibility: "none" }, paint: { "fill-color": "#000", "fill-opacity": 0 } },
+    { id: "fra-departments-pick", type: "fill", source: "fra_departments", minzoom: 5.6, layout: { visibility: "none" }, paint: { "fill-color": "#000", "fill-opacity": 0 } },
+    { id: "fra-departments-line", type: "line", source: "fra_departments", minzoom: 5.6, layout: { visibility: "none" }, paint: { "line-color": "#2c4a70", "line-width": 0.6, "line-dasharray": [2, 2] } },
+    { id: "fra-regions-line", type: "line", source: "fra_regions", layout: { visibility: "none" }, paint: { "line-color": "#36557d", "line-width": ["interpolate", ["linear"], ["zoom"], 3, 0.5, 6, 1] } },
+    { id: "fra-active", type: "line", source: "fra_regions", filter: ["==", ["get", "name"], ""], paint: { "line-color": "#12bfd2", "line-width": 2 } },
+    { id: "fra-dept-active", type: "line", source: "fra_departments", filter: ["==", ["get", "name"], ""], paint: { "line-color": "#5ad8e6", "line-width": 2 } },
+    {
+      id: "live-halo",
+      type: "circle",
+      source: "live",
+      filter: ["==", ["get", "recent"], 1],
+      paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 2, 6, 6, 9, 10, 14], "circle-color": ["get", "color"], "circle-opacity": 0.22, "circle-blur": 0.8 },
+    },
+    {
+      id: "live-viirs",
+      type: "circle",
+      source: "live",
+      filter: ["!=", ["get", "sensor"], "MODIS"],
+      paint: {
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 2, 2.2, 6, 3.4, 10, 6],
+        "circle-color": ["get", "color"],
+        "circle-stroke-color": "#f4f7fa",
+        "circle-stroke-width": ["case", ["==", ["get", "recent"], 1], 1, 0.4],
+      },
+    },
+    { id: "live-selected", type: "circle", source: "live-selected", paint: { "circle-radius": 12, "circle-color": "transparent", "circle-stroke-color": "#f4f7fa", "circle-stroke-width": 2 } },
     { id: "villages", type: "circle", source: "places", minzoom: ZOOM_VILLAGES, filter: ["==", ["get", "kind"], "village"], paint: { "circle-radius": 2.4, "circle-color": "#b9c6d8", "circle-opacity": 0.75, "circle-stroke-color": "#081226", "circle-stroke-width": 1 } },
     { id: "cluster-dots", type: "circle", source: "clusters", maxzoom: CLUSTER_MAX_ZOOM, filter: ["!", ["has", "point_count"]], paint: { "circle-radius": 2.5, "circle-color": ["case", ["<", ["get", "s"], 2], SENSOR_COLOR.modis, ["==", ["get", "s"], 2], SENSOR_COLOR.snpp, SENSOR_COLOR.noaa20], "circle-stroke-color": "#081226", "circle-stroke-width": 1 } },
   );
@@ -267,6 +301,10 @@ function globeStyle(): StyleSpecification {
       world: { type: "geojson", data: "/geo/world.geojson" },
       departments: { type: "geojson", data: "/geo/departments.geojson" },
       places: { type: "geojson", data: "/geo/places.geojson" },
+      fra_regions: { type: "geojson", data: "/geo/fra_regions.geojson" },
+      fra_departments: { type: "geojson", data: "/geo/fra_departments.geojson" },
+      live: { type: "geojson", data: empty },
+      "live-selected": { type: "geojson", data: empty },
       clusters: {
         type: "geojson",
         data: empty,
@@ -380,6 +418,16 @@ export default function FireMap(props: FireMapProps) {
         "points-viirs",
       );
       if (globe) {
+        map.addLayer(
+          {
+            id: "live-modis",
+            type: "symbol",
+            source: "live",
+            filter: ["==", ["get", "sensor"], "MODIS"],
+            layout: { "icon-image": "modis-square", "icon-size": ["interpolate", ["linear"], ["zoom"], 2, 0.55, 6, 0.8, 10, 1.4], "icon-allow-overlap": true, "icon-ignore-placement": true },
+          },
+          "live-selected",
+        );
         // Detections une a une a partir de l'echelle du pays ; regroupees en dessous.
         map.setLayerZoomRange("points-viirs", CLUSTER_MAX_ZOOM, 24);
         map.setLayerZoomRange("points-modis", CLUSTER_MAX_ZOOM, 24);
@@ -491,6 +539,13 @@ export default function FireMap(props: FireMapProps) {
           const ring = outerRing(c.geometry as unknown as Geometry);
           return { kind: "country", iso: props.iso, name: props.name, continent: props.continent, bbox: ringBounds(ring) };
         }
+        if (callbacks.current.liveMode) {
+          const fra = (z >= 5.6 ? at("fra-departments-pick")[0] : undefined) ?? at("fra-regions-pick")[0];
+          if (fra) {
+            const level = fra.layer.id === "fra-departments-pick" ? 2 : 1;
+            return { kind: "subdivision", territory: "FRA", level, name: String(fra.properties.name), bbox: ringBounds(outerRing(fra.geometry as unknown as Geometry)) };
+          }
+        }
         const village = z >= ZOOM_VILLAGES ? at("villages")[0] : undefined;
         if (village) return { kind: "place", id: Number(village.properties.id), name: String(village.properties.name), province: Number(village.properties.province), department: Number(village.properties.department) };
         const dept = z >= ZOOM_DEPARTMENTS ? at("departments-pick")[0] : undefined;
@@ -508,12 +563,22 @@ export default function FireMap(props: FireMapProps) {
         map.on("mousemove", (event) => {
           if (callbacks.current.drawing) return;
           const z = map.getZoom();
-          const layer = z < 4.4 ? "world-fill" : z >= ZOOM_VILLAGES ? "villages" : null;
+          const layer = z < 4.4 ? "world-fill" : z >= ZOOM_VILLAGES ? "villages" : callbacks.current.liveMode ? (z >= 5.6 ? "fra-departments-pick" : "fra-regions-pick") : null;
           const hit = layer && map.getLayer(layer) ? map.queryRenderedFeatures(event.point, { layers: [layer] })[0] : undefined;
           if (z < 4.4) map.setFilter("world-hover", ["==", ["get", "iso"], hit ? String(hit.properties.iso) : ""]);
           if (hit) {
             const props = hit.properties as { name: string; continent?: string; iso?: string };
-            const detail = props.iso ? (props.iso === "GAB" ? "Données de détection disponibles" : props.continent) : "Localité";
+            const detail = props.iso
+              ? props.iso === "GAB"
+                ? "Données de détection disponibles"
+                : props.iso === "FRA" && callbacks.current.liveMode
+                  ? "Observatoire temps réel"
+                  : props.continent
+              : layer === "villages"
+                ? "Localité"
+                : layer === "fra-departments-pick"
+                  ? "Département"
+                  : "Région";
             tooltip.setLngLat(event.lngLat).setHTML(`<strong>${props.name}</strong><span>${detail ?? ""}</span>`).addTo(map);
           } else tooltip.remove();
         });
@@ -529,6 +594,13 @@ export default function FireMap(props: FireMapProps) {
           [event.point.x - 5, event.point.y - 5],
           [event.point.x + 5, event.point.y + 5],
         ];
+        if (cb.liveMode) {
+          const hits = map.queryRenderedFeatures(box, { layers: ["live-modis", "live-viirs"].filter((id) => map.getLayer(id)) });
+          cb.onSelectLive?.(hits.length ? String(hits[0].properties.id) : null);
+          if (hits.length) return;
+          cb.onPickArea?.(pickArea(event));
+          return;
+        }
         if (cb.mode === "points") {
           const hits = map.getZoom() >= (globe ? CLUSTER_MAX_ZOOM : 0) ? map.queryRenderedFeatures(box, { layers: ["points-modis", "points-viirs"].filter((id) => map.getLayer(id)) }) : [];
           cb.onSelectDetection?.(hits.length ? Number(hits[0].properties.i) : null);
@@ -676,6 +748,42 @@ export default function FireMap(props: FireMapProps) {
   useEffect(() => {
     satellitesRef.current?.setVisible(props.showSatellites !== false);
   }, [props.showSatellites, ready]);
+
+  // Observatoire temps reel : detections recentes (moins de 24 h soulignees d'un halo).
+  const { live, liveMode, selectedLiveId } = props;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || !globe) return;
+    const source = map.getSource("live") as GeoJSONSource | undefined;
+    if (!source) return;
+    if (!liveMode || !live) return void source.setData(empty);
+    const dayAgo = Date.now() - 86_400_000;
+    source.setData({
+      type: "FeatureCollection",
+      features: live.map((d) => ({
+        type: "Feature",
+        geometry: { type: "Point", coordinates: [d.lon, d.lat] },
+        properties: { id: d.id, sensor: d.sensor, color: LIVE_SATELLITE_INFO[d.satellite].color, recent: Date.parse(d.acquired) >= dayAgo ? 1 : 0 },
+      })),
+    });
+  }, [live, liveMode, ready, globe]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || !globe) return;
+    const source = map.getSource("live-selected") as GeoJSONSource | undefined;
+    const d = live?.find((x) => x.id === selectedLiveId);
+    source?.setData(d && liveMode ? { type: "FeatureCollection", features: [{ type: "Feature", properties: {}, geometry: { type: "Point", coordinates: [d.lon, d.lat] } }] } : empty);
+  }, [selectedLiveId, live, liveMode, ready, globe]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || !globe) return;
+    for (const id of ["fra-regions-pick", "fra-departments-pick", "fra-departments-line", "fra-regions-line"]) map.setLayoutProperty(id, "visibility", liveMode ? "visible" : "none");
+    const sub = highlight?.subdivision;
+    map.setFilter("fra-active", ["==", ["get", "name"], liveMode && sub?.level === 1 ? sub.name : ""]);
+    map.setFilter("fra-dept-active", ["==", ["get", "name"], liveMode && sub?.level === 2 ? sub.name : ""]);
+  }, [liveMode, highlight, ready, globe]);
 
   // Vols demandes par la navigation (fil d'Ariane, recherche, continents).
   useEffect(() => {

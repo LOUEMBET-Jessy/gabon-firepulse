@@ -24,6 +24,7 @@ const SECTIONS = [
   ["anomalies", "Périodes inhabituelles"],
   ["limites", "Limites"],
   ["geographie", "Géographie"],
+  ["temps-reel", "Temps réel"],
   ["sources", "Sources"],
 ] as const;
 
@@ -341,6 +342,18 @@ export default function MethodologyPage() {
         <p>
           À l'écran, les détections sont regroupées en vue continentale ou mondiale (anneaux dont la couleur donne la part de chaque capteur), puis affichées une à une dès l'échelle du pays. Le regroupement est un choix d'affichage : il ne modifie aucun calcul.
         </p>
+      </Section>
+
+      <Section id="temps-reel" title="Observatoire en temps quasi réel">
+        <p>
+          En plus de l'archive, la carte peut afficher les <strong>dernières détections publiées par NASA FIRMS</strong> (produits NRT, « Near Real-Time ») pour le Gabon et la France métropolitaine : MODIS sur Terra et Aqua, VIIRS sur Suomi-NPP, NOAA-20 et NOAA-21. Le serveur lit les fichiers officiels des 7 derniers jours, ou l'API de FIRMS si une clé est configurée, et ne garde que les points situés dans les deux pays.
+        </p>
+        <p>
+          Chaque flux est vérifié au plus toutes les 10 minutes, par requête conditionnelle : rien n'est retéléchargé si la NASA n'a rien publié. En cas de panne, la dernière copie est servie et signalée comme ancienne. Les dates de publication, de vérification et de dernière acquisition sont affichées pour chaque capteur et chaque pays.
+        </p>
+        <Notice title="Ce que le temps réel n'est pas">
+          Ces détections ne sont ni harmonisées ni définitives : la NASA peut les corriger, et elles ne rejoignent ni l'archive ni ses calculs (indice, tendances, périodes inhabituelles). Les produits NRT ne distinguent pas toujours les sources industrielles des feux de végétation. Une détection est le centre d'un pixel signalé comme anomalie thermique, jamais un incendie confirmé.
+        </Notice>
       </Section>
 
       <Section id="sources" title="Sources, versions et vérifications">

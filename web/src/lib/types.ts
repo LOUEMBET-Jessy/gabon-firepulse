@@ -419,3 +419,55 @@ export interface MetadataResponse {
   };
   anomalySettings: { minReferenceYears: number; minActivity: number; thresholdNotable: number; thresholdStrong: number };
 }
+
+/* ------------------------------------------------------------------ Observatoire en temps quasi reel (NASA FIRMS NRT) */
+
+export type LiveSatellite = "terra" | "aqua" | "snpp" | "noaa20" | "noaa21";
+export type LiveTerritory = "GAB" | "FRA";
+
+export interface LiveDetection {
+  id: string;
+  lat: number;
+  lon: number;
+  satellite: LiveSatellite;
+  sensor: "MODIS" | "VIIRS";
+  acquired: string;
+  confidenceNative: string;
+  confidence: "low" | "nominal" | "high";
+  frp: number | null;
+  daynight: "D" | "N";
+  version: string;
+  territory: LiveTerritory;
+  level1: string | null;
+  level2: string | null;
+  feed: "modis" | "snpp" | "noaa20" | "noaa21";
+}
+
+export interface LiveFeedStatus {
+  feed: LiveDetection["feed"];
+  label: string;
+  sensor: "MODIS" | "VIIRS";
+  product: string;
+  territory: LiveTerritory;
+  url: string;
+  status: "ok" | "empty" | "stale" | "error" | "pending";
+  checkedAt: string | null;
+  fetchedAt: string | null;
+  publishedAt: string | null;
+  latestAcquisition: string | null;
+  rows: number;
+  error: string | null;
+}
+
+export interface LiveResponse {
+  generatedAt: string;
+  mode: "files" | "api";
+  maxDays: number;
+  since: string;
+  territories: LiveTerritory[];
+  days: number;
+  feeds: LiveFeedStatus[];
+  detections: LiveDetection[];
+  counts: { total: number; byTerritory: Record<string, number>; bySatellite: Record<string, number>; byLevel1: Record<string, number>; byLevel2: Record<string, number> };
+  notice: string;
+}
