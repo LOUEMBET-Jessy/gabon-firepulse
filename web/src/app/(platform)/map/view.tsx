@@ -5,13 +5,14 @@ import { useCallback, useEffect, useState } from "react";
 
 import { FireMap } from "@/components/blocks";
 import { CONTINENTS, GABON_BBOX, Navigator, TerritoryCard, isGabon, territoryFromZone, territoryZone, type Territory } from "@/components/map/explorer";
+import { LIVE_SATS, LiveControls, LiveDetectionCard, LiveTerritoryCard, TERRITORY_BBOX, ago, type LiveFocus } from "@/components/map/live";
 import { ScaleLegend, activityBreaks } from "@/components/heatmaps";
 import { DRAW_EVENT, DRAW_FLAG, zoneLabel } from "@/components/shell/pickers";
 import { Button, Checkbox, ErrorState, Notice, Segmented, SensorMark, Skeleton, buttonClass, cx } from "@/components/ui";
-import { exportUrl, useDetection, useDetections, useGrid, useMetadata, type MapFilters } from "@/lib/api";
+import { exportUrl, useDetection, useDetections, useGrid, useLive, useMetadata, type MapFilters } from "@/lib/api";
 import { fmtCoord, fmtDateTimeUtc, fmtInt, fmtPeriod } from "@/lib/format";
-import { CONF_LABEL, DEFINITIONS, SATELLITES } from "@/lib/labels";
-import type { DetectionDetail, GridCell, ZoneSpec } from "@/lib/types";
+import { CONF_LABEL, DEFINITIONS, LIVE_SATELLITE_INFO, SATELLITES } from "@/lib/labels";
+import type { DetectionDetail, GridCell, LiveTerritory, ZoneSpec } from "@/lib/types";
 import { SATELLITE_KEYS } from "@/lib/types";
 import { useFilters } from "@/state/filters";
 import { updateView, useView, type MapMode } from "@/state/view";
@@ -146,7 +147,8 @@ export function MapView() {
   const { zone, from, to, setZone } = useFilters();
   const meta = useMetadata();
   // Mode, filtres et couches vivent dans le magasin partage : l'assistant les lit et les modifie.
-  const { mode, filters, basemap, showProvinces } = useView((v) => v.map);
+  const { mode, filters, basemap, showProvinces, source, live: liveFilters } = useView((v) => v.map);
+  const isLive = source === "live";
   const setMode = (value: MapMode) => updateView("map", { mode: value });
   const setFilters = (fn: (f: MapFilters) => MapFilters) => updateView("map", { filters: fn(filters) });
   const setBasemap = (value: boolean) => updateView("map", { basemap: value });
@@ -229,22 +231,80 @@ export function MapView() {
   /** Clic sur le globe : un pays fait voyager ; dans le Gabon, le clic montre la fiche sans deplacer la carte. */
   const onPickArea = (pick: Parameters<NonNullable<React.ComponentProps<typeof FireMap>["onPickArea"]>>[0]) => {
     if (!pick) return;
+    if (isLive) {
+      setSelectedLive(null);
+      if (pick.kind === "country" && (pick.iso === "GAB" || pick.iso === "FRA")) {
+        const t = pick.iso as LiveTerritory;
+        setLiveFocus({ territory: t });
+        if (zoomLevel < 4.4) fly(TERRITORY_BBOX[t], 6.5);
+        return;
+      }
+      if (pick.kind === "subdivision") return setLiveFocus(pick.level === 1 ? { territory: "FRA", level1: pick.name } : { territory: "FRA", level2: pick.name });
+      if (pick.kind === "province") return setLiveFocus({ territory: "GAB", level1: meta.data?.provinces[pick.index]?.name });
+      if (pick.kind === "department") {
+        const d = meta.data?.departments[pick.index];
+        return setLiveFocus({ territory: "GAB", level1: d ? meta.data?.provinces[d.province]?.name : undefined, level2: d?.name });
+      }
+      if (pick.kind === "country") return go(pick);
+      return;
+    }
     if (pick.kind === "country" && (pick.iso !== "GAB" || zoomLevel < 4.4)) return go(pick);
     if (pick.kind === "country") return;
     setTerritory(pick);
     setCardOpen(true);
   };
-  const highlight =
-    territory.kind === "country" && territory.iso !== "GAB"
+  const detections = useDetections(zone, from, to, filters, !isLive && mode === "points");
+  const grid = useGrid(zone, from, to, !isLive && mode === "grid");
+
+  // Observatoire temps reel (NASA FIRMS NRT) : filtres pays, periode, satellites ; fiche d'un territoire observe.
+  const liveSats = LIVE_SATS.filter((k) => liveFilters.sats[k]);
+  const live = useLive(liveFilters.territories, liveFilters.days, liveSats, isLive);
+  const [liveFocus, setLiveFocus] = useState<LiveFocus | null>(null);
+  const [selectedLive, setSelectedLive] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const setLive = (patch: Partial<typeof liveFilters>) => updateView("map", { live: { ...liveFilters, ...patch } });
+  const refreshLive = async () => {
+    setRefreshing(true);
+    try {
+      const p = new URLSearchParams({ territories: liveFilters.territories.join(","), days: String(liveFilters.days), sats: liveSats.join(","), refresh: "1" });
+      const fresh = await fetch(`/api/live?${p}`).then((r) => (r.ok ? r.json() : null));
+      if (fresh) await live.mutate(fresh, { revalidate: false });
+    } finally {
+      setRefreshing(false);
+    }
+  };
+  const switchSource = (next: "archive" | "live") => {
+    updateView("map", { source: next });
+    setSelected(null);
+    setCell(null);
+    setSelectedLive(null);
+    if (next === "live") {
+      setCardOpen(false);
+      const t = liveFilters.territories;
+      setLiveFocus(t.length === 1 ? { territory: t[0] } : null);
+      fly(t.length === 1 ? TERRITORY_BBOX[t[0]] : [-8, -6, 18, 52], 6);
+    } else {
+      setLiveFocus(null);
+      fly(GABON_BBOX, 7);
+    }
+  };
+  const liveDetail = isLive && selectedLive ? live.data?.detections.find((x) => x.id === selectedLive) : undefined;
+  const lastSync = live.data?.feeds.reduce<string | null>((acc, f) => (f.checkedAt && (!acc || f.checkedAt > acc) ? f.checkedAt : acc), null) ?? null;
+  const highlight = isLive
+    ? liveFocus?.territory === "FRA" && (liveFocus.level2 || liveFocus.level1)
+      ? { subdivision: liveFocus.level2 ? { level: 2 as const, name: liveFocus.level2 } : { level: 1 as const, name: liveFocus.level1! } }
+      : liveFocus?.territory === "GAB" && liveFocus.level1
+        ? { province: meta.data?.provinces.findIndex((x) => x.name === liveFocus.level1) ?? null, department: liveFocus.level2 ? (meta.data?.departments.find((x) => x.name === liveFocus.level2)?.index ?? null) : null }
+        : liveFocus
+          ? { country: liveFocus.territory }
+          : {}
+    : territory.kind === "country" && territory.iso !== "GAB"
       ? { country: territory.iso }
       : territory.kind === "province"
         ? { province: territory.index }
         : territory.kind === "department"
           ? { department: territory.index }
           : {};
-
-  const detections = useDetections(zone, from, to, filters, mode === "points");
-  const grid = useGrid(zone, from, to, mode === "grid");
   const noSatellite = !Object.values(filters.sats).some(Boolean);
   const noConfidence = !Object.values(filters.conf).some(Boolean);
 
@@ -271,8 +331,63 @@ export function MapView() {
   const total = d?.total ?? 0;
   const gridBreaks = grid.data ? activityBreaks(grid.data.cells.map((c) => c.harmonized)) : [];
 
-  const controls = (
+  const sourceSwitch = (
+    <Group title="Observations">
+      <Segmented
+        label="Source des observations"
+        value={source}
+        onChange={switchSource}
+        options={[
+          { value: "archive", label: "Archive 2000-2025" },
+          { value: "live", label: "Temps réel" },
+        ]}
+      />
+      <p className="mt-1 text-[11.5px] leading-relaxed text-ink-3">
+        {isLive
+          ? "Dernières détections NASA FIRMS pour le Gabon et la France, actualisées automatiquement. Non harmonisées, non définitives."
+          : "Archive NASA FIRMS du Gabon, contrôlée et harmonisée : la base de tous les calculs de la plateforme."}
+      </p>
+    </Group>
+  );
+
+  const liveControls = (
     <>
+      {sourceSwitch}
+      <LiveControls
+        data={live.data}
+        error={live.error}
+        loading={live.isLoading}
+        territories={liveFilters.territories}
+        days={liveFilters.days}
+        sats={liveFilters.sats}
+        onChange={(patch) => {
+          setLive(patch);
+          setSelectedLive(null);
+        }}
+        onRefresh={() => void refreshLive()}
+        refreshing={refreshing}
+      />
+      <Group title="Couches de contexte">
+        <Checkbox checked={satellites} onChange={toggleSatellites}>
+          Satellites MODIS et VIIRS en vue Terre
+        </Checkbox>
+        <Checkbox
+          checked={basemap}
+          onChange={(on) => {
+            setBasemap(on);
+            setBasemapError(false);
+          }}
+        >
+          Relief NASA Blue Marble (en ligne)
+        </Checkbox>
+        <p className="text-[11.5px] leading-relaxed text-ink-3">France : régions et départements geoBoundaries (Licence Ouverte Etalab 2.0, état 2022). Gabon : geoBoundaries.</p>
+      </Group>
+    </>
+  );
+
+  const controls = isLive ? liveControls : (
+    <>
+      {sourceSwitch}
       <Group title="Affichage">
         <Segmented
           label="Mode d'affichage"
@@ -417,10 +532,17 @@ export function MapView() {
           onPickArea={onPickArea}
           onZoom={setZoomLevel}
           showSatellites={satellites}
+          liveMode={isLive}
+          live={isLive ? (live.data?.detections ?? null) : null}
+          selectedLiveId={selectedLive}
+          onSelectLive={(id) => {
+            setSelectedLive(id);
+            if (id) setLiveFocus(null);
+          }}
           placeRadiusKm={meta.data?.placeRadiusKm}
           mode={mode}
-          points={noSatellite || noConfidence ? null : d?.points}
-          grid={grid.data}
+          points={isLive || noSatellite || noConfidence ? null : d?.points}
+          grid={isLive ? undefined : grid.data}
           zone={zone}
           selectedIndex={selected}
           onSelectDetection={(index) => (setSelected(index), setCell(null))}
@@ -444,7 +566,17 @@ export function MapView() {
               <Faders size={15} />
               Filtres
             </button>
-            {mode === "points" ? (
+            {isLive ? (
+              live.error ? (
+                <span className="text-critical">NASA FIRMS injoignable</span>
+              ) : !live.data ? (
+                <span className="text-ink-3">Interrogation de la NASA</span>
+              ) : (
+                <span className="text-ink-2">
+                  <span className="num font-medium text-ink">{fmtInt(live.data.counts.total)}</span> détections récentes · synchro {ago(lastSync)}
+                </span>
+              )
+            ) : mode === "points" ? (
               detections.error ? (
                 <span className="text-critical">Chargement impossible</span>
               ) : !d ? (
@@ -465,8 +597,42 @@ export function MapView() {
             )}
           </div>
 
-          <Navigator territory={territory} onGo={go} />
-          {cardOpen && !(selected !== null || cell) ? (
+          {isLive ? null : <Navigator territory={territory} onGo={go} />}
+          {isLive && liveFocus && !liveDetail ? (
+            <div className="mt-auto flex max-h-[48%] min-h-0 flex-col md:mt-0 md:max-h-none md:flex-1">
+              <LiveTerritoryCard
+                focus={liveFocus}
+                data={live.data}
+                onClose={() => setLiveFocus(null)}
+                onFocus={(f, bbox) => {
+                  setLiveFocus(f);
+                  if (bbox) fly(bbox, f.level2 ? 9 : f.level1 ? 8 : 6.5);
+                }}
+              />
+            </div>
+          ) : null}
+          {isLive && live.data ? (
+            <div className="pointer-events-auto flex flex-wrap gap-1.5" role="group" aria-label="Pays observés">
+              <button
+                type="button"
+                onClick={() => (setLiveFocus(null), setSelectedLive(null), fly(null))}
+                className="rounded-full border border-line-strong bg-surface/90 px-3 py-1.5 text-[12.5px] text-ink-2 backdrop-blur-md transition-colors hover:border-accent/60 hover:text-ink"
+              >
+                Terre
+              </button>
+              {liveFilters.territories.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => (setLiveFocus({ territory: t }), fly(TERRITORY_BBOX[t], 6.5))}
+                  className="rounded-full border border-line-strong bg-surface/90 px-3 py-1.5 text-[12.5px] text-ink-2 backdrop-blur-md transition-colors hover:border-accent/60 hover:text-ink"
+                >
+                  {t === "GAB" ? "Gabon" : "France"} <span className="num text-ink">{fmtInt(live.data!.counts.byTerritory[t] ?? 0)}</span>
+                </button>
+              ))}
+            </div>
+          ) : null}
+          {!isLive && cardOpen && !(selected !== null || cell) ? (
             <div className="mt-auto flex max-h-[48%] min-h-0 flex-col md:mt-0 md:max-h-none md:flex-1">
               <TerritoryCard territory={territory} from={from} to={to} activeZone={zone} onClose={() => setCardOpen(false)} onGo={go} onAnalyse={setZone} />
             </div>
@@ -482,24 +648,29 @@ export function MapView() {
               <Notice title="Dessin d'une zone">Cliquez et faites glisser sur la carte pour tracer un rectangle. Touche Échap pour annuler.</Notice>
             </div>
           ) : null}
-          {mode === "points" && d?.truncated ? (
+          {isLive && live.data && live.data.counts.total === 0 ? (
+            <div className="pointer-events-auto max-w-[440px]">
+              <Notice title="Aucune détection récente pour ces filtres">La NASA n'a publié aucune anomalie thermique ici sur la période choisie. Ce n'est pas une preuve d'absence de feu : nuages et heures de passage limitent l'observation.</Notice>
+            </div>
+          ) : null}
+          {!isLive && mode === "points" && d?.truncated ? (
             <div className="pointer-events-auto max-w-[460px]">
               <Notice tone="warning" title={`${fmtInt(d.total)} détections : trop pour un affichage point par point`}>
                 Au-delà de {fmtInt(d.cap)} points, la carte n'affiche rien plutôt qu'un échantillon qui fausserait la densité. Réduisez la période ou la zone, ou passez en grille harmonisée. L'export CSV reste complet.
               </Notice>
             </div>
           ) : null}
-          {mode === "points" && (noSatellite || noConfidence) ? (
+          {!isLive && mode === "points" && (noSatellite || noConfidence) ? (
             <div className="pointer-events-auto max-w-[420px]">
               <Notice title="Aucun filtre actif">Cochez au moins un satellite et un niveau de confiance pour afficher des détections.</Notice>
             </div>
           ) : null}
-          {mode === "points" && d && !d.truncated && total === 0 && !noSatellite && !noConfidence ? (
+          {!isLive && mode === "points" && d && !d.truncated && total === 0 && !noSatellite && !noConfidence ? (
             <div className="pointer-events-auto max-w-[440px]">
               <Notice title="Aucune détection pour ces filtres">Aucun satellite n'a signalé d'anomalie thermique ici sur cette période. Ce n'est pas une preuve d'absence de feu : nuages et heures de passage limitent l'observation.</Notice>
             </div>
           ) : null}
-          {(mode === "points" ? detections.error : grid.error) ? (
+          {!isLive && (mode === "points" ? detections.error : grid.error) ? (
             <div className="pointer-events-auto max-w-[460px] rounded-panel border border-line-strong bg-surface">
               <ErrorState error={mode === "points" ? detections.error : grid.error} onRetry={() => (mode === "points" ? detections.mutate() : grid.mutate())} compact />
             </div>
@@ -509,7 +680,18 @@ export function MapView() {
         {/* Legende */}
         <div className="pointer-events-none absolute bottom-9 left-3 right-3 flex justify-start lg:bottom-10">
           <div data-tour="map-legend" className="pointer-events-auto max-w-full rounded-control border border-line-strong bg-surface/95 px-3 py-2 backdrop-blur">
-            {mode === "points" ? (
+            {isLive ? (
+              <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-ink-2">
+                {LIVE_SATS.filter((k) => liveFilters.sats[k]).map((k) => (
+                  <li key={k} className="flex items-center gap-1.5">
+                    <SensorMark color={LIVE_SATELLITE_INFO[k].color} shape={LIVE_SATELLITE_INFO[k].shape} /> {LIVE_SATELLITE_INFO[k].sensor} {LIVE_SATELLITE_INFO[k].name}
+                  </li>
+                ))}
+                <li className="flex items-center gap-1.5 text-ink-3">
+                  <span aria-hidden className="size-3 rounded-full bg-ink-2/30 shadow-[0_0_6px_2px_rgb(244_247_250/0.25)]" /> halo : moins de 24 h
+                </li>
+              </ul>
+            ) : mode === "points" ? (
               <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-ink-2">
                 {zoomLevel < 4 && satellites ? (
                   <li className="flex w-full items-center gap-1.5 text-ink-3">
@@ -518,7 +700,7 @@ export function MapView() {
                     Orbites illustratives de MODIS et VIIRS, temps accéléré : positions non réelles, fauchées à l'échelle.
                   </li>
                 ) : null}
-                {zoomLevel < 5.4 ? (
+                {zoomLevel < 5 ? (
                   <li className="flex items-center gap-1.5 text-ink-3">
                     <span aria-hidden className="inline-block size-3 rounded-full border-[3px] border-l-snpp border-t-modis border-r-noaa20 border-b-snpp" />
                     Anneau : part de chaque capteur dans un groupe de détections
@@ -541,7 +723,12 @@ export function MapView() {
         </div>
 
         {/* Fiche de detail */}
-        {selected !== null || cell ? (
+        {liveDetail ? (
+          <div className="absolute inset-x-3 bottom-3 top-auto z-20 max-h-[62%] md:inset-x-auto md:bottom-12 md:right-3 md:top-14 md:max-h-none md:w-[372px]">
+            <LiveDetectionCard d={liveDetail} feed={live.data?.feeds.find((f) => f.feed === liveDetail.feed && f.territory === liveDetail.territory)} onClose={() => setSelectedLive(null)} />
+          </div>
+        ) : null}
+        {!isLive && (selected !== null || cell) ? (
           <div className="absolute inset-x-3 bottom-3 top-auto z-20 max-h-[62%] md:inset-x-auto md:bottom-12 md:right-3 md:top-14 md:max-h-none md:w-[372px]">
             {selected !== null ? <DetectionCard id={selected} onClose={() => setSelected(null)} /> : cell && grid.data ? <CellCard cell={cell} step={grid.data.step} onClose={() => setCell(null)} /> : null}
           </div>

@@ -2,7 +2,7 @@
 
 import useSWR, { type SWRConfiguration } from "swr";
 
-import type {
+import type { LiveResponse, LiveSatellite, LiveTerritory,
   CalendarResponse,
   DailyResponse,
   DetectionDetail,
@@ -113,4 +113,19 @@ export function useDetection(id: number | null) {
 export function exportUrl(kind: "detections" | "monthly" | "anomalies", format: "csv" | "geojson", zone: ZoneSpec, from?: string, to?: string, filters?: MapFilters) {
   const base = kind === "detections" && from && to ? detectionQuery(zone, from, to, filters) : new URLSearchParams({ zone: zoneParam(zone) }).toString();
   return `/api/export?kind=${kind}&format=${format}&${base}`;
+}
+
+/**
+ * Dernieres detections NASA FIRMS. Rafraichies toutes les 10 minutes et au retour sur l'onglet :
+ * le serveur decide s'il faut interroger la NASA (cache et requetes conditionnelles).
+ */
+export function useLive(territories: LiveTerritory[], days: number, sats: LiveSatellite[], enabled = true) {
+  const p = new URLSearchParams({ territories: territories.join(","), days: String(days), sats: sats.join(",") });
+  return useSWR<LiveResponse, ApiError>(enabled && territories.length && sats.length ? `/api/live?${p}` : null, fetchJson, {
+    keepPreviousData: true,
+    revalidateOnFocus: true,
+    refreshInterval: 10 * 60_000,
+    shouldRetryOnError: true,
+    errorRetryCount: 2,
+  });
 }

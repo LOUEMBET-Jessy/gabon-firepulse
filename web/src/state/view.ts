@@ -26,7 +26,15 @@ export interface Spotlight {
 }
 
 export interface ViewState {
-  map: { mode: MapMode; filters: MapFilters; basemap: boolean; showProvinces: boolean };
+  map: {
+    mode: MapMode;
+    filters: MapFilters;
+    basemap: boolean;
+    showProvinces: boolean;
+    /** Archive harmonisee 2000-2025, ou observatoire temps quasi reel (NASA FIRMS NRT). */
+    source: "archive" | "live";
+    live: { territories: ("GAB" | "FRA")[]; days: number; sats: Record<"terra" | "aqua" | "snpp" | "noaa20" | "noaa21", boolean> };
+  };
   calendar: { granularity: Granularity; mode: HeatMode; month: { year: number; month: number } | null; dayYear: number | null };
   compare: { unit: CompareUnit };
   anomalies: { direction: AnomalyDirection; month: { year: number; month: number } | null };
@@ -41,7 +49,14 @@ export const DEFAULT_MAP_FILTERS: MapFilters = {
 };
 
 const INITIAL: ViewState = {
-  map: { mode: "points", filters: DEFAULT_MAP_FILTERS, basemap: false, showProvinces: true },
+  map: {
+    mode: "points",
+    filters: DEFAULT_MAP_FILTERS,
+    basemap: false,
+    showProvinces: true,
+    source: "archive",
+    live: { territories: ["GAB", "FRA"], days: 7, sats: { terra: true, aqua: true, snpp: true, noaa20: true, noaa21: true } },
+  },
   calendar: { granularity: "month", mode: "activity", month: null, dayYear: null },
   compare: { unit: "detections" },
   anomalies: { direction: "all", month: null },

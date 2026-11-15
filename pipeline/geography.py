@@ -13,7 +13,8 @@ Sorties :
 - web/public/geo/departments.geojson  49 departements, rattaches a leur province ;
 - web/public/geo/places.geojson       lieux habites, avec leur province et leur departement ;
 - web/data/departments.bin            indice de departement de chaque detection (int8, -1 hors polygone) ;
-- web/data/geography.json             listes, sources et parametres lus par le serveur.
+- web/data/geography.json             listes, sources et parametres lus par le serveur ;
+- web/public/geo/fra_*.geojson         France metropolitaine (pays, 13 regions, 96 departements), pour l'observatoire.
 
 Aucune donnee de detection n'est creee ici : seuls des rattachements geographiques sont calcules.
 """
@@ -171,6 +172,96 @@ def detection_departments(depts: list[dict]) -> tuple[np.ndarray, int]:
     return out, int(meta["count"])
 
 
+def simplify_ring(ring: list, tolerance: float) -> list:
+    """Douglas-Peucker sur un anneau ferme ; garde au moins 4 points."""
+    pts = np.asarray(ring, dtype=float)[:, :2]
+    if len(pts) <= 5:
+        return [[round(x, 4), round(y, 4)] for x, y in pts]
+    keep = np.zeros(len(pts), dtype=bool)
+    keep[0] = keep[-1] = True
+    # Anneau ferme : premier et dernier points confondus, on coupe d'abord au point le plus eloigne du depart.
+    far = int(np.argmax(np.hypot(*(pts - pts[0]).T)))
+    keep[far] = True
+    stack = [(0, far), (far, len(pts) - 1)]
+    while stack:
+        a, b = stack.pop()
+        if b <= a + 1:
+            continue
+        seg = pts[b] - pts[a]
+        norm = np.hypot(*seg) or 1e-12
+        rel = pts[a + 1 : b] - pts[a]
+        d = np.abs(seg[0] * rel[:, 1] - seg[1] * rel[:, 0]) / norm
+        i = int(np.argmax(d))
+        if d[i] > tolerance:
+            keep[a + 1 + i] = True
+            stack += [(a, a + 1 + i), (a + 1 + i, b)]
+    out = pts[keep]
+    if len(out) < 4:
+        out = pts[np.linspace(0, len(pts) - 1, 4).astype(int)]
+    return [[round(x, 4), round(y, 4)] for x, y in out]
+
+
+def simplify(geometry: dict, tolerance: float) -> dict:
+    polygons = geometry["coordinates"] if geometry["type"] == "MultiPolygon" else [geometry["coordinates"]]
+    out = []
+    for polygon in polygons:
+        rings = [simplify_ring(r, tolerance) for r in polygon]
+        # Les ilots minuscules disparaissent a cette echelle : on ne garde que les anneaux exterieurs significatifs.
+        if len(rings[0]) >= 4:
+            out.append(rings)
+    return {"type": "MultiPolygon", "coordinates": out}
+
+
+FRANCE_METRO = (-5.6, 41.2, 9.8, 51.2)
+
+
+def france() -> dict:
+    """France metropolitaine (Corse comprise) : pays, regions (ADM1) et departements (ADM2), simplifies pour le web."""
+    out = {}
+    # Tolerances en degres (environ 400 m, 600 m, 800 m) : invisibles aux zooms ou chaque niveau s'affiche.
+    for level, name, tolerance in (("ADM0", "country", 0.004), ("ADM1", "regions", 0.006), ("ADM2", "departments", 0.008)):
+        collection = json.loads((RAW / "boundaries" / f"geoboundaries_FRA_{level}_simplified.geojson").read_text("utf-8"))
+        features = []
+        for f in collection["features"]:
+            geom = simplify(f["geometry"], tolerance)
+            # Ne garder que les polygones de metropole (l'ADM0 contient aussi l'outre-mer).
+            kept = [poly for poly in geom["coordinates"] if FRANCE_METRO[0] <= np.mean([c[0] for c in poly[0]]) <= FRANCE_METRO[2] and FRANCE_METRO[1] <= np.mean([c[1] for c in poly[0]]) <= FRANCE_METRO[3]]
+            if not kept:
+                continue
+            features.append({"name": str(f["properties"].get("shapeName", "France")).strip(), "geometry": {"type": "MultiPolygon", "coordinates": kept}})
+        features.sort(key=lambda x: x["name"])
+        for i, f in enumerate(features):
+            f["index"] = i
+        out[name] = features
+    # Departement -> region par vote sur une grille de points interieurs (memes regles que pour le Gabon).
+    for d in out["departments"]:
+        arr = np.vstack([np.asarray(poly[0]) for poly in d["geometry"]["coordinates"]])
+        gx, gy = np.meshgrid(np.linspace(arr[:, 0].min(), arr[:, 0].max(), 40), np.linspace(arr[:, 1].min(), arr[:, 1].max(), 40))
+        gx, gy = gx.ravel(), gy.ravel()
+        inside = points_in_geometry(gx, gy, d["geometry"])
+        votes = np.full(int(inside.sum()), -1)
+        for r in out["regions"]:
+            m = points_in_geometry(gx[inside], gy[inside], r["geometry"]) & (votes == -1)
+            votes[m] = r["index"]
+        votes = votes[votes >= 0]
+        d["region"] = int(np.bincount(votes).argmax()) if votes.size else -1
+    for name, features in out.items():
+        (WEB_GEO / f"fra_{name}.geojson").write_text(
+            json.dumps(
+                {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {"type": "Feature", "properties": {k: v for k, v in f.items() if k != "geometry"}, "geometry": f["geometry"]} for f in features
+                    ],
+                },
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ),
+            "utf-8",
+        )
+    return {k: len(v) for k, v in out.items()}
+
+
 def main() -> None:
     provinces = load_provinces(RAW / "boundaries" / "geoboundaries_GAB_ADM1_simplified.geojson")
     country = json.loads((RAW / "boundaries" / "geoboundaries_GAB_ADM0_simplified.geojson").read_text("utf-8"))["features"][0]["geometry"]
@@ -251,6 +342,8 @@ def main() -> None:
     }
     (WEB_DATA / "geography.json").write_text(json.dumps(payload, ensure_ascii=False, indent=1), "utf-8")
 
+    fr = france()
+    print(f"France métropolitaine : {fr}")
     unassigned = [d["name"] for d in depts if d["province"] == -1]
     print(f"{len(w)} pays, {len(depts)} départements ({len(unassigned)} sans province : {unassigned}), {len(pl)} localités dont {len(towns)} villes")
     print(f"{n} détections, {int((dept_of_row == -1).sum())} hors départements")

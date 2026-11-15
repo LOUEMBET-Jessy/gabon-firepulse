@@ -557,7 +557,27 @@
     "url": "https://download.geonames.org/export/dump/GA.zip",
     "license": "CC BY 4.0 (GeoNames)",
     "readme": "places/geonames_readme.txt"
+   },
+   {
+    "path": "boundaries/geoboundaries_FRA_ADM0_simplified.geojson",
+    "meta": "boundaries/geoboundaries_FRA_ADM0.meta.json",
+    "license": "CC0 1.0"
+   },
+   {
+    "path": "boundaries/geoboundaries_FRA_ADM1_simplified.geojson",
+    "meta": "boundaries/geoboundaries_FRA_ADM1.meta.json",
+    "license": "Licence Ouverte Etalab 2.0"
+   },
+   {
+    "path": "boundaries/geoboundaries_FRA_ADM2_simplified.geojson",
+    "meta": "boundaries/geoboundaries_FRA_ADM2.meta.json",
+    "license": "Licence Ouverte Etalab 2.0"
    }
   ]
+ },
+ "live": {
+  "source": "NASA FIRMS, fichiers active fire NRT (7 jours) ou API area avec FIRMS_MAP_KEY",
+  "cache": "web/.cache/live (non versionné)",
+  "base": "https://firms.modaps.eosdis.nasa.gov/data/active_fire/"
  }
 }

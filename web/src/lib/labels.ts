@@ -12,6 +12,12 @@ export const SATELLITES: Record<SatelliteKey, { name: string; sensor: "MODIS" | 
   noaa20: { name: "NOAA-20", sensor: "VIIRS", color: SENSOR_COLOR.noaa20, shape: "circle", pixel: "375 m" },
 };
 
+/** Satellites de l'observatoire temps reel : NOAA-21 s'ajoute (absent de l'archive 2000-2025). */
+export const LIVE_SATELLITE_INFO: Record<"terra" | "aqua" | "snpp" | "noaa20" | "noaa21", { name: string; sensor: "MODIS" | "VIIRS"; color: string; shape: "square" | "circle"; pixel: string }> = {
+  ...SATELLITES,
+  noaa21: { name: "NOAA-21", sensor: "VIIRS", color: "#b58be8", shape: "circle", pixel: "375 m" },
+};
+
 export const CONFIG_LABEL: Record<ConfigKey, string> = {
   T: "MODIS Terra seul",
   A: "MODIS Aqua seul",

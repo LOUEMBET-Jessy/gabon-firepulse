@@ -37,6 +37,18 @@ La carte s'ouvre sur un globe 3D (MapLibre, projection globe, atmosphère). À l
 
 Sources : Natural Earth (pays, domaine public), geoBoundaries ADM2 (départements, CC BY 3.0, état 2018), GeoNames (localités, CC BY 4.0), copies dans `data/raw/world`, `data/raw/boundaries`, `data/raw/places`. **Seul le Gabon a des détections chargées** : les autres pays servent de repères et leur fiche le dit. Les indicateurs locaux aident à prioriser des vérifications de terrain ; ils ne prédisent rien.
 
+## Observatoire temps réel (NASA FIRMS)
+
+Sur la carte, « Observations » bascule entre l'**archive 2000-2025** (harmonisée, base de tous les calculs) et le **temps réel** : les dernières détections MODIS (Terra, Aqua) et VIIRS (Suomi-NPP, NOAA-20, NOAA-21) publiées par la NASA pour le **Gabon** et la **France métropolitaine**.
+
+- **Sources** : sans clé, les fichiers officiels « active fire » de FIRMS (7 derniers jours, régions « Northern and Central Africa » et « Europe »). Avec une clé `FIRMS_MAP_KEY` (gratuite, à demander sur firms.modaps.eosdis.nasa.gov) dans `web/.env.local`, le serveur passe à l'API « area » de FIRMS, limitée à l'emprise de chaque pays, jusqu'à 10 jours.
+- **Actualisation maîtrisée** : chaque flux (capteur × pays) est vérifié au plus toutes les 10 minutes, à l'ouverture ou au rafraîchissement de la page, par requête conditionnelle : rien n'est retéléchargé si la NASA n'a rien publié. Le bouton « Actualiser » force une vérification (au plus toutes les 2 minutes). Les copies sont gardées en mémoire et dans `web/.cache/live/` : si FIRMS est injoignable, la dernière copie est servie et marquée « ancienne ».
+- **Affichage** : carrés pour MODIS, disques pour VIIRS, halo pour les détections de moins de 24 h. La fiche donne l'acquisition (UTC), le satellite, le capteur, la confiance native, la puissance radiative, la région ou province, le département, le produit et la date de synchronisation.
+- **Filtres** : pays, période (24 h, 48 h, 7 jours), satellite. La fiche d'un pays classe ses régions (France) ou provinces (Gabon), puis leurs départements.
+- **Limites** : produits NRT, non harmonisés et révisables par la NASA ; ils ne rejoignent jamais l'archive ni ses calculs. Les produits temps réel ne distinguent pas toujours les sources industrielles des feux. Une détection n'est jamais un incendie confirmé. La latence réelle (souvent plusieurs heures) et l'absence d'un satellite (Suomi-NPP n'a rien publié depuis le 12 novembre 2026) sont affichées telles quelles.
+
+Limites de la France : geoBoundaries (régions et départements, Licence Ouverte Etalab 2.0, état 2022), simplifiées par `pipeline/geography.py`.
+
 ## Activer l'assistant IA
 
 Hot-Spot AI fonctionne avec **Google Gemini** ou **Anthropic Claude**, appelés **uniquement côté serveur**. Sans clé, l'application reste entièrement utilisable : l'assistant l'indique clairement et propose la visite guidée, des questions fréquentes et des raccourcis, sans prétendre répondre.
@@ -109,13 +121,14 @@ web/e2e/             parcours de test dans un vrai navigateur
 ```bash
 python -m unittest discover -s pipeline/tests   # 13 tests du pipeline
 cd web
-pnpm test                                       # 65 tests : statistiques, moteur, cohérence avec le pipeline, géographie, assistant (Claude, Gemini, voix)
+pnpm test                                       # 69 tests : statistiques, moteur, cohérence avec le pipeline, géographie, temps réel, assistant (Claude, Gemini, voix)
 pnpm dev                                        # puis, dans un autre terminal :
 node e2e/flows.mjs                              # 20 parcours d'acceptation (Chrome installé requis)
 node e2e/assistant.mjs                          # 9 parcours de l'assistant
 node e2e/assistant-live.mjs                     # 8 essais avec le vrai fournisseur IA (clé requise, requêtes facturées)
 node e2e/voice-live.mjs question.wav            # conversation vocale complète : un fichier WAV sert de micro (clé requise)
 node e2e/globe.mjs                              # 4 parcours du globe : anneaux par capteur, département, localité, arrivée depuis l'espace
+node e2e/live.mjs                               # 3 parcours de l'observatoire temps réel (réseau requis : données NASA FIRMS réelles)
 ```
 
 Les tests unitaires et navigateur de l'assistant n'appellent pas le fournisseur IA : un client simulé rejoue des réponses du modèle, ou la réponse réseau de `/api/assistant` est remplacée. Ils vérifient la boucle d'outils, la validation, l'exécution des actions et les confirmations. Le comportement du vrai modèle (refus d'une suppression, résistance à une injection, export non annoncé comme téléchargé, données 2026 absentes) est vérifié par `e2e/assistant-live.mjs`.
