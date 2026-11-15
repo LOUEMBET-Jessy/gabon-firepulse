@@ -1,0 +1,83 @@
+1
+00:00:00,600 --> 00:00:04,723
+Chaque jour, les satellites de la
+NASA repèrent les feux de la planète.
+
+2
+00:00:05,023 --> 00:00:07,684
+Mais MODIS et VIIRS ne
+voient pas la même chose.
+
+3
+00:00:07,984 --> 00:00:11,655
+Des pixels différents… des
+séries impossibles à comparer.
+
+4
+00:00:13,000 --> 00:00:17,842
+Hot-Spots réunit ces observations depuis
+l'an 2000, et les rend enfin comparables.
+
+5
+00:00:18,142 --> 00:00:22,797
+Une mission : observer, harmoniser,
+comprendre l'activité des feux.
+
+6
+00:00:25,400 --> 00:00:29,364
+Explorez la Terre en trois dimensions,
+du continent jusqu'au quartier.
+
+7
+00:00:29,664 --> 00:00:32,803
+Chaque détection garde son
+satellite et sa source.
+
+8
+00:00:33,103 --> 00:00:37,266
+Le calendrier dévoile plus de vingt-cinq
+ans de saisons, mois par mois.
+
+9
+00:00:37,566 --> 00:00:42,301
+Et la comparaison des capteurs montre ce
+que l'harmonisation corrige… et ses limites.
+
+10
+00:00:46,400 --> 00:00:49,433
+Mais Hot-Spots ne se contente
+pas d'afficher des données.
+
+11
+00:00:49,733 --> 00:00:55,668
+Une visite guidée vous accompagne. Posez
+vos questions, par écrit… ou à voix haute.
+
+12
+00:00:55,968 --> 00:00:58,988
+Utilisatrice : L'année 2025
+a-t-elle été habituelle au Gabon ?
+
+13
+00:00:59,038 --> 00:01:04,543
+Hot-Spots AI : L'année 2025 a été habituelle
+au Gabon. Avec 3 978 cellules-jour actives…
+
+14
+00:01:04,693 --> 00:01:08,045
+L'assistant lit les vrais chiffres…
+et règle l'écran pour vous.
+
+15
+00:01:08,600 --> 00:01:13,548
+Pensé pour le Gabon, ouvert à la France…
+et transposable à d'autres territoires.
+
+16
+00:01:13,848 --> 00:01:17,227
+Parce que comprendre les feux,
+c'est déjà mieux protéger.
+
+17
+00:01:17,527 --> 00:01:23,755
+Hot-Spots. Observer. Comprendre. Préserver.

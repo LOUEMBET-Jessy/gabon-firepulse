@@ -1,0 +1,54 @@
+{
+  "voice": "fr-FR-HenriNeural",
+  "rate": "-6%",
+  "pitch": "-2Hz",
+  "scenes": [
+    {
+      "id": "probleme",
+      "start": 0.6,
+      "lines": [
+        "Chaque jour, les satellites de la NASA repèrent les feux de la planète.",
+        "Mais MODIS et VIIRS ne voient pas la même chose.",
+        "Des pixels différents… des séries impossibles à comparer."
+      ]
+    },
+    {
+      "id": "solution",
+      "start": 13.0,
+      "lines": [
+        "Hot-Spots réunit ces observations depuis l'an 2000, et les rend enfin comparables.",
+        "Une mission : observer, harmoniser, comprendre l'activité des feux."
+      ]
+    },
+    {
+      "id": "fonctions",
+      "start": 25.4,
+      "lines": [
+        "Explorez la Terre en trois dimensions, du continent jusqu'au quartier.",
+        "Chaque détection garde son satellite et sa source.",
+        "Le calendrier dévoile plus de vingt-cinq ans de saisons, mois par mois.",
+        "Et la comparaison des capteurs montre ce que l'harmonisation corrige… et ses limites."
+      ]
+    },
+    {
+      "id": "assistant",
+      "start": 46.4,
+      "lines": [
+        "Mais Hot-Spots ne se contente pas d'afficher des données.",
+        "Une visite guidée vous accompagne. Posez vos questions, par écrit… ou à voix haute.",
+        { "text": "L'année 2025 a-t-elle été habituelle au Gabon ?", "voice": "fr-FR-DeniseNeural", "rate": "+4%", "pitch": "+0Hz", "speaker": "Utilisatrice", "gap": 0.2 },
+        { "text": "L'année 2025 a été habituelle au Gabon. Avec 3 978 cellules-jour actives…", "voice": "fr-FR-VivienneMultilingualNeural", "rate": "+6%", "pitch": "+0Hz", "speaker": "Hot-Spots AI", "gap": 0.3 },
+        "L'assistant lit les vrais chiffres… et règle l'écran pour vous."
+      ]
+    },
+    {
+      "id": "impact",
+      "start": 68.6,
+      "lines": [
+        "Pensé pour le Gabon, ouvert à la France… et transposable à d'autres territoires.",
+        "Parce que comprendre les feux, c'est déjà mieux protéger.",
+        "Hot-Spots. Observer. Comprendre. Préserver."
+      ]
+    }
+  ]
+}
