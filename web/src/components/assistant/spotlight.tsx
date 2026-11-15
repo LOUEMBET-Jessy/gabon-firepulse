@@ -93,7 +93,9 @@ function Ring({ box, dim }: { box: Box; dim: boolean }) {
         left: box.left - PAD,
         width: box.width + PAD * 2,
         height: box.height + PAD * 2,
-        boxShadow: dim ? "0 0 0 9999px rgb(8 18 38 / 0.62), 0 0 0 6px rgb(18 191 210 / 0.18)" : "0 0 0 6px rgb(18 191 210 / 0.2)",
+        boxShadow: dim
+          ? "0 0 0 9999px color-mix(in srgb, var(--color-ink) 48%, transparent), 0 0 0 6px color-mix(in srgb, var(--color-accent) 25%, transparent)"
+          : "0 0 0 6px color-mix(in srgb, var(--color-accent) 25%, transparent)",
       }}
     />
   );
@@ -154,7 +156,7 @@ export function AssistantSpotlight() {
     <>
       <Ring box={box} dim={false} />
       {spotlight.caption ? (
-        <div role="status" className="fixed z-40 animate-fade-up rounded-control border border-accent/50 bg-surface-2 px-3 py-2 text-[13px] text-ink shadow-[0_12px_32px_-8px_rgb(0_0_0/0.7)]" style={bubbleStyle(box, 280, 72)}>
+        <div role="status" className="fixed z-40 animate-fade-up rounded-control border border-accent/50 bg-surface-2 px-3 py-2 text-[13px] text-ink shadow-float" style={bubbleStyle(box, 280, 72)}>
           <span className="flex items-start gap-2">
             <AssistantMark size={18} className="mt-px shrink-0" />
             {spotlight.caption}
@@ -230,7 +232,7 @@ export function GuidedTour() {
         role="dialog"
         aria-modal="false"
         aria-labelledby="tour-title"
-        className="fixed z-50 animate-fade-up overflow-y-auto rounded-panel border border-line-strong bg-surface p-5 shadow-[0_24px_64px_-12px_rgb(0_0_0/0.8)]"
+        className="fixed z-50 animate-fade-up overflow-y-auto rounded-panel border border-line-strong bg-surface p-5 shadow-float"
         style={bubbleStyle(box, 380, bubbleHeight)}
       >
         <div className="flex items-start justify-between gap-3">

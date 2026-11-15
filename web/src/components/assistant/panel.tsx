@@ -284,7 +284,7 @@ function Intro({
       </div>
 
       {welcome ? (
-        <div className="rounded-panel border border-accent/25 bg-[radial-gradient(120%_120%_at_100%_0%,rgb(18_191_210/0.12),transparent_60%)] p-4">
+        <div className="rounded-panel border border-accent/25 bg-[radial-gradient(120%_120%_at_100%_0%,color-mix(in_srgb,var(--color-leaf)_14%,transparent),transparent_60%)] p-4">
           <p className="flex items-center gap-2 text-[14px] font-medium text-ink">
             <CompassTool size={17} className="text-accent" />
             Première visite ?
@@ -608,10 +608,10 @@ export function AssistantPanel() {
       <aside
         role="complementary"
         aria-label={BRAND.assistant}
-        className="fixed inset-x-0 bottom-0 top-[6dvh] z-40 flex animate-fade-up flex-col overflow-hidden rounded-t-[24px] border border-line-strong bg-surface shadow-[0_-12px_48px_-12px_rgb(0_0_0/0.7)] md:inset-x-auto md:bottom-3 md:right-3 md:top-3 md:w-[440px] md:rounded-[24px] md:shadow-[0_24px_64px_-16px_rgb(0_0_0/0.75)]"
+        className="fixed inset-x-0 bottom-0 top-[6dvh] z-40 flex animate-fade-up flex-col overflow-hidden rounded-t-[24px] border border-line-strong bg-surface shadow-float md:inset-x-auto md:bottom-3 md:right-3 md:top-3 md:w-[440px] md:rounded-[24px]"
       >
         {/* En-tete : qui repond, dans quel etat, et ce qu'il voit de l'ecran. */}
-        <header className="shrink-0 border-b border-line bg-[radial-gradient(90%_140%_at_0%_0%,rgb(18_191_210/0.10),transparent_60%)]">
+        <header className="shrink-0 border-b border-line bg-[radial-gradient(90%_140%_at_0%_0%,color-mix(in_srgb,var(--color-leaf)_12%,transparent),transparent_60%)]">
           <div className="flex items-center gap-3 px-4 pb-2 pt-3.5">
             <span className="relative">
               <AssistantMark size={36} animated={busy} />
@@ -692,7 +692,7 @@ export function AssistantPanel() {
             {messages.map((m) => (
               <li key={m.id} className={cx("flex animate-fade-up", m.role === "user" ? "justify-end" : "justify-start")}>
                 {m.role === "user" ? (
-                  <p className="max-w-[86%] whitespace-pre-wrap rounded-[18px] rounded-br-[6px] border border-accent/25 bg-[linear-gradient(145deg,rgb(18_191_210/0.20),rgb(18_191_210/0.08))] px-4 py-2.5 text-[14px] leading-relaxed text-ink">
+                  <p className="max-w-[86%] whitespace-pre-wrap rounded-[18px] rounded-br-[6px] border border-accent/25 bg-accent/10 px-4 py-2.5 text-[14px] leading-relaxed text-ink">
                     {m.text}
                   </p>
                 ) : (
@@ -784,7 +784,7 @@ export function AssistantPanel() {
             }}
             className={cx(
               "flex items-end gap-1.5 rounded-[18px] border bg-bg/50 p-1.5 pl-3.5 transition-[border-color,box-shadow] duration-200",
-              available ? "border-line-strong focus-within:border-accent focus-within:shadow-[0_0_0_3px_rgb(18_191_210/0.15)]" : "border-line",
+              available ? "border-line-strong focus-within:border-accent focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-accent)_18%,transparent)]" : "border-line",
             )}
           >
             <label htmlFor="assistant-input" className="sr-only">

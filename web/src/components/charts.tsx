@@ -29,7 +29,7 @@ const GRID = "var(--color-line)";
 const INK = "var(--color-ink)";
 const MUTED = "var(--color-ink-3)";
 const SURFACE = "var(--color-surface)";
-const HEAT = "#e88c12";
+const HEAT = "var(--color-fire-4)";
 
 const NARROW = "(max-width: 640px)";
 /** Vrai sur un ecran etroit : les graphiques y abregent leurs etiquettes. */
@@ -51,7 +51,7 @@ const axisNumber = (value: number) => (Math.abs(value) >= 1000 ? `${fmt1(value /
 
 export function TooltipCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="pointer-events-none min-w-[190px] max-w-[280px] rounded-control border border-line-strong bg-surface-3 px-3 py-2.5 text-[12.5px] shadow-[0_12px_32px_-8px_rgb(0_0_0/0.75)]">
+    <div className="pointer-events-none min-w-[190px] max-w-[280px] rounded-control border border-line bg-surface px-3 py-2.5 text-[12.5px] shadow-float">
       <p className="mb-1.5 font-medium text-ink">{title}</p>
       <div className="flex flex-col gap-1 text-ink-2">{children}</div>
     </div>
@@ -192,7 +192,7 @@ export function SeasonalChart({
                 const status = row?.record?.assessment.status;
                 if (props.cx === undefined || props.cy === undefined || row?.value === null) return <g key={props.index} />;
                 const flagged = status === "strong_high" || status === "high" || status === "low";
-                const ring = status === "strong_high" ? "#ef5350" : status === "high" ? "#f5b025" : "#95a9cc";
+                const ring = status === "strong_high" ? "var(--color-critical)" : status === "high" ? "var(--color-fire-4)" : "var(--color-info)";
                 return (
                   <g key={props.index}>
                     {flagged ? <circle cx={props.cx} cy={props.cy} r={8} fill="none" stroke={ring} strokeWidth={2} /> : null}
@@ -261,7 +261,7 @@ export function HistoryChart({ months, selection, height = 280 }: { months: Mont
             <XAxis dataKey="i" type="number" domain={[0, data.length - 1]} ticks={ticks} tick={AXIS} tickLine={false} axisLine={{ stroke: GRID }} tickFormatter={(i: number) => String(data[i]?.year ?? "")} />
             <YAxis tick={AXIS} tickLine={false} axisLine={false} width={46} tickFormatter={axisNumber} />
             {eraEnd >= 0 ? <ReferenceArea x1={0} x2={eraEnd + 0.5} fill="url(#era-hatch)" stroke="none" ifOverflow="hidden" /> : null}
-            {selected ? <ReferenceArea x1={selected.x1} x2={selected.x2} fill="#12bfd2" fillOpacity={0.12} stroke="#12bfd2" strokeOpacity={0.6} ifOverflow="hidden" /> : null}
+            {selected ? <ReferenceArea x1={selected.x1} x2={selected.x2} fill="var(--color-lagoon)" fillOpacity={0.12} stroke="var(--color-lagoon)" strokeOpacity={0.6} ifOverflow="hidden" /> : null}
             <Tooltip
               cursor={{ stroke: "var(--color-line-strong)" }}
               isAnimationActive={false}
@@ -553,7 +553,7 @@ export function ClimatologyChart({ baselines, height = 220 }: { baselines: Month
             />
             <Bar dataKey="median" radius={[4, 4, 0, 0]} isAnimationActive={false} maxBarSize={38}>
               {data.map((d) => (
-                <Cell key={d.month} fill={d.b.critical ? HEAT : "#4a6283"} />
+                <Cell key={d.month} fill={d.b.critical ? HEAT : "var(--color-line-strong)"} />
               ))}
               <ErrorBar dataKey="spread" width={4} strokeWidth={1.25} stroke={INK} opacity={0.8} />
             </Bar>

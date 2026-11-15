@@ -48,21 +48,21 @@ function CompareYears({ calendar, a, b }: { calendar: CalendarResponse; a: numbe
     <>
       <Legend>
         <span className="flex items-center gap-1.5 text-[12px] text-ink-2">
-          {swatch("#f4f7fa")} {a}
+          {swatch("var(--color-lagoon)")} {a}
         </span>
         <span className="flex items-center gap-1.5 text-[12px] text-ink-2">
-          {swatch("#12bfd2")} {b}
+          {swatch("var(--color-fire-4)")} {b}
         </span>
-        <span className="flex items-center gap-1.5 text-[12px] text-ink-2">{swatch("#8ea0b9", true)} Médiane de toutes les années</span>
+        <span className="flex items-center gap-1.5 text-[12px] text-ink-2">{swatch("var(--color-ink-3)", true)} Médiane de toutes les années</span>
       </Legend>
       <div style={{ height: 260 }} className="px-2 pb-2">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={data} margin={{ top: 12, right: 18, bottom: 0, left: 0 }}>
-            <CartesianGrid stroke="#1e3352" vertical={false} />
-            <XAxis dataKey="name" tick={{ fill: "#8ea0b9", fontSize: 11.5, fontFamily: "var(--font-mono)" }} tickLine={false} axisLine={{ stroke: "#1e3352" }} interval={0} tickFormatter={monthTick(narrow)} />
-            <YAxis tick={{ fill: "#8ea0b9", fontSize: 11.5, fontFamily: "var(--font-mono)" }} tickLine={false} axisLine={false} width={46} tickFormatter={(v: number) => fmtInt(v)} />
+            <CartesianGrid stroke="var(--color-line)" vertical={false} />
+            <XAxis dataKey="name" tick={{ fill: "var(--color-ink-3)", fontSize: 11.5, fontFamily: "var(--font-mono)" }} tickLine={false} axisLine={{ stroke: "var(--color-line)" }} interval={0} tickFormatter={monthTick(narrow)} />
+            <YAxis tick={{ fill: "var(--color-ink-3)", fontSize: 11.5, fontFamily: "var(--font-mono)" }} tickLine={false} axisLine={false} width={46} tickFormatter={(v: number) => fmtInt(v)} />
             <Tooltip
-              cursor={{ stroke: "#2c4a70" }}
+              cursor={{ stroke: "var(--color-line-strong)" }}
               isAnimationActive={false}
               content={({ active, payload }) => {
                 const row = payload?.[0]?.payload as (typeof data)[number] | undefined;
@@ -77,9 +77,9 @@ function CompareYears({ calendar, a, b }: { calendar: CalendarResponse; a: numbe
                 );
               }}
             />
-            <Line dataKey="median" stroke="#8ea0b9" strokeWidth={1.5} strokeDasharray="4 3" dot={false} isAnimationActive={false} activeDot={false} />
-            <Line dataKey="a" stroke="#f4f7fa" strokeWidth={2} dot={{ r: 3, fill: "#f4f7fa", stroke: "#10213a", strokeWidth: 1.5 }} isAnimationActive={false} connectNulls={false} />
-            <Line dataKey="b" stroke="#12bfd2" strokeWidth={2} dot={{ r: 3, fill: "#12bfd2", stroke: "#10213a", strokeWidth: 1.5 }} isAnimationActive={false} connectNulls={false} />
+            <Line dataKey="median" stroke="var(--color-ink-3)" strokeWidth={1.5} strokeDasharray="4 3" dot={false} isAnimationActive={false} activeDot={false} />
+            <Line dataKey="a" stroke="var(--color-lagoon)" strokeWidth={2} dot={{ r: 3, fill: "var(--color-lagoon)", stroke: "var(--color-surface)", strokeWidth: 1.5 }} isAnimationActive={false} connectNulls={false} />
+            <Line dataKey="b" stroke="var(--color-fire-4)" strokeWidth={2.25} dot={{ r: 3, fill: "var(--color-fire-4)", stroke: "var(--color-surface)", strokeWidth: 1.5 }} isAnimationActive={false} connectNulls={false} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>

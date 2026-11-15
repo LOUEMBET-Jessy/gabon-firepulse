@@ -15,15 +15,15 @@ export const BRAND = {
 export function BrandMark({ size = 32, className }: { size?: number; className?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden className={className}>
-      <rect x="0.5" y="0.5" width="31" height="31" rx="9" fill="#142b48" stroke="#2c4a70" />
+      <rect x="0.5" y="0.5" width="31" height="31" rx="9" fill="var(--color-forest)" />
       {/* Cellule de grille */}
-      <rect x="11" y="11" width="10" height="10" rx="2" fill="#f59e0b" fillOpacity="0.16" stroke="#f59e0b" strokeOpacity="0.55" />
+      <rect x="11" y="11" width="10" height="10" rx="2" fill="var(--color-fire-3)" fillOpacity="0.2" stroke="var(--color-fire-3)" strokeOpacity="0.6" />
       {/* Orbite */}
-      <ellipse cx="16" cy="16" rx="12.5" ry="5.2" transform="rotate(-28 16 16)" fill="none" stroke="#12bfd2" strokeWidth="1.6" />
+      <ellipse cx="16" cy="16" rx="12.5" ry="5.2" transform="rotate(-28 16 16)" fill="none" stroke="var(--color-leaf)" strokeWidth="1.6" />
       {/* Point detecte */}
-      <circle cx="16" cy="16" r="3.1" fill="#f59e0b" />
+      <circle cx="16" cy="16" r="3.1" fill="var(--color-fire-3)" />
       {/* Satellite */}
-      <circle cx="26.2" cy="10.6" r="1.9" fill="#f4f7fa" />
+      <circle cx="26.2" cy="10.6" r="1.9" fill="var(--color-forest-ink)" />
     </svg>
   );
 }
@@ -45,12 +45,12 @@ export function Wordmark({ className }: { className?: string }) {
 export function AssistantMark({ size = 28, className, animated }: { size?: number; className?: string; animated?: boolean }) {
   return (
     <svg width={size} height={size} viewBox="0 0 28 28" aria-hidden className={className}>
-      <circle cx="14" cy="14" r="13.5" fill="#0b1830" stroke="#12bfd2" strokeOpacity="0.7" />
+      <circle cx="14" cy="14" r="13.5" fill="var(--color-forest)" stroke="var(--color-leaf)" strokeOpacity="0.8" />
       <g className={animated ? "assistant-orbit" : undefined}>
-        <circle cx="14" cy="14" r="8.5" fill="none" stroke="#12bfd2" strokeOpacity="0.35" strokeDasharray="2.2 2.6" />
-        <circle cx="21.4" cy="7.4" r="1.7" fill="#2fbf7e" />
+        <circle cx="14" cy="14" r="8.5" fill="none" stroke="var(--color-forest-ink)" strokeOpacity="0.45" strokeDasharray="2.2 2.6" />
+        <circle cx="21.4" cy="7.4" r="1.7" fill="var(--color-leaf)" />
       </g>
-      <circle cx="14" cy="14" r="3.6" fill="#f59e0b" />
+      <circle cx="14" cy="14" r="3.6" fill="var(--color-fire-3)" />
     </svg>
   );
 }

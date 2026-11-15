@@ -1,9 +1,11 @@
 /** Libelles, couleurs et definitions partages par toute l'interface. */
 
+import { SATELLITE_HEX } from "./palette";
 import type { AnomalyStatus, Reliability } from "./science/anomaly";
 import type { ConfigKey, MonthKind, SatelliteKey } from "./types";
 
-export const SENSOR_COLOR = { modis: "#d95926", snpp: "#3987e5", noaa20: "#199e70" } as const;
+/** Couleurs des satellites : identiques sur la carte, dans les legendes et les graphiques. */
+export const SENSOR_COLOR = { modis: SATELLITE_HEX.modis, snpp: SATELLITE_HEX.snpp, noaa20: SATELLITE_HEX.noaa20, noaa21: SATELLITE_HEX.noaa21 } as const;
 
 export const SATELLITES: Record<SatelliteKey, { name: string; sensor: "MODIS" | "VIIRS"; color: string; shape: "square" | "circle"; pixel: string }> = {
   terra: { name: "Terra", sensor: "MODIS", color: SENSOR_COLOR.modis, shape: "square", pixel: "1 km" },
@@ -15,7 +17,7 @@ export const SATELLITES: Record<SatelliteKey, { name: string; sensor: "MODIS" | 
 /** Satellites de l'observatoire temps reel : NOAA-21 s'ajoute (absent de l'archive 2000-2025). */
 export const LIVE_SATELLITE_INFO: Record<"terra" | "aqua" | "snpp" | "noaa20" | "noaa21", { name: string; sensor: "MODIS" | "VIIRS"; color: string; shape: "square" | "circle"; pixel: string }> = {
   ...SATELLITES,
-  noaa21: { name: "NOAA-21", sensor: "VIIRS", color: "#b58be8", shape: "circle", pixel: "375 m" },
+  noaa21: { name: "NOAA-21", sensor: "VIIRS", color: SENSOR_COLOR.noaa21, shape: "circle", pixel: "375 m" },
 };
 
 export const CONFIG_LABEL: Record<ConfigKey, string> = {
@@ -44,7 +46,15 @@ export const STATUS: Record<AnomalyStatus, { label: string; short: string; tone:
   incomplete: { label: "Observation incomplète", short: "Incomplet", tone: "muted" },
 };
 
-export const TONE_COLOR = { critical: "#ef5350", warning: "#f5b025", info: "#95a9cc", muted: "#8ea0b9", neutral: "#b9c6d8", good: "#2fbf7e" } as const;
+/** Etats : references aux jetons CSS (suivent le theme). « Inhabituelle » en feu, « Habituelle » en feuille. */
+export const TONE_COLOR = {
+  critical: "var(--color-critical)",
+  warning: "var(--color-fire-4)",
+  info: "var(--color-info)",
+  muted: "var(--color-ink-3)",
+  neutral: "var(--color-leaf)",
+  good: "var(--color-good)",
+} as const;
 
 export const RELIABILITY: Record<Reliability, { label: string; detail: string }> = {
   high: { label: "Fiabilité élevée", detail: "Valeur observée par VIIRS, référence d'au moins dix années, niveau d'activité suffisant." },
@@ -54,8 +64,9 @@ export const RELIABILITY: Record<Reliability, { label: string; detail: string }>
 
 export const CONF_LABEL = { low: "Faible", nominal: "Nominale", high: "Élevée" } as const;
 
-export const HEAT = ["#12243e", "#3a2a1a", "#5f3a14", "#8a5010", "#b96a0f", "#e88c12", "#f6b547", "#fde2a2"];
-export const DIVERGING = ["#2f6fd0", "#4d7fbd", "#46608a", "#22385a", "#7c4a4a", "#b84a48", "#ef5350"];
+/** Echelles des calendriers et graphiques : jetons CSS (clair : du pale au brun ; sombre : du brun au pale). */
+export const HEAT = [0, 1, 2, 3, 4, 5, 6, 7].map((i) => `var(--color-heat-${i})`);
+export const DIVERGING = ["n3", "n2", "n1", "0", "p1", "p2", "p3"].map((k) => `var(--color-div-${k})`);
 
 export const UNIT = "cellules-jour actives, équivalent Suomi-NPP";
 export const UNIT_SHORT = "cellules-jour";

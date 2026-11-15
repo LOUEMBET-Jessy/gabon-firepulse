@@ -1,67 +1,102 @@
 @import "tailwindcss";
 
 /*
- * Hot-Spots - jetons de design.
- * Univers : la Terre vue d'orbite (bleus nuit), le signal thermique (orange detection),
- * la foret (vert), l'instrument (cyan). Theme unique, sombre.
- * Rayons : 10 px (controles), 18 px (panneaux), pilule (etiquettes).
- * Contrastes verifies : ink-3 >= 4,6:1 sur toutes les surfaces ; couleurs de capteurs validees
- * pour les daltonismes sur #0B1830, #10213A et #142B48 (script validate_palette).
+ * Hot-Spots - systeme de design « Terre vivante ».
+ * Univers : la Terre vue de l'espace et la foret gabonaise. Theme CLAIR par defaut (ivoire, vert foret,
+ * lagune, savane), theme sombre « vert nuit » en option (bascule de l'en-tete ou preference du systeme).
+ * Toutes les couleurs de l'interface sont ici ; les composants n'utilisent que ces jetons
+ * (les couleurs fixes des cartes et des satellites sont dans src/lib/palette.ts).
+ * Noms historiques conserves pour les classes : accent = vert foret (--primary), ember = feu, ink = texte.
+ * Contrastes verifies par scripts/contrast.mjs (texte >= 4,5:1 sur bg, surface et surface-2, dans les deux themes).
+ * Rayons : 10 px (controles), 16 px (panneaux), pilule (etiquettes).
  */
 @theme {
-  --color-bg: #0b1830;
-  --color-bg-deep: #081226;
-  --color-surface: #10213a;
-  --color-surface-2: #142b48;
-  --color-surface-3: #1b3557;
-  --color-line: #1e3352;
-  --color-line-strong: #2c4a70;
-  --color-ink: #f4f7fa;
-  --color-ink-2: #b9c6d8;
-  --color-ink-3: #8ea0b9;
-  --color-accent: #12bfd2;
-  --color-accent-strong: #5ad8e6;
-  --color-accent-ink: #04262b;
-  /* Marque : orange detection et vert environnement. */
-  --color-ember: #f59e0b;
-  --color-leaf: #22a06b;
-  --color-leaf-ink: #2fbf7e;
+  --color-bg: #f7f5ef;
+  --color-bg-deep: #eef3ec;
+  --color-surface: #ffffff;
+  --color-surface-2: #eef3ec;
+  --color-surface-3: #e2eadf;
+  --color-line: #dce3d8;
+  --color-line-strong: #c2cebe;
+  --color-ink: #17251c;
+  --color-ink-2: #3b4a40;
+  --color-ink-3: #55645a;
+  /* Vert foret : boutons, liens, element actif. */
+  --color-accent: #1f6b45;
+  --color-accent-strong: #17573a;
+  --color-accent-ink: #ffffff;
+  --color-primary: #1f6b45;
+  --color-primary-hover: #17573a;
+  /* Nature : feuille, lagune, ciel, savane ; feu pour la detection. */
+  --color-ember: #e8641e;
+  --color-leaf: #4fa36b;
+  --color-leaf-ink: #2b7448;
+  --color-lagoon: #0e7c86;
+  --color-sky: #3a8dde;
+  --color-savanna: #e7c77a;
+  --color-savanna-soft: #f6ead0;
 
-  /* Identite des capteurs (categoriel, ordre fixe). */
-  --color-modis: #d95926;
-  --color-snpp: #3987e5;
-  --color-noaa20: #199e70;
+  /* Identite des satellites (identique dans les deux themes et sur toutes les vues). */
+  --color-modis: #e4572e;
+  --color-snpp: #2f7fd8;
+  --color-noaa20: #13a08a;
+  --color-noaa21: #8e5cd9;
 
   /* Etats (toujours accompagnes d'une icone et d'un libelle). */
-  --color-critical: #ef5350;
-  --color-warning: #f5b025;
-  --color-good: #2fbf7e;
-  --color-info: #95a9cc;
+  --color-critical: #b8321a;
+  --color-warning: #845308;
+  --color-good: #2b7448;
+  --color-info: #285f9e;
 
-  /* Rampe sequentielle "activite thermique" : une seule teinte, du sombre au clair. */
-  --color-heat-0: #12243e;
-  --color-heat-1: #3a2a1a;
-  --color-heat-2: #5f3a14;
-  --color-heat-3: #8a5010;
-  --color-heat-4: #b96a0f;
-  --color-heat-5: #e88c12;
-  --color-heat-6: #f6b547;
-  --color-heat-7: #fde2a2;
+  /* Echelle sequentielle feu : du pale (faible) au brun (fort). heat-0 = observe, sans activite. */
+  --color-fire-1: #fff3c4;
+  --color-fire-2: #fdd27a;
+  --color-fire-3: #f9a03f;
+  --color-fire-4: #e8641e;
+  --color-fire-5: #c2361a;
+  --color-fire-6: #7f1d12;
+  --color-heat-0: #e6ece3;
+  --color-heat-1: #fff3c4;
+  --color-heat-2: #fdd27a;
+  --color-heat-3: #f9a03f;
+  --color-heat-4: #e8641e;
+  --color-heat-5: #d24d1b;
+  --color-heat-6: #c2361a;
+  --color-heat-7: #7f1d12;
 
-  /* Rampe divergente (ecart a la reference) : bleu, gris neutre, rouge. */
-  --color-div-n3: #2f6fd0;
-  --color-div-n2: #4d7fbd;
-  --color-div-n1: #46608a;
-  --color-div-0: #22385a;
-  --color-div-p1: #7c4a4a;
-  --color-div-p2: #b84a48;
-  --color-div-p3: #ef5350;
+  /* Rampe divergente (ecart a la reference) : ciel, neutre, feu. */
+  --color-div-n3: #1d5faf;
+  --color-div-n2: #5b93d6;
+  --color-div-n1: #a9c7ea;
+  --color-div-0: #e6ece3;
+  --color-div-p1: #f6b9a0;
+  --color-div-p2: #e8641e;
+  --color-div-p3: #c2361a;
+
+  /* L'espace : uniquement le hero de l'accueil, sombre dans les deux themes. */
+  --color-space: #050b14;
+  --color-space-2: #0b1a2c;
+  --color-space-ink: #f2f6f3;
+  --color-space-ink-2: #c9d6cf;
+  /* Pied de page vert foret. */
+  --color-forest: #123d28;
+  --color-forest-ink: #e9f3ec;
+  --color-forest-ink-2: #b9d2c2;
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+
+  /* Cartes : etiquettes blanches avec halo sombre, lisibles sur l'imagerie satellite. */
+  --color-map-ink: #ffffff;
+  --color-map-ink-2: #e6eee8;
+  --color-map-halo: #0b1a12;
+
+  --shadow-card: 0 1px 2px rgb(23 37 28 / 0.06), 0 8px 24px rgb(23 37 28 / 0.06);
+  --shadow-float: 0 2px 6px rgb(23 37 28 / 0.08), 0 18px 48px rgb(23 37 28 / 0.14);
 
   --radius-control: 10px;
-  --radius-panel: 18px;
+  --radius-panel: 16px;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
@@ -98,8 +133,190 @@
 
 /* Echelle de superposition : 10 barre fixe, 20 panneau flottant, 30 popover, 40 dialogue, 50 notification. */
 
-html {
+/*
+ * Theme clair, emis sans condition : Tailwind n'ecrit dans @theme que les variables utilisees par une classe,
+ * or les echelles et les cartes lisent aussi des jetons depuis le JS (var(--color-heat-1), token("fire-2")...).
+ */
+:root {
+  --color-bg: #f7f5ef;
+  --color-bg-deep: #eef3ec;
+  --color-surface: #ffffff;
+  --color-surface-2: #eef3ec;
+  --color-surface-3: #e2eadf;
+  --color-line: #dce3d8;
+  --color-line-strong: #c2cebe;
+  --color-ink: #17251c;
+  --color-ink-2: #3b4a40;
+  --color-ink-3: #55645a;
+  --color-accent: #1f6b45;
+  --color-accent-strong: #17573a;
+  --color-accent-ink: #ffffff;
+  --color-primary: #1f6b45;
+  --color-primary-hover: #17573a;
+  --color-ember: #e8641e;
+  --color-leaf: #4fa36b;
+  --color-leaf-ink: #2b7448;
+  --color-lagoon: #0e7c86;
+  --color-sky: #3a8dde;
+  --color-savanna: #e7c77a;
+  --color-savanna-soft: #f6ead0;
+  --color-modis: #e4572e;
+  --color-snpp: #2f7fd8;
+  --color-noaa20: #13a08a;
+  --color-noaa21: #8e5cd9;
+  --color-critical: #b8321a;
+  --color-warning: #845308;
+  --color-good: #2b7448;
+  --color-info: #285f9e;
+  --color-fire-1: #fff3c4;
+  --color-fire-2: #fdd27a;
+  --color-fire-3: #f9a03f;
+  --color-fire-4: #e8641e;
+  --color-fire-5: #c2361a;
+  --color-fire-6: #7f1d12;
+  --color-heat-0: #e6ece3;
+  --color-heat-1: #fff3c4;
+  --color-heat-2: #fdd27a;
+  --color-heat-3: #f9a03f;
+  --color-heat-4: #e8641e;
+  --color-heat-5: #d24d1b;
+  --color-heat-6: #c2361a;
+  --color-heat-7: #7f1d12;
+  --color-div-n3: #1d5faf;
+  --color-div-n2: #5b93d6;
+  --color-div-n1: #a9c7ea;
+  --color-div-0: #e6ece3;
+  --color-div-p1: #f6b9a0;
+  --color-div-p2: #e8641e;
+  --color-div-p3: #c2361a;
+  --color-space: #050b14;
+  --color-space-2: #0b1a2c;
+  --color-space-ink: #f2f6f3;
+  --color-space-ink-2: #c9d6cf;
+  --color-forest: #123d28;
+  --color-forest-ink: #e9f3ec;
+  --color-forest-ink-2: #b9d2c2;
+  --color-map-ink: #ffffff;
+  --color-map-ink-2: #e6eee8;
+  --color-map-halo: #0b1a12;
+  --shadow-card: 0 1px 2px rgb(23 37 28 / 0.06), 0 8px 24px rgb(23 37 28 / 0.06);
+  --shadow-float: 0 2px 6px rgb(23 37 28 / 0.08), 0 18px 48px rgb(23 37 28 / 0.14);
+}
+
+/*
+ * Theme sombre « vert nuit » : choisi dans l'en-tete (data-theme="dark"), ou par le systeme si l'utilisateur
+ * n'a rien choisi. Les deux blocs sont identiques (une regle CSS ne peut pas porter les deux selecteurs
+ * avec la media query).
+ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-bg: #0f1a14;
+    --color-bg-deep: #0b140f;
+    --color-surface: #16241c;
+    --color-surface-2: #1c2e24;
+    --color-surface-3: #243a2e;
+    --color-line: #2a3f33;
+    --color-line-strong: #3b5446;
+    --color-ink: #eaf2ec;
+    --color-ink-2: #c6d4ca;
+    --color-ink-3: #a7b8ad;
+    --color-accent: #5cc58a;
+    --color-accent-strong: #7dd6a3;
+    --color-accent-ink: #08170f;
+    --color-primary: #5cc58a;
+    --color-primary-hover: #7dd6a3;
+    --color-ember: #f9a03f;
+    --color-leaf: #5cc58a;
+    --color-leaf-ink: #7dd6a3;
+    --color-lagoon: #3fb8c2;
+    --color-sky: #6aa9e8;
+    --color-savanna-soft: #3a3320;
+    --color-critical: #f08a6c;
+    --color-warning: #f2b84b;
+    --color-good: #7dd6a3;
+    --color-info: #8db8ee;
+    --color-fire-1: #4a2a12;
+    --color-fire-2: #7a3f14;
+    --color-fire-3: #b25a17;
+    --color-fire-4: #e8641e;
+    --color-fire-5: #f9a03f;
+    --color-fire-6: #fdd27a;
+    --color-heat-0: #1f3227;
+    --color-heat-1: #4a2a12;
+    --color-heat-2: #7a3f14;
+    --color-heat-3: #b25a17;
+    --color-heat-4: #e8641e;
+    --color-heat-5: #f9a03f;
+    --color-heat-6: #fdd27a;
+    --color-heat-7: #fff3c4;
+    --color-div-n3: #6aa9e8;
+    --color-div-n2: #3a78b8;
+    --color-div-n1: #2a4a6a;
+    --color-div-0: #22362a;
+    --color-div-p1: #6b3420;
+    --color-div-p2: #b5471c;
+    --color-div-p3: #f08a6c;
+    --color-forest: #0b2417;
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.25);
+    --shadow-float: 0 2px 6px rgb(0 0 0 / 0.35), 0 18px 48px rgb(0 0 0 / 0.45);
+  }
+}
+:root[data-theme="dark"] {
   color-scheme: dark;
+  --color-bg: #0f1a14;
+  --color-bg-deep: #0b140f;
+  --color-surface: #16241c;
+  --color-surface-2: #1c2e24;
+  --color-surface-3: #243a2e;
+  --color-line: #2a3f33;
+  --color-line-strong: #3b5446;
+  --color-ink: #eaf2ec;
+  --color-ink-2: #c6d4ca;
+  --color-ink-3: #a7b8ad;
+  --color-accent: #5cc58a;
+  --color-accent-strong: #7dd6a3;
+  --color-accent-ink: #08170f;
+  --color-primary: #5cc58a;
+  --color-primary-hover: #7dd6a3;
+  --color-ember: #f9a03f;
+  --color-leaf: #5cc58a;
+  --color-leaf-ink: #7dd6a3;
+  --color-lagoon: #3fb8c2;
+  --color-sky: #6aa9e8;
+  --color-savanna-soft: #3a3320;
+  --color-critical: #f08a6c;
+  --color-warning: #f2b84b;
+  --color-good: #7dd6a3;
+  --color-info: #8db8ee;
+  --color-fire-1: #4a2a12;
+  --color-fire-2: #7a3f14;
+  --color-fire-3: #b25a17;
+  --color-fire-4: #e8641e;
+  --color-fire-5: #f9a03f;
+  --color-fire-6: #fdd27a;
+  --color-heat-0: #1f3227;
+  --color-heat-1: #4a2a12;
+  --color-heat-2: #7a3f14;
+  --color-heat-3: #b25a17;
+  --color-heat-4: #e8641e;
+  --color-heat-5: #f9a03f;
+  --color-heat-6: #fdd27a;
+  --color-heat-7: #fff3c4;
+  --color-div-n3: #6aa9e8;
+  --color-div-n2: #3a78b8;
+  --color-div-n1: #2a4a6a;
+  --color-div-0: #22362a;
+  --color-div-p1: #6b3420;
+  --color-div-p2: #b5471c;
+  --color-div-p3: #f08a6c;
+  --color-forest: #0b2417;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.25);
+  --shadow-float: 0 2px 6px rgb(0 0 0 / 0.35), 0 18px 48px rgb(0 0 0 / 0.45);
+}
+
+html {
+  color-scheme: light;
   background: var(--color-bg);
 }
 
@@ -152,7 +369,7 @@ body {
     radial-gradient(1px 1px at 52% 31%, rgb(244 247 250 / 0.3), transparent 60%),
     radial-gradient(1.5px 1.5px at 7% 88%, rgb(244 247 250 / 0.35), transparent 60%),
     radial-gradient(1px 1px at 91% 81%, rgb(244 247 250 / 0.4), transparent 60%),
-    radial-gradient(1px 1px at 24% 46%, rgb(18 191 210 / 0.45), transparent 60%);
+    radial-gradient(1px 1px at 24% 46%, rgb(160 220 255 / 0.45), transparent 60%);
   background-size: 420px 380px;
   animation: star-drift 140s linear infinite;
 }
@@ -288,7 +505,7 @@ body {
   inset: 0 0 auto 0;
   height: 420px;
   pointer-events: none;
-  background: radial-gradient(60% 100% at 70% 0%, rgb(18 191 210 / 0.07), transparent 70%);
+  background: radial-gradient(60% 100% at 70% 0%, color-mix(in srgb, var(--color-leaf) 10%, transparent), transparent 70%);
   z-index: 0;
 }
 
@@ -317,7 +534,7 @@ body {
     radial-gradient(1px 1px at 34% 82%, rgb(244 247 250 / 0.3), transparent 60%),
     radial-gradient(1px 1px at 58% 44%, rgb(244 247 250 / 0.25), transparent 60%),
     radial-gradient(1.5px 1.5px at 22% 56%, rgb(244 247 250 / 0.3), transparent 60%),
-    radial-gradient(120% 90% at 60% 40%, #0c1d38 0%, #050c1a 70%);
+    radial-gradient(120% 90% at 60% 40%, var(--color-space-2) 0%, var(--color-space) 70%);
 }
 .cluster-marker {
   position: relative;
@@ -345,24 +562,24 @@ body {
   pointer-events: none;
   user-select: none;
   white-space: nowrap;
-  text-shadow: 0 1px 3px #081226, 0 0 2px #081226;
+  text-shadow: 0 1px 3px var(--color-map-halo), 0 0 2px var(--color-map-halo), 0 0 1px var(--color-map-halo);
 }
 .map-label-continent {
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.08em;
-  color: rgb(185 198 216 / 0.75);
+  color: color-mix(in srgb, var(--color-map-ink) 82%, transparent);
 }
 .map-label-department {
   font-size: 10.5px;
   font-style: italic;
-  color: rgb(142 160 185 / 0.9);
+  color: var(--color-map-ink-2);
 }
 .map-label-capital,
 .map-label-town {
   font-size: 11px;
   font-weight: 500;
-  color: var(--color-ink);
+  color: var(--color-map-ink);
   padding-left: 9px;
   position: relative;
 }
@@ -376,8 +593,8 @@ body {
   height: 5px;
   margin-top: -2.5px;
   border-radius: 9999px;
-  background: var(--color-ink);
-  box-shadow: 0 0 0 1.5px #081226;
+  background: var(--color-map-ink);
+  box-shadow: 0 0 0 1.5px var(--color-map-halo);
 }
 .map-label-capital {
   font-size: 12.5px;
@@ -389,11 +606,11 @@ body {
   gap: 1px;
   padding: 6px 10px;
   border-radius: 10px;
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-line-strong);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
   color: var(--color-ink);
   font-size: 12.5px;
-  box-shadow: 0 12px 32px -8px rgb(0 0 0 / 0.7);
+  box-shadow: var(--shadow-float);
 }
 .map-tooltip .maplibregl-popup-content span {
   font-size: 11.5px;
@@ -451,15 +668,25 @@ body {
 .check:checked {
   border-color: var(--color-accent);
   background-color: var(--color-accent);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3.2L13 4.5' fill='none' stroke='%2304202c' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3.2L13 4.5' fill='none' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+:root[data-theme="dark"] .check:checked {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3.2L13 4.5' fill='none' stroke='%2308170f' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .check:checked {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3.2L13 4.5' fill='none' stroke='%2308170f' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
 }
 
 /* Motif "estimation MODIS" : hachures, pour ne pas reposer sur la seule couleur. */
 .hatch {
-  background-image: repeating-linear-gradient(135deg, rgb(11 24 48 / 0.55) 0 1.5px, transparent 1.5px 5px);
+  background-image: repeating-linear-gradient(135deg, color-mix(in srgb, var(--color-ink) 38%, transparent) 0 1.5px, transparent 1.5px 5px);
 }
 .hatch-missing {
-  background-image: repeating-linear-gradient(45deg, var(--color-line-strong) 0 1px, transparent 1px 5px);
+  background-color: var(--color-surface-2);
+  background-image: repeating-linear-gradient(45deg, var(--color-ink-3) 0 1px, transparent 1px 5px);
 }
 
 /* Cartographie : habillage des controles MapLibre. */
@@ -467,10 +694,10 @@ body {
   font-family: var(--font-sans);
 }
 .maplibregl-ctrl-group {
-  background: var(--color-surface-2) !important;
-  border: 1px solid var(--color-line-strong);
-  box-shadow: none !important;
-  border-radius: 8px !important;
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-line);
+  box-shadow: var(--shadow-card) !important;
+  border-radius: 10px !important;
   overflow: hidden;
 }
 .maplibregl-ctrl-group button {
@@ -480,21 +707,29 @@ body {
 .maplibregl-ctrl-group button + button {
   border-top: 1px solid var(--color-line) !important;
 }
-.maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+:root[data-theme="dark"] .maplibregl-ctrl-group button .maplibregl-ctrl-icon {
   filter: invert(0.9);
 }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+    filter: invert(0.9);
+  }
+}
 .maplibregl-ctrl-attrib {
-  background: rgb(11 24 48 / 0.7) !important;
-  color: var(--color-ink-3);
-  font-size: 10px;
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent) !important;
+  color: var(--color-ink-2);
+  font-size: 10.5px;
 }
 .maplibregl-ctrl-attrib a {
-  color: var(--color-ink-2);
+  color: var(--color-ink);
+}
+.maplibregl-ctrl-attrib-button {
+  background-color: var(--color-surface) !important;
 }
 .maplibregl-ctrl-scale {
-  background: rgb(11 24 48 / 0.7) !important;
-  border-color: var(--color-ink-3) !important;
-  color: var(--color-ink-2) !important;
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent) !important;
+  border-color: var(--color-ink-2) !important;
+  color: var(--color-ink) !important;
   font-family: var(--font-mono);
   font-size: 10px;
 }

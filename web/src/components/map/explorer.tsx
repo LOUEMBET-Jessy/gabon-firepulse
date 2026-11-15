@@ -115,7 +115,7 @@ export function Navigator({ territory, onGo }: { territory: Territory; onGo: (t:
 
   return (
     <div className="pointer-events-auto flex flex-col gap-2">
-      <nav aria-label="Niveau d'exploration" className="flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full border border-line-strong bg-surface/90 py-1 pl-1.5 pr-2 text-[12.5px] shadow-[0_8px_24px_-12px_rgb(0_0_0/0.8)] backdrop-blur-md no-scrollbar">
+      <nav aria-label="Niveau d'exploration" className="flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full border border-line-strong bg-surface/90 py-1 pl-1.5 pr-2 text-[12.5px] shadow-float backdrop-blur-md no-scrollbar">
         {trail.map((c, i) => {
           const last = i === trail.length - 1;
           return (
@@ -151,11 +151,11 @@ export function Navigator({ territory, onGo }: { territory: Territory; onGo: (t:
               if (e.key === "Escape") setOpen(false);
             }}
             placeholder="Rechercher : province, département, ville…"
-            className="h-10 w-full rounded-full border border-line-strong bg-surface/90 pl-9 pr-3 text-[13px] text-ink shadow-[0_8px_24px_-12px_rgb(0_0_0/0.8)] backdrop-blur-md placeholder:text-ink-3 focus:border-accent focus:outline-none"
+            className="h-10 w-full rounded-full border border-line-strong bg-surface/90 pl-9 pr-3 text-[13px] text-ink shadow-float backdrop-blur-md placeholder:text-ink-3 focus:border-accent focus:outline-none"
           />
         </label>
         {open && results.length ? (
-          <ul className="absolute left-0 right-0 top-[calc(100%+6px)] z-10 animate-fade-up overflow-hidden rounded-panel border border-line-strong bg-surface-2 py-1 shadow-[0_18px_50px_-12px_rgb(0_0_0/0.8)]" role="listbox" aria-label="Lieux trouvés">
+          <ul className="absolute left-0 right-0 top-[calc(100%+6px)] z-10 animate-fade-up overflow-hidden rounded-panel border border-line-strong bg-surface-2 py-1 shadow-float" role="listbox" aria-label="Lieux trouvés">
             {results.map((r) => (
               <li key={`${r.detail}-${r.label}`}>
                 <button
@@ -269,7 +269,7 @@ export function TerritoryCard({
   const weakCalibration = Boolean(c?.calibration.local && zoneCal && (!zoneCal.verified || zoneCal.annualErrorLoyo === null || zoneCal.annualErrorLoyo > 0.2));
 
   return (
-    <aside aria-label="Fiche du territoire" className="pointer-events-auto flex max-h-full w-[min(340px,calc(100vw-24px))] animate-fade-up flex-col overflow-hidden rounded-panel border border-line-strong bg-surface/95 shadow-[0_18px_50px_-12px_rgb(0_0_0/0.85)] backdrop-blur-md">
+    <aside aria-label="Fiche du territoire" className="pointer-events-auto flex max-h-full w-[min(340px,calc(100vw-24px))] animate-fade-up flex-col overflow-hidden rounded-panel border border-line-strong bg-surface/95 shadow-float backdrop-blur-md">
       <header className="flex items-start gap-3 border-b border-line px-4 py-3">
         <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-control bg-surface-2 text-accent">{isGabon(territory) ? <MapPin size={16} /> : <Globe size={16} />}</span>
         <div className="min-w-0 flex-1">

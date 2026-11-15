@@ -210,7 +210,7 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 export function LiveDetectionCard({ d, feed, onClose }: { d: LiveDetection; feed: LiveFeedStatus | undefined; onClose: () => void }) {
   const s = LIVE_SATELLITE_INFO[d.satellite];
   return (
-    <aside aria-label="Fiche de détection récente" className="flex max-h-full flex-col overflow-hidden rounded-panel border border-line-strong bg-surface shadow-[0_18px_50px_-12px_rgb(0_0_0/0.8)]">
+    <aside aria-label="Fiche de détection récente" className="flex max-h-full flex-col overflow-hidden rounded-panel border border-line-strong bg-surface shadow-float">
       <header className="flex items-start justify-between gap-3 border-b border-line px-4 py-3">
         <div className="min-w-0">
           <p className="flex items-center gap-1.5 text-[14px] font-medium text-ink">
@@ -312,7 +312,7 @@ export function LiveTerritoryCard({
     f.level2 ? (subs?.level2.find((x) => x.name === f.level2)?.bbox ?? null) : f.level1 ? (subs?.level1.find((x) => x.name === f.level1)?.bbox ?? null) : TERRITORY_BBOX[f.territory];
 
   return (
-    <aside aria-label="Fiche du territoire observé" className="pointer-events-auto flex max-h-full w-[min(340px,calc(100vw-24px))] animate-fade-up flex-col overflow-hidden rounded-panel border border-line-strong bg-surface/95 shadow-[0_18px_50px_-12px_rgb(0_0_0/0.85)] backdrop-blur-md">
+    <aside aria-label="Fiche du territoire observé" className="pointer-events-auto flex max-h-full w-[min(340px,calc(100vw-24px))] animate-fade-up flex-col overflow-hidden rounded-panel border border-line-strong bg-surface/95 shadow-float backdrop-blur-md">
       <header className="flex items-start gap-3 border-b border-line px-4 py-3">
         <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-control bg-surface-2 text-accent">
           <Satellite size={16} />

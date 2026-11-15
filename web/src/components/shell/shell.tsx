@@ -27,6 +27,7 @@ import { useFilters } from "@/state/filters";
 
 import { CountrySwitch, DataBadge, PeriodPicker, ZonePicker } from "./pickers";
 import { ProvisionalBanner } from "./provisional";
+import { ThemeToggle } from "./theme-toggle";
 
 interface NavItem {
   href: string;
@@ -256,6 +257,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
           <div className="hidden md:block">
             <DataBadge />
           </div>
+          <ThemeToggle />
           <AssistantButton />
         </header>
 

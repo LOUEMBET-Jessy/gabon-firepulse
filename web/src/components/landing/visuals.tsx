@@ -113,15 +113,15 @@ export function HarmonizedYears({ years }: { years: YearRecord[] }) {
     <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Indice harmonisé annuel au Gabon, années complètes" className="h-auto w-full">
       <defs>
         <pattern id="lp-hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-          <rect width="5" height="5" fill="#e88c12" />
-          <line x1="0" y1="0" x2="0" y2="5" stroke="#10213a" strokeWidth="2" strokeOpacity="0.6" />
+          <rect width="5" height="5" fill="var(--color-fire-4)" />
+          <line x1="0" y1="0" x2="0" y2="5" stroke="var(--color-surface)" strokeWidth="2" strokeOpacity="0.6" />
         </pattern>
       </defs>
       {rows.map((r, i) => {
         const h = (r.harmonized / max) * (H - T - B);
         return (
           <g key={r.year}>
-            <rect x={L + i * bw + 2} y={H - B - h} width={bw - 4} height={h} rx="3" fill={r.estimatedShare > 0.5 ? "url(#lp-hatch)" : "#e88c12"} />
+            <rect x={L + i * bw + 2} y={H - B - h} width={bw - 4} height={h} rx="3" fill={r.estimatedShare > 0.5 ? "url(#lp-hatch)" : "var(--color-fire-4)"} />
             {r.year % 5 === 0 || i === 0 ? (
               <text x={L + i * bw + bw / 2} y={H - 7} textAnchor="middle" fontSize="11" fill="var(--color-ink-3)" fontFamily="var(--font-mono)">
                 {r.year}
@@ -141,7 +141,7 @@ export function SeasonBars({ baselines }: { baselines: MonthBaseline[] }) {
     <div role="img" aria-label="Activité médiane de l'indice harmonisé par mois calendaire" className="flex h-[92px] items-end gap-1.5">
       {baselines.map((b) => (
         <div key={b.month} className="flex flex-1 flex-col items-center gap-1">
-          <div className="w-full rounded-t-[3px]" style={{ height: `${Math.max(((b.median ?? 0) / max) * 70, 2)}px`, backgroundColor: b.critical ? "#e88c12" : "#4a6283" }} />
+          <div className="w-full rounded-t-[3px]" style={{ height: `${Math.max(((b.median ?? 0) / max) * 70, 2)}px`, backgroundColor: b.critical ? "var(--color-fire-4)" : "var(--color-line-strong)" }} />
           <span className="text-[10px] text-ink-3">{MONTHS_LETTER[b.month - 1]}</span>
         </div>
       ))}
@@ -180,7 +180,7 @@ export function GabonGrid({ grid }: { grid: GridResponse }) {
   return (
     <svg viewBox={`0 0 ${((E0 - W0) * scale).toFixed(0)} ${((N0 - S0) * scale).toFixed(0)}`} role="img" aria-label="Carte du Gabon : cellules de la grille où une activité a été détectée la dernière année" className="h-auto w-full">
       {paths.map((d, i) => (
-        <path key={i} d={d} fill="#12284a" stroke="#36557d" strokeWidth="1" />
+        <path key={i} d={d} fill="var(--color-surface-2)" stroke="var(--color-line-strong)" strokeWidth="1" />
       ))}
       {grid.cells.map((c) => (
         <rect key={c.cell} x={px(c.lon)} y={py(c.lat + grid.step)} width={size} height={size} fill={activityColor(c.harmonized, breaks)} />

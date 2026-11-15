@@ -22,7 +22,7 @@ export function Panel({ className, children, interactive, ...rest }: React.HTMLA
   return (
     <section
       className={cx(
-        "relative rounded-panel border border-line/80 bg-surface shadow-[inset_0_1px_0_rgb(255_255_255/0.035)]",
+        "relative rounded-panel border border-line/80 bg-surface shadow-card",
         interactive && "panel-hover",
         className,
       )}
@@ -272,7 +272,7 @@ export function Popover({
           aria-label={label}
           style={{ width: `min(${width}px, calc(100vw - 24px))` }}
           className={cx(
-            "absolute top-[calc(100%+6px)] z-30 animate-fade-up rounded-panel border border-line-strong bg-surface-2 p-3 shadow-[0_18px_50px_-12px_rgb(0_0_0/0.7)]",
+            "absolute top-[calc(100%+6px)] z-30 animate-fade-up rounded-panel border border-line bg-surface p-3 shadow-float",
             align === "end" ? "right-0" : "left-0",
           )}
         >
@@ -303,7 +303,7 @@ export function InfoTip({ text, label = "Définition" }: { text: string; label?:
         <span
           id={id}
           role="tooltip"
-          className="absolute left-1/2 top-[calc(100%+6px)] z-30 w-[min(300px,80vw)] -translate-x-1/2 rounded-control border border-line-strong bg-surface-3 px-3 py-2 text-left text-[12.5px] font-normal leading-relaxed text-ink-2 shadow-[0_12px_32px_-8px_rgb(0_0_0/0.7)]"
+          className="absolute left-1/2 top-[calc(100%+6px)] z-30 w-[min(300px,80vw)] -translate-x-1/2 rounded-control border border-line bg-surface px-3 py-2 text-left text-[12.5px] font-normal leading-relaxed text-ink-2 shadow-float"
         >
           {text}
         </span>
@@ -414,13 +414,16 @@ const STATUS_ICON: Record<AnomalyStatus, React.ReactNode> = {
 export function StatusBadge({ status, long }: { status: AnomalyStatus; long?: boolean }) {
   const s = STATUS[status];
   const color = TONE_COLOR[s.tone];
+  // Fond et bordure teintes ; texte en couleur d'encre pour garder un contraste AA, l'icone porte la teinte.
   return (
     <span
-      className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2 py-0.5 text-[12px] font-medium"
-      style={{ color, borderColor: `${color}55`, backgroundColor: `${color}14` }}
+      className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2 py-0.5 text-[12px] font-medium text-ink"
+      style={{ borderColor: `color-mix(in srgb, ${color} 55%, transparent)`, backgroundColor: `color-mix(in srgb, ${color} 18%, transparent)` }}
     >
-      {STATUS_ICON[status]}
-      {status === "strong_high" ? <ArrowUp size={12} weight="bold" className="-ml-1.5" /> : null}
+      <span className="inline-flex items-center" style={{ color: `color-mix(in srgb, ${color} 75%, var(--color-ink))` }}>
+        {STATUS_ICON[status]}
+        {status === "strong_high" ? <ArrowUp size={12} weight="bold" className="-ml-1.5" /> : null}
+      </span>
       {long ? s.label : s.short}
     </span>
   );

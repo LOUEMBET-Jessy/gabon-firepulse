@@ -40,7 +40,7 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 function DetectionCard({ id, onClose }: { id: number; onClose: () => void }) {
   const { data, error, isLoading } = useDetection(id);
   return (
-    <aside aria-label="Fiche de détection" className="flex max-h-full flex-col overflow-hidden rounded-panel border border-line-strong bg-surface shadow-[0_18px_50px_-12px_rgb(0_0_0/0.8)]">
+    <aside aria-label="Fiche de détection" className="flex max-h-full flex-col overflow-hidden rounded-panel border border-line-strong bg-surface shadow-float">
       <header className="flex items-start justify-between gap-3 border-b border-line px-4 py-3">
         <div className="min-w-0">
           <p className="text-[14px] font-medium text-ink">Fiche de détection</p>
@@ -118,7 +118,7 @@ function DetectionFields({ d }: { d: DetectionDetail }) {
 
 function CellCard({ cell, step, onClose }: { cell: GridCell; step: number; onClose: () => void }) {
   return (
-    <aside aria-label="Cellule de la grille" className="rounded-panel border border-line-strong bg-surface shadow-[0_18px_50px_-12px_rgb(0_0_0/0.8)]">
+    <aside aria-label="Cellule de la grille" className="rounded-panel border border-line-strong bg-surface shadow-float">
       <header className="flex items-start justify-between gap-3 border-b border-line px-4 py-3">
         <div>
           <p className="text-[14px] font-medium text-ink">Cellule n° {cell.cell}</p>
@@ -713,7 +713,7 @@ export function MapView() {
                   </li>
                 ))}
                 <li className="flex items-center gap-1.5 text-ink-3">
-                  <span aria-hidden className="size-3 rounded-full bg-ink-2/30 shadow-[0_0_6px_2px_rgb(244_247_250/0.25)]" /> halo : moins de 24 h
+                  <span aria-hidden className="size-3 rounded-full bg-ink-2/30 shadow-[0_0_6px_2px_color-mix(in_srgb,var(--color-ink)_25%,transparent)]" /> halo : moins de 24 h
                 </li>
               </ul>
             ) : mode === "points" ? (
