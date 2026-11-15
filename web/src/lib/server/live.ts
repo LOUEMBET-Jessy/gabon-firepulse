@@ -71,9 +71,9 @@ export const TERRITORIES: Record<LiveTerritory, TerritorySpec> = {
     name: "France métropolitaine",
     firmsRegion: "Europe",
     bbox: [-5.6, 41.2, 9.8, 51.2],
-    country: "fra_country.geojson",
-    level1: { file: "fra_regions.geojson", label: "Région" },
-    level2: { file: "fra_departments.geojson", label: "Département" },
+    country: "fra/country.geojson",
+    level1: { file: "fra/provinces.geojson", label: "Région" },
+    level2: { file: "fra/departments.geojson", label: "Département" },
   },
 };
 
@@ -91,6 +91,8 @@ export interface LiveDetection {
   frp: number | null;
   daynight: "D" | "N";
   version: string;
+  scan: number | null;
+  track: number | null;
   territory: LiveTerritory;
   level1: string | null;
   level2: string | null;
@@ -207,6 +209,7 @@ export function parseFirmsCsv(text: string, feed: FeedSpec, territory: LiveTerri
   const col = (name: string) => header.indexOf(name);
   const iLat = col("latitude"), iLon = col("longitude"), iDate = col("acq_date"), iTime = col("acq_time");
   const iSat = col("satellite"), iConf = col("confidence"), iVer = col("version"), iFrp = col("frp"), iDn = col("daynight");
+  const iScan = col("scan"), iTrack = col("track");
   if (iLat < 0 || iLon < 0 || iDate < 0 || iTime < 0) {
     if (text.trim().length === 0 || lines.length <= 1) return [];
     throw new Error("Format inattendu : colonnes latitude, longitude, acq_date ou acq_time absentes.");
@@ -239,6 +242,8 @@ export function parseFirmsCsv(text: string, feed: FeedSpec, territory: LiveTerri
       frp: Number.isFinite(frp) ? frp : null,
       daynight: (f[iDn] ?? "").trim().toUpperCase() === "N" ? "N" : "D",
       version: (f[iVer] ?? "").trim(),
+      scan: Number.isFinite(Number(f[iScan])) && iScan >= 0 ? Number(f[iScan]) : null,
+      track: Number.isFinite(Number(f[iTrack])) && iTrack >= 0 ? Number(f[iTrack]) : null,
       territory,
       level1: geo.level1.find((a) => inArea(lon, lat, a))?.name ?? null,
       level2: geo.level2.find((a) => inArea(lon, lat, a))?.name ?? null,
@@ -255,15 +260,20 @@ function mapKey(): string | null {
   return key ? key : null;
 }
 
+/**
+ * L'observatoire lit les fichiers publics des 7 derniers jours, avec ou sans cle : l'API « area » plafonne a
+ * 5 jours par requete et chaque appel consomme le quota de la cle, reserve au prolongement de l'archive
+ * (pipeline/recent.py). FIRMS_LIVE_API=1 force l'API, sur 5 jours.
+ */
 export function liveMode(): { mode: "api" | "files"; maxDays: number } {
-  return mapKey() ? { mode: "api", maxDays: 10 } : { mode: "files", maxDays: 7 };
+  return mapKey() && process.env.FIRMS_LIVE_API === "1" ? { mode: "api", maxDays: 5 } : { mode: "files", maxDays: 7 };
 }
 
 function feedUrl(feed: FeedSpec, territory: LiveTerritory): { url: string; shown: string } {
-  const key = mapKey();
+  const key = liveMode().mode === "api" ? mapKey() : null;
   if (key) {
     const area = TERRITORIES[territory].bbox.join(",");
-    const url = `${FIRMS}/api/area/csv/${key}/${feed.apiSource}/${area}/10`;
+    const url = `${FIRMS}/api/area/csv/${key}/${feed.apiSource}/${area}/5`;
     return { url, shown: url.replace(key, "CLE_MASQUEE") };
   }
   const url = `${FIRMS}/data/active_fire/${feed.dir}/csv/${feed.prefix}_${TERRITORIES[territory].firmsRegion}_7d.csv`;

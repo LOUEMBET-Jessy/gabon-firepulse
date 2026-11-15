@@ -19,10 +19,10 @@ export function rememberPlace(id: number, name: string) {
   placeNames.set(id, name);
 }
 
-type GeoMeta = Pick<MetadataResponse, "provinces"> & Partial<Pick<MetadataResponse, "departments" | "towns" | "placeRadiusKm">>;
+type GeoMeta = Pick<MetadataResponse, "provinces"> & Partial<Pick<MetadataResponse, "departments" | "towns" | "placeRadiusKm" | "countryName">>;
 
 export function zoneLabel(zone: ZoneSpec, meta: GeoMeta | undefined): string {
-  if (zone.kind === "country") return "Gabon";
+  if (zone.kind === "country") return meta?.countryName ?? "Gabon";
   if (zone.kind === "province") return meta?.provinces.find((p) => p.index === zone.index)?.name ?? "Province";
   if (zone.kind === "department") return meta?.departments?.find((d) => d.index === zone.index)?.name ?? "Département";
   if (zone.kind === "place") {
@@ -106,11 +106,11 @@ export function ZonePicker() {
           <div>
             <p className="px-2.5 pb-1 text-[11.5px] font-medium text-ink-3">Territoire</p>
             <OptionRow active={zone.kind === "country"} onClick={() => (setZone({ kind: "country" }), close())} detail={meta ? `${fmtInt(Math.round(meta.countryAreaKm2 / 1000) * 1000)} km²` : undefined}>
-              Gabon, pays entier
+              {meta?.countryName ?? "Gabon"}, pays entier
             </OptionRow>
           </div>
           <div>
-            <p className="px-2.5 pb-1 text-[11.5px] font-medium text-ink-3">Provinces</p>
+            <p className="px-2.5 pb-1 text-[11.5px] font-medium text-ink-3">{meta ? meta.level1.many.replace(/^./, (c) => c.toUpperCase()) : "Provinces"}</p>
             <div className="grid max-h-[230px] grid-cols-1 overflow-y-auto">
               {meta
                 ? meta.provinces.filter((p) => match(p.name)).map((p) => (
@@ -335,7 +335,7 @@ export function DataBadge() {
           <div className="flex flex-col gap-2.5 p-1 text-[13px] leading-relaxed text-ink-2">
             <p className="font-medium text-ink">{simulated ? "Jeu de données simulé" : "Archive NASA FIRMS réelle, figée"}</p>
             <p>
-              {fmtInt(meta.rows.kept)} détections lues dans {meta.sources.length} fichiers annuels FIRMS pour le Gabon, du {fmtDateShort(meta.coverage.firstDate)} au{" "}
+              {fmtInt(meta.rows.kept)} détections lues dans {meta.sources.length} fichiers annuels FIRMS pour {meta.countryName === "Gabon" ? "le Gabon" : "la France métropolitaine"}, du {fmtDateShort(meta.coverage.firstDate)} au{" "}
               {fmtDateShort(meta.coverage.lastDate)}.
             </p>
             <p>
@@ -349,5 +349,35 @@ export function DataBadge() {
         )
       }
     </Popover>
+  );
+}
+
+/** Pays de l'archive : Gabon ou France metropolitaine. Changer de pays ramene la zone au pays entier. */
+export function CountrySwitch() {
+  const { country, setCountry } = useFilters();
+  const options = [
+    { value: "GAB", label: "Gabon", short: "GA" },
+    { value: "FRA", label: "France", short: "FR" },
+  ] as const;
+  return (
+    <div role="radiogroup" aria-label="Pays analysé" data-tour="country-switch" className="flex h-9 shrink-0 items-center rounded-control border border-line-strong bg-surface-2 p-0.5">
+      {options.map((o) => {
+        const active = country === o.value;
+        return (
+          <button
+            key={o.value}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            aria-label={o.label}
+            onClick={() => setCountry(o.value)}
+            className={cx("h-full rounded-[7px] px-2 text-[12.5px] font-medium transition-colors sm:px-2.5", active ? "bg-surface-3 text-ink shadow-[inset_0_0_0_1px_var(--color-line-strong)]" : "text-ink-3 hover:text-ink")}
+          >
+            <span className="sm:hidden">{o.short}</span>
+            <span className="hidden sm:inline">{o.label}</span>
+          </button>
+        );
+      })}
+    </div>
   );
 }

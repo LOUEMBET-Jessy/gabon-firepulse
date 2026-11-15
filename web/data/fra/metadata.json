@@ -1,0 +1,87 @@
+{
+ "built_at": "2026-11-15T06:26:18Z",
+ "data_kind": "real",
+ "data_kind_label": "Donnees NASA FIRMS reelles (archives annuelles par pays), figees a la date d'acces indiquee",
+ "country": "France",
+ "coverage": {
+  "first_date": "2000-11-02",
+  "last_date": "2025-12-31"
+ },
+ "rows": {
+  "read": 338449,
+  "kept": 338449,
+  "rejected": 0,
+  "eligible": 138800,
+  "outside_provinces": 984
+ },
+ "by_satellite": {
+  "terra": 27026,
+  "aqua": 29218,
+  "snpp": 182174,
+  "noaa20": 100031
+ },
+ "envelope": {
+  "lon_min": -5.8,
+  "lon_max": 10.0,
+  "lat_min": 41.0,
+  "lat_max": 51.4
+ },
+ "firms": {
+  "base_url": "https://firms.modaps.eosdis.nasa.gov/data/country",
+  "missing_years": [
+   {
+    "dataset": "modis",
+    "year": 2026,
+    "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2026/modis_2026_France.csv",
+    "http_status": 404,
+    "checked_at": "2026-11-15T06:23:58Z"
+   },
+   {
+    "dataset": "viirs-snpp",
+    "year": 2026,
+    "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2026/viirs-snpp_2026_France.csv",
+    "http_status": 404,
+    "checked_at": "2026-11-15T06:24:43Z"
+   },
+   {
+    "dataset": "viirs-jpss1",
+    "year": 2026,
+    "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2026/viirs-jpss1_2026_France.csv",
+    "http_status": 404,
+    "checked_at": "2026-11-15T06:25:07Z"
+   }
+  ],
+  "accessed_first": "2026-11-15T06:23:01Z",
+  "accessed_last": "2026-11-15T06:25:06Z"
+ },
+ "boundaries": [
+  {
+   "level": "ADM0",
+   "path": "data/raw/boundaries/geoboundaries_FRA_ADM0_simplified.geojson",
+   "api_url": null,
+   "download_url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/FRA/ADM0/geoBoundaries-FRA-ADM0_simplified.geojson",
+   "source": "geoBoundaries, Wikipedia",
+   "license": "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
+   "license_detail": "nan",
+   "year_represented": "2016",
+   "boundary_id": "FRA-ADM0-40433807",
+   "sha256": null,
+   "bytes": null,
+   "accessed_at": null
+  },
+  {
+   "level": "ADM1",
+   "path": "data/raw/boundaries/geoboundaries_FRA_ADM1_simplified.geojson",
+   "api_url": null,
+   "download_url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/FRA/ADM1/geoBoundaries-FRA-ADM1_simplified.geojson",
+   "source": "Institut national de l'information géographique et forestière (IGN-F)",
+   "license": "Etalab Open License 2.0",
+   "license_detail": "nan",
+   "year_represented": "2022",
+   "boundary_id": "FRA-ADM1-19338628",
+   "sha256": null,
+   "bytes": null,
+   "accessed_at": null
+  }
+ ]
+}

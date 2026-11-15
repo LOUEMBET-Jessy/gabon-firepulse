@@ -1,5 +1,5 @@
 {
- "built_at": "2026-11-15T06:07:36Z",
+ "built_at": "2026-11-15T08:38:05Z",
  "unit": "cellules-jour actives, equivalent Suomi-NPP",
  "grid": {
   "lon0": 8.5,
@@ -61,7 +61,7 @@
    "start": "2001-06-14",
    "end": "2001-07-02",
    "days": 19,
-   "expected_detections": 76.6,
+   "expected_detections": 75.8,
    "witness": null,
    "witness_detections": null
   },
@@ -72,7 +72,7 @@
    "start": "2002-07-30",
    "end": "2002-08-07",
    "days": 9,
-   "expected_detections": 98.8,
+   "expected_detections": 97.8,
    "witness": null,
    "witness_detections": null
   },
@@ -83,7 +83,7 @@
    "start": "2016-08-24",
    "end": "2016-08-29",
    "days": 6,
-   "expected_detections": 67.1,
+   "expected_detections": 65.9,
    "witness": null,
    "witness_detections": null
   },
@@ -94,7 +94,7 @@
    "start": "2020-08-17",
    "end": "2020-09-02",
    "days": 17,
-   "expected_detections": 181.2,
+   "expected_detections": 178.7,
    "witness": null,
    "witness_detections": null
   },
@@ -116,7 +116,7 @@
    "start": "2022-07-27",
    "end": "2022-08-10",
    "days": 15,
-   "expected_detections": 1112.8,
+   "expected_detections": 1074.5,
    "witness": "noaa20",
    "witness_detections": 1191
   },
@@ -127,7 +127,7 @@
    "start": "2024-05-30",
    "end": "2024-06-03",
    "days": 5,
-   "expected_detections": 137.4,
+   "expected_detections": 139.0,
    "witness": "noaa20",
    "witness_detections": 109
   },
@@ -138,7 +138,7 @@
    "start": "2024-07-10",
    "end": "2024-07-16",
    "days": 7,
-   "expected_detections": 500.0,
+   "expected_detections": 487.8,
    "witness": "noaa20",
    "witness_detections": 532
   },
@@ -149,9 +149,64 @@
    "start": "2024-07-25",
    "end": "2024-07-29",
    "days": 5,
-   "expected_detections": 357.2,
+   "expected_detections": 348.5,
    "witness": "noaa20",
    "witness_detections": 388
+  },
+  {
+   "satellite": "snpp",
+   "start_day": 9565,
+   "end_day": 9567,
+   "start": "2026-03-10",
+   "end": "2026-03-12",
+   "days": 3,
+   "expected_detections": 61.4,
+   "witness": "noaa20",
+   "witness_detections": 60
+  },
+  {
+   "satellite": "snpp",
+   "start_day": 9614,
+   "end_day": 9616,
+   "start": "2026-04-28",
+   "end": "2026-04-30",
+   "days": 3,
+   "expected_detections": 54.8,
+   "witness": "noaa20",
+   "witness_detections": 48
+  },
+  {
+   "satellite": "snpp",
+   "start_day": 9647,
+   "end_day": 9649,
+   "start": "2026-05-31",
+   "end": "2026-06-02",
+   "days": 3,
+   "expected_detections": 87.4,
+   "witness": "noaa20",
+   "witness_detections": 25
+  },
+  {
+   "satellite": "snpp",
+   "start_day": 9687,
+   "end_day": 9693,
+   "start": "2026-07-10",
+   "end": "2026-07-16",
+   "days": 7,
+   "expected_detections": 487.8,
+   "witness": "noaa20",
+   "witness_detections": 728
+  },
+  {
+   "satellite": "snpp",
+   "start_day": 9803,
+   "end_day": 9814,
+   "start": "2026-11-03",
+   "end": "2026-11-14",
+   "days": 12,
+   "expected_detections": 86.2,
+   "witness": "noaa20",
+   "witness_detections": 60
   },
   {
    "satellite": "noaa20",
@@ -160,9 +215,20 @@
    "start": "2023-07-19",
    "end": "2023-07-22",
    "days": 4,
-   "expected_detections": 246.8,
+   "expected_detections": 250.1,
    "witness": "snpp",
    "witness_detections": 251
+  },
+  {
+   "satellite": "noaa20",
+   "start_day": 9514,
+   "end_day": 9517,
+   "start": "2026-01-18",
+   "end": "2026-01-21",
+   "days": 4,
+   "expected_detections": 65.1,
+   "witness": "snpp",
+   "witness_detections": 26
   }
  ],
  "relay_segments": [
@@ -281,583 +347,666 @@
   {
    "config": "S",
    "start_day": 8977,
-   "end_day": 9496,
+   "end_day": 9564,
    "start": "2024-07-30",
-   "end": "2025-12-31"
+   "end": "2026-03-09"
+  },
+  {
+   "config": "N",
+   "start_day": 9565,
+   "end_day": 9567,
+   "start": "2026-03-10",
+   "end": "2026-03-12"
+  },
+  {
+   "config": "S",
+   "start_day": 9568,
+   "end_day": 9613,
+   "start": "2026-03-13",
+   "end": "2026-04-27"
+  },
+  {
+   "config": "N",
+   "start_day": 9614,
+   "end_day": 9616,
+   "start": "2026-04-28",
+   "end": "2026-04-30"
+  },
+  {
+   "config": "S",
+   "start_day": 9617,
+   "end_day": 9646,
+   "start": "2026-05-01",
+   "end": "2026-05-30"
+  },
+  {
+   "config": "N",
+   "start_day": 9647,
+   "end_day": 9649,
+   "start": "2026-05-31",
+   "end": "2026-06-02"
+  },
+  {
+   "config": "S",
+   "start_day": 9650,
+   "end_day": 9686,
+   "start": "2026-06-03",
+   "end": "2026-07-09"
+  },
+  {
+   "config": "N",
+   "start_day": 9687,
+   "end_day": 9693,
+   "start": "2026-07-10",
+   "end": "2026-07-16"
+  },
+  {
+   "config": "S",
+   "start_day": 9694,
+   "end_day": 9802,
+   "start": "2026-07-17",
+   "end": "2026-11-02"
+  },
+  {
+   "config": "N",
+   "start_day": 9803,
+   "end_day": 9814,
+   "start": "2026-11-03",
+   "end": "2026-11-14"
   }
  ],
  "calibration": {
   "T": {
    "model": "month",
    "factors_by_month": [
-    10.48356807511737,
-    20.01081081081081,
-    14.31060606060606,
-    10.816546762589928,
-    12.138613861386139,
-    5.911421911421911,
-    5.008653846153846,
-    6.3629453681710215,
+    10.266666666666667,
+    19.690721649484537,
+    15.052044609665428,
+    11.313167259786477,
+    11.356223175965665,
+    6.183628318584071,
+    5.128564749883123,
+    6.215313225058004,
     9.893258426966293,
     10.131147540983607,
     8.935483870967742,
     9.275
    ],
    "overlap_first_year": 2012,
-   "overlap_last_year": 2025,
-   "overlap_days": 5059,
-   "overlap_months": 168,
+   "overlap_last_year": 2026,
+   "overlap_days": 5349,
+   "overlap_months": 179,
    "validation": {
     "model": "month",
-    "months_scored": 168,
-    "monthly_median_abs_pct_error": 0.22235569961043397,
-    "monthly_mean_abs_pct_error": 0.3143157286477349,
-    "monthly_bias_pct": 0.00654073963841242,
-    "monthly_ratio_q10": 0.6563661711211227,
-    "monthly_ratio_q90": 1.866106406382181,
-    "monthly_correlation": 0.9400144846043023,
-    "annual_mean_abs_pct_error": 0.0741887214020418,
-    "annual_max_abs_pct_error": 0.3816089703666534,
-    "annual_ratio_min": 0.7237937950957416,
-    "annual_ratio_max": 1.1884043450384956,
+    "months_scored": 175,
+    "monthly_median_abs_pct_error": 0.23895711143695023,
+    "monthly_mean_abs_pct_error": 0.32698284107606296,
+    "monthly_bias_pct": 0.0013111968918297363,
+    "monthly_ratio_q10": 0.6407133089519289,
+    "monthly_ratio_q90": 1.9900347383047705,
+    "monthly_correlation": 0.9306167691755339,
+    "annual_mean_abs_pct_error": 0.07679026491383802,
+    "annual_max_abs_pct_error": 0.3871375314776537,
+    "annual_ratio_min": 0.7209090499733982,
+    "annual_ratio_max": 1.1870022086046297,
     "annual": [
      {
       "year": 2012,
-      "predicted": 3943.7130440184596,
+      "predicted": 3998.6559838915696,
       "reference": 3994.0
      },
      {
       "year": 2013,
-      "predicted": 4255.452557540803,
+      "predicted": 4271.926017226834,
       "reference": 4675.0
      },
      {
       "year": 2014,
-      "predicted": 3337.9751019,
+      "predicted": 3365.1062804320995,
       "reference": 3869.0
      },
      {
       "year": 2015,
-      "predicted": 4091.4148722486393,
+      "predicted": 4138.021262190632,
       "reference": 4157.0
      },
      {
       "year": 2016,
-      "predicted": 4452.105581028871,
+      "predicted": 4466.855526261687,
       "reference": 4197.0
      },
      {
       "year": 2017,
-      "predicted": 5053.925613601218,
+      "predicted": 5074.149090145257,
       "reference": 3658.0
      },
      {
       "year": 2018,
-      "predicted": 3628.394677284963,
+      "predicted": 3632.6806881588996,
       "reference": 4312.0
      },
      {
       "year": 2019,
-      "predicted": 4447.406085886767,
+      "predicted": 4481.0425542175,
       "reference": 4272.0
      },
      {
       "year": 2020,
-      "predicted": 4377.166991358417,
+      "predicted": 4402.402935184094,
       "reference": 4261.0
      },
      {
       "year": 2021,
-      "predicted": 3768.2595964664024,
+      "predicted": 3786.1570611286184,
       "reference": 3579.0
      },
      {
       "year": 2022,
-      "predicted": 3637.278543091122,
+      "predicted": 3640.26490899716,
       "reference": 3752.0
      },
      {
       "year": 2023,
-      "predicted": 3589.3264592125493,
+      "predicted": 3585.459261892302,
       "reference": 3599.0
      },
      {
       "year": 2024,
-      "predicted": 4381.825257406403,
+      "predicted": 4397.192279057024,
       "reference": 4356.0
      },
      {
       "year": 2025,
-      "predicted": 4065.3473861281955,
+      "predicted": 4044.2353530578057,
       "reference": 3978.0
+     },
+     {
+      "year": 2026,
+      "predicted": 1671.7830677495122,
+      "reference": 1902.0
      }
     ]
    },
    "candidates": {
     "global": {
      "model": "global",
-     "months_scored": 168,
-     "monthly_median_abs_pct_error": 0.3704875955190581,
-     "monthly_mean_abs_pct_error": 0.38757665786898154,
-     "monthly_bias_pct": 0.0005035369269027761,
-     "monthly_ratio_q10": 0.7166350110101948,
-     "monthly_ratio_q90": 2.7459118832511358,
-     "monthly_correlation": 0.9223132603033696,
-     "annual_mean_abs_pct_error": 0.07930422815889923,
-     "annual_max_abs_pct_error": 0.2514911512793775,
-     "annual_ratio_min": 0.7990468002731921,
-     "annual_ratio_max": 1.1683253588105698
+     "months_scored": 175,
+     "monthly_median_abs_pct_error": 0.36552052820012093,
+     "monthly_mean_abs_pct_error": 0.3899692756123782,
+     "monthly_bias_pct": -0.005793064751516486,
+     "monthly_ratio_q10": 0.7192829411775554,
+     "monthly_ratio_q90": 2.769892454930667,
+     "monthly_correlation": 0.9171170769888827,
+     "annual_mean_abs_pct_error": 0.08307047976301489,
+     "annual_max_abs_pct_error": 0.25710077071879167,
+     "annual_ratio_min": 0.7954811764439654,
+     "annual_ratio_max": 1.1664923202332025
     },
     "season": {
      "model": "season",
-     "months_scored": 168,
-     "monthly_median_abs_pct_error": 0.3089903951631622,
-     "monthly_mean_abs_pct_error": 0.37253884885353206,
-     "monthly_bias_pct": 0.0014846606024267277,
-     "monthly_ratio_q10": 0.5960235323336593,
-     "monthly_ratio_q90": 1.8641847668461795,
-     "monthly_correlation": 0.9083161007525542,
-     "annual_mean_abs_pct_error": 0.07789870428428551,
-     "annual_max_abs_pct_error": 0.3293712193257102,
-     "annual_ratio_min": 0.7522353316082957,
-     "annual_ratio_max": 1.1691487694980338
+     "months_scored": 175,
+     "monthly_median_abs_pct_error": 0.3210259125451601,
+     "monthly_mean_abs_pct_error": 0.3833553575784209,
+     "monthly_bias_pct": -0.003914563865441037,
+     "monthly_ratio_q10": 0.5782869452133012,
+     "monthly_ratio_q90": 1.903197901317988,
+     "monthly_correlation": 0.9030123333623125,
+     "annual_mean_abs_pct_error": 0.07899534925201264,
+     "annual_max_abs_pct_error": 0.3328097178050519,
+     "annual_ratio_min": 0.7502946494469277,
+     "annual_ratio_max": 1.1652360683995076
     },
     "month": {
      "model": "month",
-     "months_scored": 168,
-     "monthly_median_abs_pct_error": 0.22235569961043397,
-     "monthly_mean_abs_pct_error": 0.3143157286477349,
-     "monthly_bias_pct": 0.00654073963841242,
-     "monthly_ratio_q10": 0.6563661711211227,
-     "monthly_ratio_q90": 1.866106406382181,
-     "monthly_correlation": 0.9400144846043023,
-     "annual_mean_abs_pct_error": 0.0741887214020418,
-     "annual_max_abs_pct_error": 0.3816089703666534,
-     "annual_ratio_min": 0.7237937950957416,
-     "annual_ratio_max": 1.1884043450384956
+     "months_scored": 175,
+     "monthly_median_abs_pct_error": 0.23895711143695023,
+     "monthly_mean_abs_pct_error": 0.32698284107606296,
+     "monthly_bias_pct": 0.0013111968918297363,
+     "monthly_ratio_q10": 0.6407133089519289,
+     "monthly_ratio_q90": 1.9900347383047705,
+     "monthly_correlation": 0.9306167691755339,
+     "annual_mean_abs_pct_error": 0.07679026491383802,
+     "annual_max_abs_pct_error": 0.3871375314776537,
+     "annual_ratio_min": 0.7209090499733982,
+     "annual_ratio_max": 1.1870022086046297
     }
    }
   },
   "A": {
    "model": "season",
    "factors_by_month": [
-    4.599903006789525,
-    4.599903006789525,
-    4.599903006789525,
-    4.599903006789525,
-    4.599903006789525,
-    4.140500442869796,
-    4.140500442869796,
-    4.140500442869796,
-    4.140500442869796,
-    4.599903006789525,
-    4.599903006789525,
-    4.599903006789525
+    4.470986678708512,
+    4.470986678708512,
+    4.470986678708512,
+    4.470986678708512,
+    4.470986678708512,
+    4.033448673587082,
+    4.033448673587082,
+    4.033448673587082,
+    4.033448673587082,
+    4.470986678708512,
+    4.470986678708512,
+    4.470986678708512
    ],
    "overlap_first_year": 2012,
-   "overlap_last_year": 2025,
-   "overlap_days": 5036,
-   "overlap_months": 168,
+   "overlap_last_year": 2026,
+   "overlap_days": 5326,
+   "overlap_months": 179,
    "validation": {
     "model": "season",
-    "months_scored": 168,
-    "monthly_median_abs_pct_error": 0.1792474108536533,
-    "monthly_mean_abs_pct_error": 0.23660398281443107,
-    "monthly_bias_pct": 0.001657239776402589,
-    "monthly_ratio_q10": 0.7024254902119762,
-    "monthly_ratio_q90": 1.6503956114334557,
-    "monthly_correlation": 0.9463841021137136,
-    "annual_mean_abs_pct_error": 0.11875948707476255,
-    "annual_max_abs_pct_error": 0.315821194363412,
-    "annual_ratio_min": 0.7599816785773809,
-    "annual_ratio_max": 1.2986470702754092,
+    "months_scored": 175,
+    "monthly_median_abs_pct_error": 0.19780689776000573,
+    "monthly_mean_abs_pct_error": 0.2510911072662649,
+    "monthly_bias_pct": -0.008131631089001449,
+    "monthly_ratio_q10": 0.6983115414652444,
+    "monthly_ratio_q90": 1.6717198876158932,
+    "monthly_correlation": 0.9340544502001523,
+    "annual_mean_abs_pct_error": 0.1704688913377536,
+    "annual_max_abs_pct_error": 0.8369732601051799,
+    "annual_ratio_min": 0.544373737885952,
+    "annual_ratio_max": 1.3353657036589637,
     "annual": [
      {
       "year": 2012,
-      "predicted": 3648.8223684340815,
+      "predicted": 3546.7140979775627,
       "reference": 3994.0
      },
      {
       "year": 2013,
-      "predicted": 4302.666142599207,
+      "predicted": 4180.626063829787,
       "reference": 4675.0
      },
      {
       "year": 2014,
-      "predicted": 3726.482016189066,
+      "predicted": 3620.428026382177,
       "reference": 3869.0
      },
      {
       "year": 2015,
-      "predicted": 4124.0564859397855,
+      "predicted": 4006.4745408120057,
       "reference": 4157.0
      },
      {
       "year": 2016,
-      "predicted": 4360.568653421368,
+      "predicted": 4234.489197924415,
       "reference": 4164.0
      },
      {
       "year": 2017,
-      "predicted": 3661.5546882765834,
+      "predicted": 3557.523548231006,
       "reference": 3658.0
      },
      {
       "year": 2018,
-      "predicted": 3320.378645358617,
+      "predicted": 3229.077988288093,
       "reference": 4312.0
      },
      {
       "year": 2019,
-      "predicted": 3496.2076960636246,
+      "predicted": 3399.0336950200895,
       "reference": 4272.0
      },
      {
       "year": 2020,
-      "predicted": 3702.8935109226886,
+      "predicted": 3597.7333333333327,
       "reference": 4002.0
      },
      {
       "year": 2021,
-      "predicted": 3920.4650992948805,
+      "predicted": 3808.548869465963,
       "reference": 3579.0
      },
      {
       "year": 2022,
-      "predicted": 3347.4480297715554,
+      "predicted": 3254.25938482911,
       "reference": 3752.0
      },
      {
       "year": 2023,
-      "predicted": 4018.2943242244573,
+      "predicted": 3902.672155749069,
       "reference": 3599.0
      },
      {
       "year": 2024,
-      "predicted": 5731.717122647023,
+      "predicted": 5558.524496222475,
       "reference": 4356.0
      },
      {
       "year": 2025,
-      "predicted": 5098.85885133355,
+      "predicted": 4947.555007305781,
       "reference": 3978.0
+     },
+     {
+      "year": 2026,
+      "predicted": 3493.9231407200523,
+      "reference": 1902.0
      }
     ]
    },
    "candidates": {
     "global": {
      "model": "global",
-     "months_scored": 168,
-     "monthly_median_abs_pct_error": 0.1980389329284152,
-     "monthly_mean_abs_pct_error": 0.23658090761718156,
-     "monthly_bias_pct": 0.001571384501140739,
-     "monthly_ratio_q10": 0.7400771340206959,
-     "monthly_ratio_q90": 1.7303824786285074,
-     "monthly_correlation": 0.9500464967058351,
-     "annual_mean_abs_pct_error": 0.11827198042094514,
-     "annual_max_abs_pct_error": 0.31369117183555867,
-     "annual_ratio_min": 0.7612139149894318,
-     "annual_ratio_max": 1.294893165244725
+     "months_scored": 175,
+     "monthly_median_abs_pct_error": 0.21222692327334577,
+     "monthly_mean_abs_pct_error": 0.2506374088141566,
+     "monthly_bias_pct": -0.008530784080196196,
+     "monthly_ratio_q10": 0.7266923463593978,
+     "monthly_ratio_q90": 1.7464697404504321,
+     "monthly_correlation": 0.9375524271118929,
+     "annual_mean_abs_pct_error": 0.16927087428658308,
+     "annual_max_abs_pct_error": 0.824633157269284,
+     "annual_ratio_min": 0.5480553699334192,
+     "annual_ratio_max": 1.3310828796644198
     },
     "season": {
      "model": "season",
-     "months_scored": 168,
-     "monthly_median_abs_pct_error": 0.1792474108536533,
-     "monthly_mean_abs_pct_error": 0.23660398281443107,
-     "monthly_bias_pct": 0.001657239776402589,
-     "monthly_ratio_q10": 0.7024254902119762,
-     "monthly_ratio_q90": 1.6503956114334557,
-     "monthly_correlation": 0.9463841021137136,
-     "annual_mean_abs_pct_error": 0.11875948707476255,
-     "annual_max_abs_pct_error": 0.315821194363412,
-     "annual_ratio_min": 0.7599816785773809,
-     "annual_ratio_max": 1.2986470702754092
+     "months_scored": 175,
+     "monthly_median_abs_pct_error": 0.19780689776000573,
+     "monthly_mean_abs_pct_error": 0.2510911072662649,
+     "monthly_bias_pct": -0.008131631089001449,
+     "monthly_ratio_q10": 0.6983115414652444,
+     "monthly_ratio_q90": 1.6717198876158932,
+     "monthly_correlation": 0.9340544502001523,
+     "annual_mean_abs_pct_error": 0.1704688913377536,
+     "annual_max_abs_pct_error": 0.8369732601051799,
+     "annual_ratio_min": 0.544373737885952,
+     "annual_ratio_max": 1.3353657036589637
     },
     "month": {
      "model": "month",
-     "months_scored": 168,
-     "monthly_median_abs_pct_error": 0.18601640016558638,
-     "monthly_mean_abs_pct_error": 0.24311266591725134,
-     "monthly_bias_pct": 0.006303433558831985,
-     "monthly_ratio_q10": 0.703902393332731,
-     "monthly_ratio_q90": 1.5650940333484313,
-     "monthly_correlation": 0.9438132480755536,
-     "annual_mean_abs_pct_error": 0.12246826018118788,
-     "annual_max_abs_pct_error": 0.3403022127563971,
-     "annual_ratio_min": 0.7461003872726966,
-     "annual_ratio_max": 1.2888317010810104
+     "months_scored": 175,
+     "monthly_median_abs_pct_error": 0.19537728026533982,
+     "monthly_mean_abs_pct_error": 0.25743353476310193,
+     "monthly_bias_pct": -0.003904517123534357,
+     "monthly_ratio_q10": 0.7065054882672667,
+     "monthly_ratio_q90": 1.5760411537884604,
+     "monthly_correlation": 0.932092190087657,
+     "annual_mean_abs_pct_error": 0.17065521384385282,
+     "annual_max_abs_pct_error": 0.8307192298244497,
+     "annual_ratio_min": 0.5462334058160799,
+     "annual_ratio_max": 1.3285402826793442
     }
    }
   },
   "TA": {
    "model": "month",
    "factors_by_month": [
-    3.1991404011461317,
-    3.2703180212014136,
-    3.8238866396761133,
-    3.4209328782707624,
-    3.732115677321157,
-    2.480195599022005,
-    2.3053772958619163,
-    2.69376026272578,
+    3.1006711409395975,
+    3.2318104906937393,
+    3.819811320754717,
+    3.3114583333333334,
+    3.454308093994778,
+    2.4517543859649122,
+    2.3075305006310476,
+    2.598811881188119,
     3.1278490028490027,
     3.185567010309278,
     3.159695817490494,
     3.3125
    ],
    "overlap_first_year": 2012,
-   "overlap_last_year": 2025,
-   "overlap_days": 5036,
-   "overlap_months": 168,
+   "overlap_last_year": 2026,
+   "overlap_days": 5326,
+   "overlap_months": 179,
    "validation": {
     "model": "month",
-    "months_scored": 168,
-    "monthly_median_abs_pct_error": 0.14649050922672388,
-    "monthly_mean_abs_pct_error": 0.2042181389774018,
-    "monthly_bias_pct": 0.003516112853100589,
-    "monthly_ratio_q10": 0.7562593156194747,
-    "monthly_ratio_q90": 1.5524231511107023,
-    "monthly_correlation": 0.9706506436970553,
-    "annual_mean_abs_pct_error": 0.09948529089479874,
-    "annual_max_abs_pct_error": 0.22029412428755146,
-    "annual_ratio_min": 0.819474567726722,
-    "annual_ratio_max": 1.2399276045059373,
+    "months_scored": 175,
+    "monthly_median_abs_pct_error": 0.14612137590078764,
+    "monthly_mean_abs_pct_error": 0.2101628416108077,
+    "monthly_bias_pct": -0.005097180083636035,
+    "monthly_ratio_q10": 0.7455639531749653,
+    "monthly_ratio_q90": 1.5486940069651105,
+    "monthly_correlation": 0.9621881788227387,
+    "annual_mean_abs_pct_error": 0.1264943983478243,
+    "annual_max_abs_pct_error": 0.5127184369092889,
+    "annual_ratio_min": 0.6610615535586056,
+    "annual_ratio_max": 1.265513558542649,
     "annual": [
      {
       "year": 2012,
-      "predicted": 3662.6059008495586,
+      "predicted": 3613.175711384257,
       "reference": 3994.0
      },
      {
       "year": 2013,
-      "predicted": 4302.001360833783,
+      "predicted": 4214.669396254398,
       "reference": 4675.0
      },
      {
       "year": 2014,
-      "predicted": 3613.1975047859796,
+      "predicted": 3569.2152114414143,
       "reference": 3869.0
      },
      {
       "year": 2015,
-      "predicted": 4072.8689094078263,
+      "predicted": 4020.7726680920396,
       "reference": 4157.0
      },
      {
       "year": 2016,
-      "predicted": 4362.338849878951,
+      "predicted": 4294.636051339891,
       "reference": 4164.0
      },
      {
       "year": 2017,
-      "predicted": 4079.4696244887273,
+      "predicted": 4007.563881748046,
       "reference": 3658.0
      },
      {
       "year": 2018,
-      "predicted": 3477.622390476711,
+      "predicted": 3407.3123680837134,
       "reference": 4312.0
      },
      {
       "year": 2019,
-      "predicted": 3922.0194833240544,
+      "predicted": 3855.066952959092,
       "reference": 4272.0
      },
      {
       "year": 2020,
-      "predicted": 3793.4518719904627,
+      "predicted": 3731.1132774628404,
       "reference": 4002.0
      },
      {
       "year": 2021,
-      "predicted": 3856.5734548686487,
+      "predicted": 3794.137529416042,
       "reference": 3579.0
      },
      {
       "year": 2022,
-      "predicted": 3458.7349674549537,
+      "predicted": 3398.28566315913,
       "reference": 3752.0
      },
      {
       "year": 2023,
-      "predicted": 3850.3089014458583,
+      "predicted": 3781.4431016239832,
       "reference": 3599.0
      },
      {
       "year": 2024,
-      "predicted": 5259.669486969329,
+      "predicted": 5128.3100094166,
       "reference": 4356.0
      },
      {
       "year": 2025,
-      "predicted": 4854.33002641588,
+      "predicted": 4758.589451088894,
       "reference": 3978.0
+     },
+     {
+      "year": 2026,
+      "predicted": 2877.1904670014674,
+      "reference": 1902.0
      }
     ]
    },
    "candidates": {
     "global": {
      "model": "global",
-     "months_scored": 168,
-     "monthly_median_abs_pct_error": 0.1933528193943197,
-     "monthly_mean_abs_pct_error": 0.2231427812187108,
-     "monthly_bias_pct": 0.0007082363186987505,
-     "monthly_ratio_q10": 0.7986385742569436,
-     "monthly_ratio_q90": 1.7843016528520306,
-     "monthly_correlation": 0.9676165245985734,
-     "annual_mean_abs_pct_error": 0.09372118888265417,
-     "annual_max_abs_pct_error": 0.1954029011808541,
-     "annual_ratio_min": 0.8365380400299938,
-     "annual_ratio_max": 1.22893604481126
+     "months_scored": 175,
+     "monthly_median_abs_pct_error": 0.19045159143367346,
+     "monthly_mean_abs_pct_error": 0.2295689026500967,
+     "monthly_bias_pct": -0.008423354700523293,
+     "monthly_ratio_q10": 0.7883226092837006,
+     "monthly_ratio_q90": 1.766338407757264,
+     "monthly_correlation": 0.9595529342794645,
+     "annual_mean_abs_pct_error": 0.12190286710569259,
+     "annual_max_abs_pct_error": 0.508827352975936,
+     "annual_ratio_min": 0.6627663516489476,
+     "annual_ratio_max": 1.2500471530179276
     },
     "season": {
      "model": "season",
-     "months_scored": 168,
-     "monthly_median_abs_pct_error": 0.18280050732434888,
-     "monthly_mean_abs_pct_error": 0.21535735159380845,
-     "monthly_bias_pct": 0.0009232786020294241,
-     "monthly_ratio_q10": 0.724724324026486,
-     "monthly_ratio_q90": 1.547573542545128,
-     "monthly_correlation": 0.9645144761014036,
-     "annual_mean_abs_pct_error": 0.09684152367589448,
-     "annual_max_abs_pct_error": 0.2048226482045654,
-     "annual_ratio_min": 0.8299976776583728,
-     "annual_ratio_max": 1.24398793808379
+     "months_scored": 175,
+     "monthly_median_abs_pct_error": 0.17865430457987888,
+     "monthly_mean_abs_pct_error": 0.22216857011440483,
+     "monthly_bias_pct": -0.007547753639193268,
+     "monthly_ratio_q10": 0.7323741072988081,
+     "monthly_ratio_q90": 1.5485551553023762,
+     "monthly_correlation": 0.9568870573322072,
+     "annual_mean_abs_pct_error": 0.12691910001715084,
+     "annual_max_abs_pct_error": 0.541372008793897,
+     "annual_ratio_min": 0.6487726481957374,
+     "annual_ratio_max": 1.2664378664904916
     },
     "month": {
      "model": "month",
-     "months_scored": 168,
-     "monthly_median_abs_pct_error": 0.14649050922672388,
-     "monthly_mean_abs_pct_error": 0.2042181389774018,
-     "monthly_bias_pct": 0.003516112853100589,
-     "monthly_ratio_q10": 0.7562593156194747,
-     "monthly_ratio_q90": 1.5524231511107023,
-     "monthly_correlation": 0.9706506436970553,
-     "annual_mean_abs_pct_error": 0.09948529089479874,
-     "annual_max_abs_pct_error": 0.22029412428755146,
-     "annual_ratio_min": 0.819474567726722,
-     "annual_ratio_max": 1.2399276045059373
+     "months_scored": 175,
+     "monthly_median_abs_pct_error": 0.14612137590078764,
+     "monthly_mean_abs_pct_error": 0.2101628416108077,
+     "monthly_bias_pct": -0.005097180083636035,
+     "monthly_ratio_q10": 0.7455639531749653,
+     "monthly_ratio_q90": 1.5486940069651105,
+     "monthly_correlation": 0.9621881788227387,
+     "annual_mean_abs_pct_error": 0.1264943983478243,
+     "annual_max_abs_pct_error": 0.5127184369092889,
+     "annual_ratio_min": 0.6610615535586056,
+     "annual_ratio_max": 1.265513558542649
     }
    }
   },
   "N": {
    "model": "global",
    "factors_by_month": [
-    0.9841604073038122,
-    0.9841604073038122,
-    0.9841604073038122,
-    0.9841604073038122,
-    0.9841604073038122,
-    0.9841604073038122,
-    0.9841604073038122,
-    0.9841604073038122,
-    0.9841604073038122,
-    0.9841604073038122,
-    0.9841604073038122,
-    0.9841604073038122
+    0.9888624181060155,
+    0.9888624181060155,
+    0.9888624181060155,
+    0.9888624181060155,
+    0.9888624181060155,
+    0.9888624181060155,
+    0.9888624181060155,
+    0.9888624181060155,
+    0.9888624181060155,
+    0.9888624181060155,
+    0.9888624181060155,
+    0.9888624181060155
    ],
    "overlap_first_year": 2018,
-   "overlap_last_year": 2025,
-   "overlap_days": 2796,
-   "overlap_months": 93,
+   "overlap_last_year": 2026,
+   "overlap_days": 3082,
+   "overlap_months": 104,
    "validation": {
     "model": "global",
-    "months_scored": 93,
-    "monthly_median_abs_pct_error": 0.08813872646183632,
-    "monthly_mean_abs_pct_error": 0.12535907167538854,
-    "monthly_bias_pct": 7.119001677441331e-05,
-    "monthly_ratio_q10": 0.8121988957982912,
-    "monthly_ratio_q90": 1.2319853803424015,
-    "monthly_correlation": 0.9932437340532028,
-    "annual_mean_abs_pct_error": 0.03890155711137168,
-    "annual_max_abs_pct_error": 0.07996207192732963,
-    "annual_ratio_min": 0.933280802062395,
-    "annual_ratio_max": 1.0869117125365007,
+    "months_scored": 100,
+    "monthly_median_abs_pct_error": 0.08555162332396629,
+    "monthly_mean_abs_pct_error": 0.12398883180307299,
+    "monthly_bias_pct": 0.00042370606862663263,
+    "monthly_ratio_q10": 0.8132231966472695,
+    "monthly_ratio_q90": 1.211878321637406,
+    "monthly_correlation": 0.9931368097376734,
+    "annual_mean_abs_pct_error": 0.0437771885426507,
+    "annual_max_abs_pct_error": 0.08349736792067004,
+    "annual_ratio_min": 0.9287530591108395,
+    "annual_ratio_max": 1.0911043405639045,
     "annual": [
      {
       "year": 2018,
-      "predicted": 3325.0170720546307,
+      "predicted": 3344.6708650977794,
       "reference": 3614.0
      },
      {
       "year": 2019,
-      "predicted": 4072.9766037462928,
+      "predicted": 4096.893081761006,
       "reference": 4272.0
      },
      {
       "year": 2020,
-      "predicted": 4231.888642558604,
+      "predicted": 4255.33816095095,
       "reference": 4261.0
      },
      {
       "year": 2021,
-      "predicted": 3834.858696429849,
+      "predicted": 3853.5539289920916,
       "reference": 3579.0
      },
      {
       "year": 2022,
-      "predicted": 3818.7975811357214,
+      "predicted": 3838.8948431398953,
       "reference": 3752.0
      },
      {
       "year": 2023,
-      "predicted": 3707.804388089472,
+      "predicted": 3726.189931963669,
       "reference": 3503.0
      },
      {
       "year": 2024,
-      "predicted": 4414.287286957795,
+      "predicted": 4438.080266639178,
       "reference": 4356.0
      },
      {
       "year": 2025,
-      "predicted": 3911.5990444029317,
+      "predicted": 3933.3420279082334,
       "reference": 3978.0
+     },
+     {
+      "year": 2026,
+      "predicted": 1733.106477262013,
+      "reference": 1891.0
      }
     ]
    },
    "candidates": {
     "global": {
      "model": "global",
-     "months_scored": 93,
-     "monthly_median_abs_pct_error": 0.08813872646183632,
-     "monthly_mean_abs_pct_error": 0.12535907167538854,
-     "monthly_bias_pct": 7.119001677441331e-05,
-     "monthly_ratio_q10": 0.8121988957982912,
-     "monthly_ratio_q90": 1.2319853803424015,
-     "monthly_correlation": 0.9932437340532028,
-     "annual_mean_abs_pct_error": 0.03890155711137168,
-     "annual_max_abs_pct_error": 0.07996207192732963,
-     "annual_ratio_min": 0.933280802062395,
-     "annual_ratio_max": 1.0869117125365007
+     "months_scored": 100,
+     "monthly_median_abs_pct_error": 0.08555162332396629,
+     "monthly_mean_abs_pct_error": 0.12398883180307299,
+     "monthly_bias_pct": 0.00042370606862663263,
+     "monthly_ratio_q10": 0.8132231966472695,
+     "monthly_ratio_q90": 1.211878321637406,
+     "monthly_correlation": 0.9931368097376734,
+     "annual_mean_abs_pct_error": 0.0437771885426507,
+     "annual_max_abs_pct_error": 0.08349736792067004,
+     "annual_ratio_min": 0.9287530591108395,
+     "annual_ratio_max": 1.0911043405639045
     },
     "season": {
      "model": "season",
-     "months_scored": 93,
-     "monthly_median_abs_pct_error": 0.09049120320832607,
-     "monthly_mean_abs_pct_error": 0.1282912539221072,
-     "monthly_bias_pct": 0.00044805895115722605,
-     "monthly_ratio_q10": 0.7995304959738359,
-     "monthly_ratio_q90": 1.2402414500663792,
-     "monthly_correlation": 0.9930541986106203,
-     "annual_mean_abs_pct_error": 0.03926057176119637,
-     "annual_max_abs_pct_error": 0.08035681154147294,
-     "annual_ratio_min": 0.9326472642938154,
-     "annual_ratio_max": 1.0873782490317403
+     "months_scored": 100,
+     "monthly_median_abs_pct_error": 0.09184629488164897,
+     "monthly_mean_abs_pct_error": 0.1263394028539852,
+     "monthly_bias_pct": 0.0007696207486905974,
+     "monthly_ratio_q10": 0.8029953726081347,
+     "monthly_ratio_q90": 1.216902411253085,
+     "monthly_correlation": 0.9929727077141377,
+     "annual_mean_abs_pct_error": 0.04380428270836374,
+     "annual_max_abs_pct_error": 0.082290606570678,
+     "annual_ratio_min": 0.9283750557830509,
+     "annual_ratio_max": 1.0896695698658725
     },
     "month": {
      "model": "month",
-     "months_scored": 93,
-     "monthly_median_abs_pct_error": 0.10256937307297007,
-     "monthly_mean_abs_pct_error": 0.13603127946246532,
-     "monthly_bias_pct": 0.000511331892412493,
-     "monthly_ratio_q10": 0.8000448179739977,
-     "monthly_ratio_q90": 1.2650750996741167,
-     "monthly_correlation": 0.9921361567930329,
-     "annual_mean_abs_pct_error": 0.03973004212417222,
-     "annual_max_abs_pct_error": 0.08337103909332055,
-     "annual_ratio_min": 0.9347305492013217,
-     "annual_ratio_max": 1.090953965725515
+     "months_scored": 100,
+     "monthly_median_abs_pct_error": 0.10070977170015893,
+     "monthly_mean_abs_pct_error": 0.13259567696028068,
+     "monthly_bias_pct": 0.0005219231446354648,
+     "monthly_ratio_q10": 0.8023027478007969,
+     "monthly_ratio_q90": 1.2436556233676086,
+     "monthly_correlation": 0.9923414055551674,
+     "annual_mean_abs_pct_error": 0.041584263642266146,
+     "annual_max_abs_pct_error": 0.07945219806138036,
+     "annual_ratio_min": 0.932520157409756,
+     "annual_ratio_max": 1.0863096928742415
     }
    }
   }
@@ -876,18 +1025,18 @@
  "diagnostics": {
   "unit_comparison": {
    "cell_days": {
-    "factor_global": 2.8498407401789776,
-    "monthly_median_abs_pct_error": 0.14649050922672388,
-    "annual_mean_abs_pct_error": 0.09948529089479874,
-    "monthly_ratio_q10": 0.7562593156194747,
-    "monthly_ratio_q90": 1.5524231511107023
+    "factor_global": 2.803281054555951,
+    "monthly_median_abs_pct_error": 0.14612137590078764,
+    "annual_mean_abs_pct_error": 0.1264943983478243,
+    "monthly_ratio_q10": 0.7455639531749653,
+    "monthly_ratio_q90": 1.5486940069651105
    },
    "raw_detections": {
-    "factor_global": 3.98669741042923,
-    "monthly_median_abs_pct_error": 0.1626748571298014,
-    "annual_mean_abs_pct_error": 0.08408332788706151,
-    "monthly_ratio_q10": 0.7286814151788088,
-    "monthly_ratio_q90": 1.4882057014627823
+    "factor_global": 3.928158881345628,
+    "monthly_median_abs_pct_error": 0.16697244356818824,
+    "annual_mean_abs_pct_error": 0.10680096300873446,
+    "monthly_ratio_q10": 0.735889659251163,
+    "monthly_ratio_q90": 1.4783260838266923
    }
   },
   "yearly_ratio": [
@@ -988,80 +1137,87 @@
     "A": 3.405821917808219,
     "T": 7.6943907156673115,
     "N": 0.9987446648255084
+   },
+   {
+    "year": 2026,
+    "TA": 1.8887785501489573,
+    "A": 2.348148148148148,
+    "T": 8.846511627906978,
+    "N": 1.0738216922203294
    }
   ],
   "province_transfer": [
    {
     "province": "Estuaire",
-    "reference_cell_days": 1690.0,
-    "predicted_cell_days": 1253.1188848854185,
-    "ratio_reference_over_predicted": 1.3486350101207905,
-    "annual_median_abs_pct_error": 0.37190904840704386,
-    "years_scored": 14
+    "reference_cell_days": 1725.0,
+    "predicted_cell_days": 1288.2212529834246,
+    "ratio_reference_over_predicted": 1.3390556909420865,
+    "annual_median_abs_pct_error": 0.39271508954149625,
+    "years_scored": 15
    },
    {
     "province": "Haut-Ogooué",
-    "reference_cell_days": 23918.0,
-    "predicted_cell_days": 23433.83124643868,
-    "ratio_reference_over_predicted": 1.0206611009727613,
-    "annual_median_abs_pct_error": 0.0453399827686954,
-    "years_scored": 14
+    "reference_cell_days": 24742.0,
+    "predicted_cell_days": 24269.735718155458,
+    "ratio_reference_over_predicted": 1.0194589791717945,
+    "annual_median_abs_pct_error": 0.04506655796649959,
+    "years_scored": 15
    },
    {
     "province": "Moyen-Ogooué",
-    "reference_cell_days": 1301.0,
-    "predicted_cell_days": 704.4073417349194,
-    "ratio_reference_over_predicted": 1.8469427033450605,
-    "annual_median_abs_pct_error": 0.4970731499776945,
-    "years_scored": 14
+    "reference_cell_days": 1323.0,
+    "predicted_cell_days": 720.9191566040968,
+    "ratio_reference_over_predicted": 1.8351572265495293,
+    "annual_median_abs_pct_error": 0.4945805430351509,
+    "years_scored": 15
    },
    {
     "province": "Ngounié",
-    "reference_cell_days": 6909.0,
-    "predicted_cell_days": 6686.372474035561,
-    "ratio_reference_over_predicted": 1.033295711064399,
-    "annual_median_abs_pct_error": 0.13782025476779403,
-    "years_scored": 14
+    "reference_cell_days": 7208.0,
+    "predicted_cell_days": 6917.746385293844,
+    "ratio_reference_over_predicted": 1.0419578282492683,
+    "annual_median_abs_pct_error": 0.15909739240707524,
+    "years_scored": 15
    },
    {
     "province": "Nyanga",
-    "reference_cell_days": 7274.0,
-    "predicted_cell_days": 9800.751575191443,
-    "ratio_reference_over_predicted": 0.7421879785640738,
-    "annual_median_abs_pct_error": 0.3440275895748134,
-    "years_scored": 14
+    "reference_cell_days": 7573.0,
+    "predicted_cell_days": 10088.081238567192,
+    "ratio_reference_over_predicted": 0.7506878484530911,
+    "annual_median_abs_pct_error": 0.33635763772052135,
+    "years_scored": 15
    },
    {
     "province": "Ogooué-Ivindo",
-    "reference_cell_days": 3250.0,
-    "predicted_cell_days": 1895.2203132902391,
-    "ratio_reference_over_predicted": 1.714840209979475,
-    "annual_median_abs_pct_error": 0.43591386442809776,
-    "years_scored": 14
+    "reference_cell_days": 3281.0,
+    "predicted_cell_days": 2015.0604766042343,
+    "ratio_reference_over_predicted": 1.628238972524099,
+    "annual_median_abs_pct_error": 0.4943934085243958,
+    "years_scored": 15
    },
    {
     "province": "Ogooué-Lolo",
-    "reference_cell_days": 1911.0,
-    "predicted_cell_days": 2312.1735038814486,
-    "ratio_reference_over_predicted": 0.8264950691598195,
-    "annual_median_abs_pct_error": 0.36725056961100355,
+    "reference_cell_days": 1919.0,
+    "predicted_cell_days": 2369.490971395316,
+    "ratio_reference_over_predicted": 0.8098785870747435,
+    "annual_median_abs_pct_error": 0.3674613392993328,
     "years_scored": 14
    },
    {
     "province": "Ogooué-Maritime",
-    "reference_cell_days": 3621.0,
-    "predicted_cell_days": 5079.549261255781,
-    "ratio_reference_over_predicted": 0.7128585261726167,
-    "annual_median_abs_pct_error": 0.33553146019365565,
-    "years_scored": 14
+    "reference_cell_days": 3738.0,
+    "predicted_cell_days": 5213.239104497068,
+    "ratio_reference_over_predicted": 0.717020632484612,
+    "annual_median_abs_pct_error": 0.32143842650560045,
+    "years_scored": 15
    },
    {
     "province": "Woleu-Ntem",
-    "reference_cell_days": 4909.0,
-    "predicted_cell_days": 3857.007326149851,
-    "ratio_reference_over_predicted": 1.272748425111308,
-    "annual_median_abs_pct_error": 0.25800875731663697,
-    "years_scored": 14
+    "reference_cell_days": 5037.0,
+    "predicted_cell_days": 3894.456705917216,
+    "ratio_reference_over_predicted": 1.2933768123155176,
+    "annual_median_abs_pct_error": 0.26612963176604354,
+    "years_scored": 15
    }
   ]
  },
@@ -1133,7 +1289,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 115.31924882629107
+   "harmonized": 112.93333333333334
   },
   {
    "year": 2001,
@@ -1156,7 +1312,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 400.21621621621625
+   "harmonized": 393.8144329896908
   },
   {
    "year": 2001,
@@ -1179,7 +1335,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 472.25
+   "harmonized": 496.7174721189591
   },
   {
    "year": 2001,
@@ -1202,7 +1358,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 248.78057553956833
+   "harmonized": 260.20284697508896
   },
   {
    "year": 2001,
@@ -1225,7 +1381,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 157.8019801980198
+   "harmonized": 147.63090128755363
   },
   {
    "year": 2001,
@@ -1248,7 +1404,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 70.93706293706293
+   "harmonized": 74.20353982300885
   },
   {
    "year": 2001,
@@ -1271,7 +1427,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 831.4365384615387
+   "harmonized": 851.3417484805983
   },
   {
    "year": 2001,
@@ -1294,7 +1450,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 1361.6703087885987
+   "harmonized": 1330.0770301624132
   },
   {
    "year": 2001,
@@ -1409,7 +1565,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 62.90140845070422
+   "harmonized": 61.6
   },
   {
    "year": 2002,
@@ -1432,7 +1588,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 220.11891891891892
+   "harmonized": 216.59793814432993
   },
   {
    "year": 2002,
@@ -1455,7 +1611,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 57.24242424242424
+   "harmonized": 60.20817843866171
   },
   {
    "year": 2002,
@@ -1478,7 +1634,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 335.3129496402878
+   "harmonized": 350.7081850533808
   },
   {
    "year": 2002,
@@ -1501,7 +1657,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 242.77227722772278
+   "harmonized": 227.12446351931328
   },
   {
    "year": 2002,
@@ -1524,7 +1680,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 401.97668997668995
+   "harmonized": 420.48672566371687
   },
   {
    "year": 2002,
@@ -1548,7 +1704,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 677.313199397416
+   "harmonized": 680.4809276526664
   },
   {
    "year": 2002,
@@ -1572,7 +1728,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 698.0582010148642
+   "harmonized": 675.5994633709311
   },
   {
    "year": 2002,
@@ -1687,7 +1843,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 185.55014326647566
+   "harmonized": 179.83892617449663
   },
   {
    "year": 2003,
@@ -1710,7 +1866,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 425.14134275618375
+   "harmonized": 420.13536379018615
   },
   {
    "year": 2003,
@@ -1733,7 +1889,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 416.80364372469637
+   "harmonized": 416.3594339622642
   },
   {
    "year": 2003,
@@ -1756,7 +1912,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 174.46757679180888
+   "harmonized": 168.884375
   },
   {
    "year": 2003,
@@ -1779,7 +1935,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 238.85540334855403
+   "harmonized": 221.07571801566579
   },
   {
    "year": 2003,
@@ -1802,7 +1958,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 396.8312958435208
+   "harmonized": 392.2807017543859
   },
   {
    "year": 2003,
@@ -1825,7 +1981,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 495.656118610312
+   "harmonized": 496.11905763567523
   },
   {
    "year": 2003,
@@ -1848,7 +2004,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 1214.8858784893266
+   "harmonized": 1172.0641584158413
   },
   {
    "year": 2003,
@@ -1963,7 +2119,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 73.58022922636103
+   "harmonized": 71.31543624161074
   },
   {
    "year": 2004,
@@ -1986,7 +2142,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 379.35689045936397
+   "harmonized": 374.89001692047384
   },
   {
    "year": 2004,
@@ -2009,7 +2165,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 447.3947368421053
+   "harmonized": 446.9179245283019
   },
   {
    "year": 2004,
@@ -2032,7 +2188,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 321.56769055745167
+   "harmonized": 311.2770833333333
   },
   {
    "year": 2004,
@@ -2055,7 +2211,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 223.92694063926942
+   "harmonized": 207.25848563968665
   },
   {
    "year": 2004,
@@ -2078,7 +2234,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 416.6728606356969
+   "harmonized": 411.8947368421053
   },
   {
    "year": 2004,
@@ -2101,7 +2257,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 726.1938481965037
+   "harmonized": 726.8721076987802
   },
   {
    "year": 2004,
@@ -2124,7 +2280,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 1592.012315270936
+   "harmonized": 1535.8978217821782
   },
   {
    "year": 2004,
@@ -2239,7 +2395,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 188.74928366762177
+   "harmonized": 182.93959731543623
   },
   {
    "year": 2005,
@@ -2262,7 +2418,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 297.59893992932865
+   "harmonized": 294.0947546531302
   },
   {
    "year": 2005,
@@ -2285,7 +2441,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 367.0931174089069
+   "harmonized": 366.7018867924528
   },
   {
    "year": 2005,
@@ -2308,7 +2464,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 222.36063708759957
+   "harmonized": 215.24479166666666
   },
   {
    "year": 2005,
@@ -2331,7 +2487,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 253.78386605783865
+   "harmonized": 234.8929503916449
   },
   {
    "year": 2005,
@@ -2354,7 +2510,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 481.15794621026896
+   "harmonized": 475.640350877193
   },
   {
    "year": 2005,
@@ -2377,7 +2533,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 590.1765877406506
+   "harmonized": 590.7278081615482
   },
   {
    "year": 2005,
@@ -2400,7 +2556,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 1268.7610837438424
+   "harmonized": 1224.040396039604
   },
   {
    "year": 2005,
@@ -2515,7 +2671,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 70.3810888252149
+   "harmonized": 68.21476510067114
   },
   {
    "year": 2006,
@@ -2538,7 +2694,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 179.86749116607774
+   "harmonized": 177.74957698815564
   },
   {
    "year": 2006,
@@ -2561,7 +2717,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 409.15587044534414
+   "harmonized": 408.71981132075473
   },
   {
    "year": 2006,
@@ -2584,7 +2740,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 352.35608646188854
+   "harmonized": 341.0802083333334
   },
   {
    "year": 2006,
@@ -2607,7 +2763,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 291.1050228310502
+   "harmonized": 269.43603133159263
   },
   {
    "year": 2006,
@@ -2630,7 +2786,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 223.21760391198043
+   "harmonized": 220.6578947368421
   },
   {
    "year": 2006,
@@ -2653,7 +2809,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 952.1208231909715
+   "harmonized": 953.0100967606228
   },
   {
    "year": 2006,
@@ -2676,7 +2832,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 956.2848932676517
+   "harmonized": 922.5782178217822
   },
   {
    "year": 2006,
@@ -2791,7 +2947,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 351.9054441260745
+   "harmonized": 341.0738255033557
   },
   {
    "year": 2007,
@@ -2814,7 +2970,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 349.92402826855124
+   "harmonized": 345.8037225042301
   },
   {
    "year": 2007,
@@ -2837,7 +2993,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 604.174089068826
+   "harmonized": 603.5301886792454
   },
   {
    "year": 2007,
@@ -2860,7 +3016,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 280.5164960182026
+   "harmonized": 271.53958333333327
   },
   {
    "year": 2007,
@@ -2883,7 +3039,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 186.60578386605783
+   "harmonized": 172.7154046997389
   },
   {
    "year": 2007,
@@ -2906,7 +3062,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 518.3608801955991
+   "harmonized": 512.4166666666666
   },
   {
    "year": 2007,
@@ -2929,7 +3085,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 668.5594157999558
+   "harmonized": 669.1838451830038
   },
   {
    "year": 2007,
@@ -2952,7 +3108,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 490.26436781609203
+   "harmonized": 472.9837623762376
   },
   {
    "year": 2007,
@@ -3067,7 +3223,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 99.17335243553009
+   "harmonized": 96.12080536912752
   },
   {
    "year": 2008,
@@ -3090,7 +3246,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 343.3833922261484
+   "harmonized": 339.3401015228426
   },
   {
    "year": 2008,
@@ -3113,7 +3269,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 374.74089068825907
+   "harmonized": 374.3415094339623
   },
   {
    "year": 2008,
@@ -3136,7 +3292,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 143.679180887372
+   "harmonized": 139.08125
   },
   {
    "year": 2008,
@@ -3159,7 +3315,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 220.19482496194826
+   "harmonized": 203.80417754569189
   },
   {
    "year": 2008,
@@ -3182,7 +3338,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 505.95990220048895
+   "harmonized": 500.15789473684214
   },
   {
    "year": 2008,
@@ -3205,7 +3361,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 843.7680902854617
+   "harmonized": 844.5561632309634
   },
   {
    "year": 2008,
@@ -3228,7 +3384,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 915.8784893267651
+   "harmonized": 883.5960396039603
   },
   {
    "year": 2008,
@@ -3343,7 +3499,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 95.97421203438397
+   "harmonized": 93.02013422818791
   },
   {
    "year": 2009,
@@ -3366,7 +3522,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 156.97526501766788
+   "harmonized": 155.12690355329943
   },
   {
    "year": 2009,
@@ -3389,7 +3545,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 382.38866396761136
+   "harmonized": 381.9811320754717
   },
   {
    "year": 2009,
@@ -3412,7 +3568,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 246.30716723549492
+   "harmonized": 238.42499999999998
   },
   {
    "year": 2009,
@@ -3435,7 +3591,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 246.31963470319633
+   "harmonized": 227.98433420365535
   },
   {
    "year": 2009,
@@ -3458,7 +3614,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 233.13838630806848
+   "harmonized": 230.46491228070172
   },
   {
    "year": 2009,
@@ -3481,7 +3637,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 594.7873423323745
+   "harmonized": 595.3428691628103
   },
   {
    "year": 2009,
@@ -3504,7 +3660,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 331.33251231527095
+   "harmonized": 319.6538613861386
   },
   {
    "year": 2009,
@@ -3619,7 +3775,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 111.96991404011463
+   "harmonized": 108.52348993288591
   },
   {
    "year": 2010,
@@ -3642,7 +3798,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 238.7332155477032
+   "harmonized": 235.922165820643
   },
   {
    "year": 2010,
@@ -3665,7 +3821,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 531.5202429149798
+   "harmonized": 530.9537735849057
   },
   {
    "year": 2010,
@@ -3688,7 +3844,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 345.51422070534704
+   "harmonized": 334.4572916666667
   },
   {
    "year": 2010,
@@ -3711,7 +3867,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 332.1582952815829
+   "harmonized": 307.4334203655352
   },
   {
    "year": 2010,
@@ -3734,7 +3890,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 362.1085574572127
+   "harmonized": 357.95614035087726
   },
   {
    "year": 2010,
@@ -3757,7 +3913,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 511.79375968134536
+   "harmonized": 512.2717711400926
   },
   {
    "year": 2010,
@@ -3780,7 +3936,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 940.1223316912972
+   "harmonized": 906.9853465346534
   },
   {
    "year": 2010,
@@ -3895,7 +4051,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 124.76647564469916
+   "harmonized": 120.9261744966443
   },
   {
    "year": 2011,
@@ -3918,7 +4074,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 189.67844522968198
+   "harmonized": 187.44500846023686
   },
   {
    "year": 2011,
@@ -3941,7 +4097,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 428.2753036437247
+   "harmonized": 427.81886792452826
   },
   {
    "year": 2011,
@@ -3964,7 +4120,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 249.72810011376566
+   "harmonized": 241.73645833333333
   },
   {
    "year": 2011,
@@ -3987,7 +4143,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 186.60578386605786
+   "harmonized": 172.7154046997389
   },
   {
    "year": 2011,
@@ -4010,7 +4166,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 260.4205378973105
+   "harmonized": 257.43421052631584
   },
   {
    "year": 2011,
@@ -4033,7 +4189,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 926.7616729364904
+   "harmonized": 927.6272612536812
   },
   {
    "year": 2011,
@@ -4056,7 +4212,7 @@
     "snpp": 0,
     "noaa20": 0
    },
-   "harmonized": 1241.8234811165846
+   "harmonized": 1198.0522772277227
   },
   {
    "year": 2011,
@@ -4172,7 +4328,7 @@
     "snpp": 166,
     "noaa20": 0
    },
-   "harmonized": 115.98710601719198
+   "harmonized": 114.51006711409397
   },
   {
    "year": 2012,
@@ -7072,7 +7228,7 @@
     "snpp": 1827,
     "noaa20": 2010
    },
-   "harmonized": 781.7032590590527
+   "harmonized": 782.3850506253721
   },
   {
    "year": 2022,
@@ -7096,7 +7252,7 @@
     "snpp": 2109,
     "noaa20": 2733
    },
-   "harmonized": 1261.361105000157
+   "harmonized": 1263.0350208457414
   },
   {
    "year": 2022,
@@ -7580,7 +7736,7 @@
     "snpp": 407,
     "noaa20": 437
    },
-   "harmonized": 159.7307269241648
+   "harmonized": 159.81066110780228
   },
   {
    "year": 2024,
@@ -7604,7 +7760,7 @@
     "snpp": 1182,
     "noaa20": 1290
    },
-   "harmonized": 438.69904773877244
+   "harmonized": 438.7883859440143
   },
   {
    "year": 2024,
@@ -7628,7 +7784,7 @@
     "snpp": 1375,
     "noaa20": 2509
    },
-   "harmonized": 841.7412552248655
+   "harmonized": 843.3023228111972
   },
   {
    "year": 2024,
@@ -8020,6 +8176,265 @@
     "noaa20": 265
    },
    "harmonized": 74.0
+  },
+  {
+   "year": 2026,
+   "month": 1,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 12.0,
+    "A": 37.0,
+    "TA": 47.0,
+    "S": 77.0,
+    "N": 74.0
+   },
+   "detections": {
+    "terra": 14,
+    "aqua": 49,
+    "snpp": 164,
+    "noaa20": 174
+   },
+   "harmonized": 77.0
+  },
+  {
+   "year": 2026,
+   "month": 2,
+   "days": 28,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 28
+   },
+   "cell_days": {
+    "T": 9.0,
+    "A": 41.0,
+    "TA": 50.0,
+    "S": 118.0,
+    "N": 101.0
+   },
+   "detections": {
+    "terra": 12,
+    "aqua": 50,
+    "snpp": 234,
+    "noaa20": 210
+   },
+   "harmonized": 118.0
+  },
+  {
+   "year": 2026,
+   "month": 3,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 28,
+    "N": 3
+   },
+   "cell_days": {
+    "T": 6.0,
+    "A": 73.0,
+    "TA": 77.0,
+    "S": 271.0,
+    "N": 274.0
+   },
+   "detections": {
+    "terra": 12,
+    "aqua": 106,
+    "snpp": 484,
+    "noaa20": 560
+   },
+   "harmonized": 302.6435973793925
+  },
+  {
+   "year": 2026,
+   "month": 4,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 27,
+    "N": 3
+   },
+   "cell_days": {
+    "T": 3.0,
+    "A": 81.0,
+    "TA": 84.0,
+    "S": 172.0,
+    "N": 198.0
+   },
+   "detections": {
+    "terra": 5,
+    "aqua": 121,
+    "snpp": 387,
+    "noaa20": 387
+   },
+   "harmonized": 192.76611078022634
+  },
+  {
+   "year": 2026,
+   "month": 5,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30,
+    "N": 1
+   },
+   "cell_days": {
+    "T": 31.0,
+    "A": 82.0,
+    "TA": 111.0,
+    "S": 194.0,
+    "N": 206.0
+   },
+   "detections": {
+    "terra": 44,
+    "aqua": 105,
+    "snpp": 476,
+    "noaa20": 477
+   },
+   "harmonized": 195.97772483621202
+  },
+  {
+   "year": 2026,
+   "month": 6,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 28,
+    "N": 2
+   },
+   "cell_days": {
+    "T": 48.0,
+    "A": 203.0,
+    "TA": 248.0,
+    "S": 518.0,
+    "N": 444.0
+   },
+   "detections": {
+    "terra": 81,
+    "aqua": 334,
+    "snpp": 1310,
+    "noaa20": 1170
+   },
+   "harmonized": 526.8997617629541
+  },
+  {
+   "year": 2026,
+   "month": 7,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 24,
+    "N": 7
+   },
+   "cell_days": {
+    "T": 78.0,
+    "A": 293.0,
+    "TA": 362.0,
+    "S": 552.0,
+    "N": 781.0
+   },
+   "detections": {
+    "terra": 142,
+    "aqua": 473,
+    "snpp": 1404,
+    "noaa20": 2140
+   },
+   "harmonized": 802.182191780822
+  },
+  {
+   "year": 2026,
+   "month": 8,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 50.0,
+    "A": 131.0,
+    "TA": 178.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 87,
+    "aqua": 189,
+    "snpp": 966,
+    "noaa20": 1030
+   },
+   "harmonized": 0.0
+  },
+  {
+   "year": 2026,
+   "month": 9,
+   "days": 30,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 30
+   },
+   "cell_days": {
+    "T": 0.0,
+    "A": 0.0,
+    "TA": 0.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 114,
+    "aqua": 424,
+    "snpp": 942,
+    "noaa20": 883
+   },
+   "harmonized": 0.0
+  },
+  {
+   "year": 2026,
+   "month": 10,
+   "days": 31,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 31
+   },
+   "cell_days": {
+    "T": 0.0,
+    "A": 0.0,
+    "TA": 0.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 34,
+    "aqua": 95,
+    "snpp": 321,
+    "noaa20": 308
+   },
+   "harmonized": 0.0
+  },
+  {
+   "year": 2026,
+   "month": 11,
+   "days": 14,
+   "unobserved_days": 0,
+   "source_days": {
+    "S": 2,
+    "N": 12
+   },
+   "cell_days": {
+    "T": 0.0,
+    "A": 0.0,
+    "TA": 0.0,
+    "S": 0.0,
+    "N": 0.0
+   },
+   "detections": {
+    "terra": 1,
+    "aqua": 22,
+    "snpp": 23,
+    "noaa20": 80
+   },
+   "harmonized": 0.0
   }
  ]
 }

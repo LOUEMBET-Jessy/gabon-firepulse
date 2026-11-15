@@ -53,7 +53,7 @@ await test("G-01", "Vue Terre : un anneau regroupe les détections, par capteur"
   const expected = await api("/api/detections?zone=country&from=2025-01-01&to=2025-12-31&sats=terra,aqua,snpp,noaa20&conf=low,nominal,high&types=all&dn=all");
   const all = await page.locator("button.cluster-marker").evaluateAll((els) => els.reduce((acc, el) => acc + Number(el.getAttribute("aria-label").match(/^(\d+)/)[1]), 0));
   expect(all <= expected.total && all > 0, `anneaux ${all}, détections ${expected.total}`);
-  await page.getByRole("complementary", { name: "Fiche du territoire" }).getByText("concernent le Gabon").waitFor();
+  await page.getByRole("complementary", { name: "Fiche du territoire" }).getByText(/archives chargées couvrent le Gabon et la France/).waitFor();
   await cluster.click();
   await page.waitForTimeout(1500);
   expect(errors.length === 0, errors.join(" | "));

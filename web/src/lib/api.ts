@@ -1,5 +1,6 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import useSWR, { type SWRConfiguration } from "swr";
 
 import type { LiveResponse, LiveSatellite, LiveTerritory,
@@ -45,6 +46,21 @@ export async function fetchJson<T>(url: string): Promise<T> {
 
 const config: SWRConfiguration = { revalidateOnFocus: false, revalidateIfStale: false, keepPreviousData: true, shouldRetryOnError: false };
 
+/**
+ * Pays de l'archive consultee (GAB par defaut). Fixe par FiltersProvider pendant son rendu, avant les ecrans :
+ * chaque adresse d'API (et donc chaque cle de cache SWR) porte le pays, les archives ne se melangent jamais.
+ */
+let currentCountry: "GAB" | "FRA" = "GAB";
+export function setApiCountry(country: "GAB" | "FRA") {
+  currentCountry = country;
+}
+export function getApiCountry() {
+  return currentCountry;
+}
+function archive(url: string): string {
+  return `${url}${url.includes("?") ? "&" : "?"}country=${currentCountry}`;
+}
+
 export function zoneParam(zone: ZoneSpec): string {
   if (zone.kind === "country") return "country";
   if (zone.kind === "province") return `province:${zone.index}`;
@@ -72,47 +88,47 @@ export function detectionQuery(zone: ZoneSpec, from: string, to: string, filters
 }
 
 export function useMetadata() {
-  return useSWR<MetadataResponse, ApiError>("/api/metadata", fetchJson, config);
+  return useSWR<MetadataResponse, ApiError>(archive("/api/metadata"), fetchJson, config);
 }
 
 export function useCalendar(zone: ZoneSpec) {
-  return useSWR<CalendarResponse, ApiError>(`/api/calendar?zone=${encodeURIComponent(zoneParam(zone))}`, fetchJson, config);
+  return useSWR<CalendarResponse, ApiError>(archive(`/api/calendar?zone=${encodeURIComponent(zoneParam(zone))}`), fetchJson, config);
 }
 
 export function useDaily(zone: ZoneSpec, enabled = true) {
-  return useSWR<DailyResponse, ApiError>(enabled ? `/api/daily?zone=${encodeURIComponent(zoneParam(zone))}` : null, fetchJson, config);
+  return useSWR<DailyResponse, ApiError>(enabled ? archive(`/api/daily?zone=${encodeURIComponent(zoneParam(zone))}`) : null, fetchJson, config);
 }
 
 export function useOverview(zone: ZoneSpec, from: string, to: string) {
-  return useSWR<OverviewResponse, ApiError>(`/api/overview?${new URLSearchParams({ zone: zoneParam(zone), from, to })}`, fetchJson, config);
+  return useSWR<OverviewResponse, ApiError>(archive(`/api/overview?${new URLSearchParams({ zone: zoneParam(zone), from, to })}`), fetchJson, config);
 }
 
 export function useRegions(from: string, to: string) {
-  return useSWR<RegionsResponse, ApiError>(`/api/regions?${new URLSearchParams({ from, to })}`, fetchJson, config);
+  return useSWR<RegionsResponse, ApiError>(archive(`/api/regions?${new URLSearchParams({ from, to })}`), fetchJson, config);
 }
 
 /** Activite par departement d'une province (ou de tout le pays). `enabled` a false : aucune requete. */
 export function useDepartmentRegions(from: string, to: string, province: number | null, enabled = true) {
   const p = new URLSearchParams({ from, to, level: "department" });
   if (province !== null) p.set("province", String(province));
-  return useSWR<RegionsResponse, ApiError>(enabled ? `/api/regions?${p}` : null, fetchJson, config);
+  return useSWR<RegionsResponse, ApiError>(enabled ? archive(`/api/regions?${p}`) : null, fetchJson, config);
 }
 
 export function useDetections(zone: ZoneSpec, from: string, to: string, filters: MapFilters, enabled = true) {
-  return useSWR<DetectionsResponse, ApiError>(enabled ? `/api/detections?${detectionQuery(zone, from, to, filters)}` : null, fetchJson, config);
+  return useSWR<DetectionsResponse, ApiError>(enabled ? archive(`/api/detections?${detectionQuery(zone, from, to, filters)}`) : null, fetchJson, config);
 }
 
 export function useGrid(zone: ZoneSpec, from: string, to: string, enabled = true) {
-  return useSWR<GridResponse, ApiError>(enabled ? `/api/aggregates?${new URLSearchParams({ zone: zoneParam(zone), from, to })}` : null, fetchJson, config);
+  return useSWR<GridResponse, ApiError>(enabled ? archive(`/api/aggregates?${new URLSearchParams({ zone: zoneParam(zone), from, to })}`) : null, fetchJson, config);
 }
 
 export function useDetection(id: number | null) {
-  return useSWR<DetectionDetail, ApiError>(id === null ? null : `/api/detections/${id}`, fetchJson, config);
+  return useSWR<DetectionDetail, ApiError>(id === null ? null : archive(`/api/detections/${id}`), fetchJson, config);
 }
 
 export function exportUrl(kind: "detections" | "monthly" | "anomalies", format: "csv" | "geojson", zone: ZoneSpec, from?: string, to?: string, filters?: MapFilters) {
   const base = kind === "detections" && from && to ? detectionQuery(zone, from, to, filters) : new URLSearchParams({ zone: zoneParam(zone) }).toString();
-  return `/api/export?kind=${kind}&format=${format}&${base}`;
+  return archive(`/api/export?kind=${kind}&format=${format}&${base}`);
 }
 
 /**
@@ -128,4 +144,13 @@ export function useLive(territories: LiveTerritory[], days: number, sats: LiveSa
     shouldRetryOnError: true,
     errorRetryCount: 2,
   });
+}
+
+/**
+ * Vrai une fois la page hydratee. Les liens qui dependent du pays restaure depuis la session (exports)
+ * attendent ce moment : le HTML du serveur et celui de l'hydratation restent identiques.
+ */
+const noop = () => () => {};
+export function useHydrated(): boolean {
+  return useSyncExternalStore(noop, () => true, () => false);
 }

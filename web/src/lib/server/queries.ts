@@ -114,6 +114,9 @@ export function queryDetections(filter: DetectionFilter, store: Store = getStore
           type: rows.map((r) => store.type[r]),
           night: rows.map((r) => store.night[r]),
           frp: rows.map((r) => (Number.isNaN(store.frp[r]) ? null : round(store.frp[r], 1))),
+          // Dimensions du pixel au sol (km), le long du balayage et de la trace : la position reelle du feu est dans ce rectangle.
+          scan: rows.map((r) => (Number.isNaN(store.scan[r]) ? null : round(store.scan[r], 2))),
+          track: rows.map((r) => (Number.isNaN(store.track[r]) ? null : round(store.track[r], 2))),
         },
     epoch: store.meta.epoch,
     provenance: provenance(store),

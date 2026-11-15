@@ -2,7 +2,7 @@
 
 import type { ZoneSpec } from "../types";
 import type { DetectionFilter } from "./queries";
-import { getStore, isoToDay, type Store } from "./store";
+import { getStore, isCountry, isoToDay, type Store } from "./store";
 import { BadRequest, parseZone } from "./zone";
 
 export { BadRequest };
@@ -58,7 +58,10 @@ export async function handle(request: Request, fn: (params: URLSearchParams, sto
   // (elle depend de la requete) et ce signal ne doit pas etre pris pour une erreur.
   const params = new URL(request.url).searchParams;
   try {
-    const result = await fn(params, getStore());
+    // Pays de l'archive : GAB (defaut) ou FRA.
+    const country = params.get("country") ?? "GAB";
+    if (!isCountry(country)) throw new BadRequest("Pays inconnu : GAB ou FRA attendus.");
+    const result = await fn(params, getStore(country));
     if (result instanceof Response) return result;
     return Response.json(result, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {

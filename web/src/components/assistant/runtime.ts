@@ -21,12 +21,12 @@ const PRINT_FLAG = "hotspot.print";
 /** Etat de l'application, tel que transmis a l'assistant. */
 export function useAssistantContext(): () => AssistantContext {
   const pathname = usePathname();
-  const { zone, from, to } = useFilters();
+  const { zone, from, to, country } = useFilters();
   return useCallback(() => {
     const view = getView();
     const f = view.map.filters;
     const page = pageFromPath(pathname);
-    const ctx: AssistantContext = { page, zone, from, to };
+    const ctx: AssistantContext = { page, country, zone, from, to };
     if (page === "map") {
       ctx.map = {
         mode: view.map.mode,
@@ -40,7 +40,7 @@ export function useAssistantContext(): () => AssistantContext {
     if (page === "compare") ctx.compare = { unit: view.compare.unit };
     if (page === "anomalies") ctx.anomalies = { month: view.anomalies.month };
     return ctx;
-  }, [pathname, zone, from, to]);
+  }, [pathname, zone, from, to, country]);
 }
 
 /** Libelle court d'une action, pour l'accuse de reception dans la conversation. */

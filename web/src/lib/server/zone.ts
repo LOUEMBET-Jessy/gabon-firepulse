@@ -3,8 +3,6 @@ import type { Store } from "./store";
 
 export class BadRequest extends Error {}
 
-/** Emprise dans laquelle un rectangle personnalise est accepte. */
-const LIMITS = { west: 7.5, south: -5, east: 15.5, north: 3.5 };
 
 /** Analyse le parametre `zone` : "country", "province:3", "department:12", "place:2399697" ou "bbox:ouest,sud,est,nord". */
 export function parseZone(raw: string | null, store: Store): ZoneSpec {
@@ -32,6 +30,9 @@ export function parseZone(raw: string | null, store: Store): ZoneSpec {
       throw new BadRequest("Rectangle invalide : quatre nombres attendus (ouest, sud, est, nord).");
     }
     const [w, s, e, n] = parts;
+    // Emprise acceptee : l'enveloppe de controle qualite du pays, elargie d'un demi-degre.
+    const env = (store.metadata as unknown as { envelope: { lon_min: number; lon_max: number; lat_min: number; lat_max: number } }).envelope;
+    const LIMITS = { west: env.lon_min - 0.5, south: env.lat_min - 0.5, east: env.lon_max + 0.5, north: env.lat_max + 0.5 };
     if (w >= e || s >= n) throw new BadRequest("Rectangle invalide : ouest doit être inférieur à est, sud à nord.");
     if (w < LIMITS.west || e > LIMITS.east || s < LIMITS.south || n > LIMITS.north) {
       throw new BadRequest(
@@ -94,7 +95,7 @@ function bboxAreaKm2([w, s, e, n]: [number, number, number, number]): number {
 
 export function zoneInfo(zone: ZoneSpec, store: Store): ZoneInfo {
   if (zone.kind === "country") {
-    return { key: "country", label: "Gabon", kind: "country", areaKm2: store.countryAreaKm2, bbox: null };
+    return { key: "country", label: store.countryName, kind: "country", areaKm2: store.countryAreaKm2, bbox: null };
   }
   if (zone.kind === "province") {
     return {

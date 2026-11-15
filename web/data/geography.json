@@ -1,6 +1,6 @@
 {
- "built_at": "2026-11-15T04:53:06Z",
- "rows": 292589,
+ "built_at": "2026-11-15T08:36:43Z",
+ "rows": 309233,
  "place_radius_km": 15.0,
  "departments": [
   {
@@ -38556,5 +38556,5 @@
    "withPopulation": 45
   }
  },
- "outside_departments": 6858
+ "outside_departments": 8063
 }

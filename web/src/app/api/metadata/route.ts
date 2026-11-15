@@ -1,6 +1,6 @@
 import { ANOMALY_SETTINGS } from "@/lib/science/anomaly";
 import { handle } from "@/lib/server/http";
-import { dayToIso } from "@/lib/server/store";
+import { COUNTRIES, dayToIso } from "@/lib/server/store";
 import type { MetadataResponse } from "@/lib/types";
 
 /** Sources, dates disponibles, produits, bilan qualite et parametres de la methode. */
@@ -12,6 +12,19 @@ export function GET(request: Request) {
       dataKindLabel: store.metadata.data_kind_label,
       builtAt: store.metadata.built_at,
       country: store.metadata.country,
+      countryCode: store.country,
+      recent: store.metadata.recent
+        ? {
+            start: store.metadata.recent.start,
+            provisionalFrom: store.metadata.recent.provisional_from,
+            vegetationPrecision: store.metadata.recent.mask_validation.vegetation_precision,
+            staticRecall: store.metadata.recent.mask_validation.static_recall,
+            testYear: store.metadata.recent.mask_validation.test_year,
+          }
+        : null,
+      countryName: store.countryName,
+      geoUrl: COUNTRIES[store.country].geoUrl,
+      level1: store.country === "FRA" ? { one: "région", many: "régions" } : { one: "province", many: "provinces" },
       coverage: { firstDate: dayToIso(store, store.firstDay), lastDate: dayToIso(store, store.lastDay) },
       rows: store.metadata.rows,
       satellites: store.meta.satellites,

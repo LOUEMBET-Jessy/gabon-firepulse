@@ -1,0 +1,540 @@
+{
+  "generated_at": "2026-11-15T06:25:07Z",
+  "country": "France",
+  "firms_base_url": "https://firms.modaps.eosdis.nasa.gov/data/country",
+  "firms_files": [
+    {
+      "dataset": "modis",
+      "year": 2000,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2000/modis_2000_France.csv",
+      "path": "data/raw/firms/modis/modis_2000_France.csv",
+      "bytes": 4026,
+      "sha256": "e5c8ddd944980af21602336664b85e7a0dd20d69f3b18b3a737dbb151619083b",
+      "rows": 51,
+      "accessed_at": "2026-11-15T06:23:01Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2001,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2001/modis_2001_France.csv",
+      "path": "data/raw/firms/modis/modis_2001_France.csv",
+      "bytes": 97479,
+      "sha256": "7d5989538b6428723b6a0017c79a4ed97425ac0cba51fac5d5f10b29ceda2c5d",
+      "rows": 1273,
+      "accessed_at": "2026-11-15T06:23:03Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2002,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2002/modis_2002_France.csv",
+      "path": "data/raw/firms/modis/modis_2002_France.csv",
+      "bytes": 182873,
+      "sha256": "6c7ffad5822e93e75a93652827393af9044ecda6c85d16e2bb4e1e70324cfbd6",
+      "rows": 2405,
+      "accessed_at": "2026-11-15T06:23:06Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2003,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2003/modis_2003_France.csv",
+      "path": "data/raw/firms/modis/modis_2003_France.csv",
+      "bytes": 358925,
+      "sha256": "16d0aab8f25c2c345217c7ec93e636d358269bf9b1c745a098acb22cf75d483c",
+      "rows": 4710,
+      "accessed_at": "2026-11-15T06:23:08Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2004,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2004/modis_2004_France.csv",
+      "path": "data/raw/firms/modis/modis_2004_France.csv",
+      "bytes": 228002,
+      "sha256": "6fef6bbab907207e03158081baac54be0483717a8d485f7b19b2d8c0e3223269",
+      "rows": 2997,
+      "accessed_at": "2026-11-15T06:23:10Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2005,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2005/modis_2005_France.csv",
+      "path": "data/raw/firms/modis/modis_2005_France.csv",
+      "bytes": 218387,
+      "sha256": "1a5e09101124bb905d8af68fe66b8d300d04daaea397bd998a0a841a6ff9d979",
+      "rows": 2864,
+      "accessed_at": "2026-11-15T06:23:13Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2006,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2006/modis_2006_France.csv",
+      "path": "data/raw/firms/modis/modis_2006_France.csv",
+      "bytes": 171563,
+      "sha256": "c0c954a2c962805473c465ab6fbc19a8d0a7df164e6cdd42402ff076132a51da",
+      "rows": 2260,
+      "accessed_at": "2026-11-15T06:23:15Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2007,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2007/modis_2007_France.csv",
+      "path": "data/raw/firms/modis/modis_2007_France.csv",
+      "bytes": 159504,
+      "sha256": "d423fa9bf91503e84bec3d67c9ec4d06514726273caba82c6a613437cd326c4d",
+      "rows": 2104,
+      "accessed_at": "2026-11-15T06:23:17Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2008,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2008/modis_2008_France.csv",
+      "path": "data/raw/firms/modis/modis_2008_France.csv",
+      "bytes": 161283,
+      "sha256": "6d268abb20bbaff767e343fa0fdb2da5eff53308235f7e6e5891fed0820f2d0a",
+      "rows": 2122,
+      "accessed_at": "2026-11-15T06:23:19Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2009,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2009/modis_2009_France.csv",
+      "path": "data/raw/firms/modis/modis_2009_France.csv",
+      "bytes": 162139,
+      "sha256": "8932c21d30a6429c6ee6bc3b05507e0a39f61fbd9c47a38b3ee37b5c9a218349",
+      "rows": 2131,
+      "accessed_at": "2026-11-15T06:23:21Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2010,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2010/modis_2010_France.csv",
+      "path": "data/raw/firms/modis/modis_2010_France.csv",
+      "bytes": 123859,
+      "sha256": "ce2449f6616a498ceb04cec83db750f3a4ea1692a3df2aeb152b737000cfcdba",
+      "rows": 1629,
+      "accessed_at": "2026-11-15T06:23:23Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2011,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2011/modis_2011_France.csv",
+      "path": "data/raw/firms/modis/modis_2011_France.csv",
+      "bytes": 160421,
+      "sha256": "e7300c63edcafa63f5ccd9e3ec6e0f8576f0829f17222faa1ffc6abb48755074",
+      "rows": 2114,
+      "accessed_at": "2026-11-15T06:23:25Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2012,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2012/modis_2012_France.csv",
+      "path": "data/raw/firms/modis/modis_2012_France.csv",
+      "bytes": 166749,
+      "sha256": "a69a498c40a761a3bd249ffe2d2f1a0e0521c09bbf583b04e8f11a366e6353c8",
+      "rows": 2193,
+      "accessed_at": "2026-11-15T06:23:27Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2013,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2013/modis_2013_France.csv",
+      "path": "data/raw/firms/modis/modis_2013_France.csv",
+      "bytes": 115147,
+      "sha256": "a2310cfa418a14a20039e6ef342771b1b997b1b0a0821812294ce996cc54c9dd",
+      "rows": 1518,
+      "accessed_at": "2026-11-15T06:23:29Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2014,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2014/modis_2014_France.csv",
+      "path": "data/raw/firms/modis/modis_2014_France.csv",
+      "bytes": 147561,
+      "sha256": "65f2d7ba0c9923bde950b7948eb4de379338d94c40aac4244ca599a10ae2c573",
+      "rows": 1942,
+      "accessed_at": "2026-11-15T06:23:31Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2015,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2015/modis_2015_France.csv",
+      "path": "data/raw/firms/modis/modis_2015_France.csv",
+      "bytes": 158075,
+      "sha256": "ad23f49a3f1f599c10497f217883f3c213c24309647ecdbad3d2b6a5ffd043f7",
+      "rows": 2083,
+      "accessed_at": "2026-11-15T06:23:33Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2016,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2016/modis_2016_France.csv",
+      "path": "data/raw/firms/modis/modis_2016_France.csv",
+      "bytes": 146634,
+      "sha256": "a56a57b52b9656e24eb0f91833224146c2e84205ed45ac102fc9e08a65b133c5",
+      "rows": 1930,
+      "accessed_at": "2026-11-15T06:23:35Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2017,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2017/modis_2017_France.csv",
+      "path": "data/raw/firms/modis/modis_2017_France.csv",
+      "bytes": 212997,
+      "sha256": "96bbf9a66e62266e530fe61be9687cd21faf81c31a13d7d002a684682a90d9d7",
+      "rows": 2797,
+      "accessed_at": "2026-11-15T06:23:38Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2018,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2018/modis_2018_France.csv",
+      "path": "data/raw/firms/modis/modis_2018_France.csv",
+      "bytes": 122447,
+      "sha256": "fe5d1883a5c2c0efba0cbdeedb039696f9a2839ff9db4de1fbba34518584a774",
+      "rows": 1594,
+      "accessed_at": "2026-11-15T06:23:40Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2019,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2019/modis_2019_France.csv",
+      "path": "data/raw/firms/modis/modis_2019_France.csv",
+      "bytes": 223655,
+      "sha256": "aac271531d1c109e77424c7f9059babe58a5c2a3883a48e3b983549346259cc7",
+      "rows": 2901,
+      "accessed_at": "2026-11-15T06:23:43Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2020,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2020/modis_2020_France.csv",
+      "path": "data/raw/firms/modis/modis_2020_France.csv",
+      "bytes": 125978,
+      "sha256": "4c61e9abd7c49a53b7007b25eddb5a9757c6b75c9bb708f79bf223e17de43de2",
+      "rows": 1642,
+      "accessed_at": "2026-11-15T06:23:45Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2021,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2021/modis_2021_France.csv",
+      "path": "data/raw/firms/modis/modis_2021_France.csv",
+      "bytes": 171424,
+      "sha256": "48007c05587d51cf770402cefddb175c0fb65f2c7cc40b17acd3fcd686602a46",
+      "rows": 2227,
+      "accessed_at": "2026-11-15T06:23:47Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2022,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2022/modis_2022_France.csv",
+      "path": "data/raw/firms/modis/modis_2022_France.csv",
+      "bytes": 275421,
+      "sha256": "5ef7cd02f48be72d1b7c698972a7a2ba9fdc8083815c8b096d354278dbcbd5af",
+      "rows": 3538,
+      "accessed_at": "2026-11-15T06:23:49Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2023,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2023/modis_2023_France.csv",
+      "path": "data/raw/firms/modis/modis_2023_France.csv",
+      "bytes": 149126,
+      "sha256": "4ee06f63eaad57fbf969f00d058672a53645aee04528d90ec7fecb64bacb428c",
+      "rows": 1913,
+      "accessed_at": "2026-11-15T06:23:52Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2024,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2024/modis_2024_France.csv",
+      "path": "data/raw/firms/modis/modis_2024_France.csv",
+      "bytes": 108007,
+      "sha256": "49deac78fbd4f99a60641b1582fc5a7ad781ed64036290101824b0f4d8b0fcba",
+      "rows": 1382,
+      "accessed_at": "2026-11-15T06:23:54Z"
+    },
+    {
+      "dataset": "modis",
+      "year": 2025,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2025/modis_2025_France.csv",
+      "path": "data/raw/firms/modis/modis_2025_France.csv",
+      "bytes": 151116,
+      "sha256": "40e98ad9bb98c05bde8cd86f2dfa753c8c48230be7bc862deb28e65846d066c1",
+      "rows": 1924,
+      "accessed_at": "2026-11-15T06:23:56Z"
+    },
+    {
+      "dataset": "viirs-snpp",
+      "year": 2012,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2012/viirs-snpp_2012_France.csv",
+      "path": "data/raw/firms/viirs-snpp/viirs-snpp_2012_France.csv",
+      "bytes": 1078785,
+      "sha256": "58dc7a6d5e5c180f9bdcb651152a31ce06b2a593580a5e3de031ed6d4806c9c7",
+      "rows": 13952,
+      "accessed_at": "2026-11-15T06:24:00Z"
+    },
+    {
+      "dataset": "viirs-snpp",
+      "year": 2013,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2013/viirs-snpp_2013_France.csv",
+      "path": "data/raw/firms/viirs-snpp/viirs-snpp_2013_France.csv",
+      "bytes": 965745,
+      "sha256": "a38c15dd0b26c44d7b83ef7c0a2093653dcbc1288510a23718abee5058b79a76",
+      "rows": 12497,
+      "accessed_at": "2026-11-15T06:24:03Z"
+    },
+    {
+      "dataset": "viirs-snpp",
+      "year": 2014,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2014/viirs-snpp_2014_France.csv",
+      "path": "data/raw/firms/viirs-snpp/viirs-snpp_2014_France.csv",
+      "bytes": 1085957,
+      "sha256": "59cfb5a317bbd7647bbd905c5e3468baaa1c74694f1598aeabc49f8e4d6a3a6a",
+      "rows": 14042,
+      "accessed_at": "2026-11-15T06:24:06Z"
+    },
+    {
+      "dataset": "viirs-snpp",
+      "year": 2015,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2015/viirs-snpp_2015_France.csv",
+      "path": "data/raw/firms/viirs-snpp/viirs-snpp_2015_France.csv",
+      "bytes": 1088326,
+      "sha256": "77eb8a8e3ef562b0f2344939174533aeaac32b246725f47a7c05f58f20cccadd",
+      "rows": 14079,
+      "accessed_at": "2026-11-15T06:24:09Z"
+    },
+    {
+      "dataset": "viirs-snpp",
+      "year": 2016,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2016/viirs-snpp_2016_France.csv",
+      "path": "data/raw/firms/viirs-snpp/viirs-snpp_2016_France.csv",
+      "bytes": 1016561,
+      "sha256": "fcbc027614722d774c9ec95cc826b0c165c080069717e5c29cf942018987ee4a",
+      "rows": 13147,
+      "accessed_at": "2026-11-15T06:24:11Z"
+    },
+    {
+      "dataset": "viirs-snpp",
+      "year": 2017,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2017/viirs-snpp_2017_France.csv",
+      "path": "data/raw/firms/viirs-snpp/viirs-snpp_2017_France.csv",
+      "bytes": 1265529,
+      "sha256": "1e667eecf9c2f3688fea026065737f85c7b425d9423ef20e30a46e2266dd52c0",
+      "rows": 16364,
+      "accessed_at": "2026-11-15T06:24:15Z"
+    },
+    {
+      "dataset": "viirs-snpp",
+      "year": 2018,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2018/viirs-snpp_2018_France.csv",
+      "path": "data/raw/firms/viirs-snpp/viirs-snpp_2018_France.csv",
+      "bytes": 1029351,
+      "sha256": "d127ef7ed0f418490cfbfe069bddc8617e4ba234ec3192ae853984ed2558f1fa",
+      "rows": 13318,
+      "accessed_at": "2026-11-15T06:24:18Z"
+    },
+    {
+      "dataset": "viirs-snpp",
+      "year": 2019,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2019/viirs-snpp_2019_France.csv",
+      "path": "data/raw/firms/viirs-snpp/viirs-snpp_2019_France.csv",
+      "bytes": 1277459,
+      "sha256": "c583dcbee5f37ddeaf5a92007496ef67625da9dd31a34218aeac159a9980aa9f",
+      "rows": 16509,
+      "accessed_at": "2026-11-15T06:24:23Z"
+    },
+    {
+      "dataset": "viirs-snpp",
+      "year": 2020,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2020/viirs-snpp_2020_France.csv",
+      "path": "data/raw/firms/viirs-snpp/viirs-snpp_2020_France.csv",
+      "bytes": 868979,
+      "sha256": "05390d6db78208b7d5ed9f9cb3aa726a04c00f6c9e61a5435b0f7f3d0e4ea911",
+      "rows": 11238,
+      "accessed_at": "2026-11-15T06:24:26Z"
+    },
+    {
+      "dataset": "viirs-snpp",
+      "year": 2021,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2021/viirs-snpp_2021_France.csv",
+      "path": "data/raw/firms/viirs-snpp/viirs-snpp_2021_France.csv",
+      "bytes": 1001437,
+      "sha256": "26e01cceca2251549471ced7d94073c6f52c13d17288d0abb432695f56e7fd76",
+      "rows": 12948,
+      "accessed_at": "2026-11-15T06:24:28Z"
+    },
+    {
+      "dataset": "viirs-snpp",
+      "year": 2022,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2022/viirs-snpp_2022_France.csv",
+      "path": "data/raw/firms/viirs-snpp/viirs-snpp_2022_France.csv",
+      "bytes": 1262837,
+      "sha256": "b566837cb135654151f5c044c23299b140ae93289fca8316fd1a0c1a2f61152c",
+      "rows": 16287,
+      "accessed_at": "2026-11-15T06:24:31Z"
+    },
+    {
+      "dataset": "viirs-snpp",
+      "year": 2023,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2023/viirs-snpp_2023_France.csv",
+      "path": "data/raw/firms/viirs-snpp/viirs-snpp_2023_France.csv",
+      "bytes": 806455,
+      "sha256": "eac33d303947acb0aca633b39a86df5c31fb35ffad2c14a8e73a8f1a3d44618b",
+      "rows": 10424,
+      "accessed_at": "2026-11-15T06:24:34Z"
+    },
+    {
+      "dataset": "viirs-snpp",
+      "year": 2024,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2024/viirs-snpp_2024_France.csv",
+      "path": "data/raw/firms/viirs-snpp/viirs-snpp_2024_France.csv",
+      "bytes": 578653,
+      "sha256": "8d5e960bca73c5204c047e24d2fea8e131764df63b9e776e97b3f042c9c6ec3b",
+      "rows": 7481,
+      "accessed_at": "2026-11-15T06:24:38Z"
+    },
+    {
+      "dataset": "viirs-snpp",
+      "year": 2025,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2025/viirs-snpp_2025_France.csv",
+      "path": "data/raw/firms/viirs-snpp/viirs-snpp_2025_France.csv",
+      "bytes": 764984,
+      "sha256": "18ebf52ee0e097a6bbd420d7dba1a13a53ef6d57007d427d904c4eaf67898af8",
+      "rows": 9888,
+      "accessed_at": "2026-11-15T06:24:42Z"
+    },
+    {
+      "dataset": "viirs-jpss1",
+      "year": 2018,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2018/viirs-jpss1_2018_France.csv",
+      "path": "data/raw/firms/viirs-jpss1/viirs-jpss1_2018_France.csv",
+      "bytes": 911498,
+      "sha256": "4c3220e33979be74d731e89e5c247b6ccef339b6a95877eff946dabc62240db2",
+      "rows": 11494,
+      "accessed_at": "2026-11-15T06:24:45Z"
+    },
+    {
+      "dataset": "viirs-jpss1",
+      "year": 2019,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2019/viirs-jpss1_2019_France.csv",
+      "path": "data/raw/firms/viirs-jpss1/viirs-jpss1_2019_France.csv",
+      "bytes": 1307966,
+      "sha256": "0bdbcffe33171bccc144d936f5344f015009c0923a27a8c0660bc06c7d08c4ea",
+      "rows": 16469,
+      "accessed_at": "2026-11-15T06:24:48Z"
+    },
+    {
+      "dataset": "viirs-jpss1",
+      "year": 2020,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2020/viirs-jpss1_2020_France.csv",
+      "path": "data/raw/firms/viirs-jpss1/viirs-jpss1_2020_France.csv",
+      "bytes": 895401,
+      "sha256": "ce32ed5091ba16d4ef37f3cbaf50646837ae0b0e55bc5ac3e25716dc6ef3dbd1",
+      "rows": 11286,
+      "accessed_at": "2026-11-15T06:24:51Z"
+    },
+    {
+      "dataset": "viirs-jpss1",
+      "year": 2021,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2021/viirs-jpss1_2021_France.csv",
+      "path": "data/raw/firms/viirs-jpss1/viirs-jpss1_2021_France.csv",
+      "bytes": 1048436,
+      "sha256": "0546025845bf6397e02c37305de16ca956867cf87f3883991dae1f6d9d13e0b9",
+      "rows": 13215,
+      "accessed_at": "2026-11-15T06:24:54Z"
+    },
+    {
+      "dataset": "viirs-jpss1",
+      "year": 2022,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2022/viirs-jpss1_2022_France.csv",
+      "path": "data/raw/firms/viirs-jpss1/viirs-jpss1_2022_France.csv",
+      "bytes": 1459385,
+      "sha256": "ad4ad228281eafa9e11f431c108123e1a8b6bca82a3b857f154db829c076ab24",
+      "rows": 18340,
+      "accessed_at": "2026-11-15T06:24:57Z"
+    },
+    {
+      "dataset": "viirs-jpss1",
+      "year": 2023,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2023/viirs-jpss1_2023_France.csv",
+      "path": "data/raw/firms/viirs-jpss1/viirs-jpss1_2023_France.csv",
+      "bytes": 841539,
+      "sha256": "0b132fc99d9546332ae2a010d0cf0e0295ecd9ce547eed87e4fc9fc777f4ac6a",
+      "rows": 10603,
+      "accessed_at": "2026-11-15T06:25:00Z"
+    },
+    {
+      "dataset": "viirs-jpss1",
+      "year": 2024,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2024/viirs-jpss1_2024_France.csv",
+      "path": "data/raw/firms/viirs-jpss1/viirs-jpss1_2024_France.csv",
+      "bytes": 644262,
+      "sha256": "f46c131e0125967ef4799cc33ec3f6c4d26e8d24c6aeb1cd1b8b629da1853e06",
+      "rows": 8121,
+      "accessed_at": "2026-11-15T06:25:02Z"
+    },
+    {
+      "dataset": "viirs-jpss1",
+      "year": 2025,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2025/viirs-jpss1_2025_France.csv",
+      "path": "data/raw/firms/viirs-jpss1/viirs-jpss1_2025_France.csv",
+      "bytes": 833802,
+      "sha256": "b539e08262678cb51714f74825677d96c77f4588c4cedf6fc0003a7d6a9457c7",
+      "rows": 10503,
+      "accessed_at": "2026-11-15T06:25:06Z"
+    }
+  ],
+  "firms_missing": [
+    {
+      "dataset": "modis",
+      "year": 2026,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2026/modis_2026_France.csv",
+      "http_status": 404,
+      "checked_at": "2026-11-15T06:23:58Z"
+    },
+    {
+      "dataset": "viirs-snpp",
+      "year": 2026,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2026/viirs-snpp_2026_France.csv",
+      "http_status": 404,
+      "checked_at": "2026-11-15T06:24:43Z"
+    },
+    {
+      "dataset": "viirs-jpss1",
+      "year": 2026,
+      "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2026/viirs-jpss1_2026_France.csv",
+      "http_status": 404,
+      "checked_at": "2026-11-15T06:25:07Z"
+    }
+  ],
+  "boundaries": [
+    {
+      "level": "ADM0",
+      "path": "data/raw/boundaries/geoboundaries_FRA_ADM0_simplified.geojson",
+      "api_url": null,
+      "download_url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/FRA/ADM0/geoBoundaries-FRA-ADM0_simplified.geojson",
+      "source": "geoBoundaries, Wikipedia",
+      "license": "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
+      "license_detail": "nan",
+      "year_represented": "2016",
+      "boundary_id": "FRA-ADM0-40433807",
+      "sha256": null,
+      "bytes": null,
+      "accessed_at": null
+    },
+    {
+      "level": "ADM1",
+      "path": "data/raw/boundaries/geoboundaries_FRA_ADM1_simplified.geojson",
+      "api_url": null,
+      "download_url": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/FRA/ADM1/geoBoundaries-FRA-ADM1_simplified.geojson",
+      "source": "Institut national de l'information géographique et forestière (IGN-F)",
+      "license": "Etalab Open License 2.0",
+      "license_detail": "nan",
+      "year_represented": "2022",
+      "boundary_id": "FRA-ADM1-19338628",
+      "sha256": null,
+      "bytes": null,
+      "accessed_at": null
+    }
+  ]
+}

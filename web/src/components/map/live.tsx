@@ -58,7 +58,7 @@ function bboxOf(geometry: { type: string; coordinates: unknown }): Bbox {
 }
 
 export function useSubdivisions(territory: LiveTerritory): Subdivisions | null {
-  const files = territory === "FRA" ? ["/geo/fra_regions.geojson", "/geo/fra_departments.geojson"] : ["/geo/provinces.geojson", "/geo/departments.geojson"];
+  const files = territory === "FRA" ? ["/geo/fra/provinces.geojson", "/geo/fra/departments.geojson"] : ["/geo/provinces.geojson", "/geo/departments.geojson"];
   const l1 = useSWR(files[0], fetchGeo, { revalidateOnFocus: false });
   const l2 = useSWR(files[1], fetchGeo, { revalidateOnFocus: false });
   return useMemo(() => {
@@ -67,7 +67,7 @@ export function useSubdivisions(territory: LiveTerritory): Subdivisions | null {
     const byIndex = new Map(level1.map((x) => [x.index, x.name]));
     return {
       level1,
-      level2: l2.data.features.map((f) => ({ name: f.properties.name, bbox: bboxOf(f.geometry), parent: byIndex.get(territory === "FRA" ? (f.properties.region ?? -1) : (f.properties.province ?? -1)) ?? null })),
+      level2: l2.data.features.map((f) => ({ name: f.properties.name, bbox: bboxOf(f.geometry), parent: byIndex.get(f.properties.province ?? -1) ?? null })),
       labels: territory === "FRA" ? ["Régions", "Départements"] : ["Provinces", "Départements"],
     };
   }, [l1.data, l2.data, territory]);

@@ -10,8 +10,15 @@ import path from "node:path";
 import type { CalibrationSummary, ConfigKey, GapRecord, SatelliteMeta, SourceFile } from "../types";
 import { CONFIG_KEYS } from "../types";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const GEO_DIR = path.join(process.cwd(), "public", "geo");
+/** Pays disponibles : chacun a son archive harmonisee (pipeline lance avec HOTSPOT_COUNTRY). */
+export type CountryCode = "GAB" | "FRA";
+export const COUNTRIES: Record<CountryCode, { name: string; dataDir: string; geoDir: string; geoUrl: string }> = {
+  GAB: { name: "Gabon", dataDir: path.join(process.cwd(), "data"), geoDir: path.join(process.cwd(), "public", "geo"), geoUrl: "/geo" },
+  FRA: { name: "France métropolitaine", dataDir: path.join(process.cwd(), "data", "fra"), geoDir: path.join(process.cwd(), "public", "geo", "fra"), geoUrl: "/geo/fra" },
+};
+export function isCountry(value: unknown): value is CountryCode {
+  return value === "GAB" || value === "FRA";
+}
 const DAY_MS = 86_400_000;
 
 interface ColumnMeta {
@@ -78,6 +85,13 @@ export interface MetadataFile {
   country: string;
   coverage: { first_date: string; last_date: string };
   rows: { read: number; kept: number; rejected: number; eligible: number; outside_provinces: number };
+  /** Prolongement par l'API FIRMS au-dela des archives annuelles (pipeline/recent.py). */
+  recent?: {
+    start: string;
+    provisional_from: string | null;
+    mask_validation: { test_year: number; static_precision: number; static_recall: number; vegetation_precision: number; agreement: number };
+    datasets: Record<string, { ranges: { SP?: [string, string]; NRT?: [string, string] }; kept: number; type_inferred: number }>;
+  } | null;
   firms: {
     base_url: string;
     missing_years: { dataset: string; year: number; url: string; http_status: number }[];
@@ -116,6 +130,8 @@ export interface GeographyFile {
 }
 
 export interface Store {
+  country: CountryCode;
+  countryName: string;
   n: number;
   nDays: number;
   firstDay: number;
@@ -221,7 +237,9 @@ function geometryBbox(geometry: { type: string; coordinates: unknown }): [number
   return [w, s, e, n];
 }
 
-function load(): Store {
+function load(country: CountryCode): Store {
+  const DATA_DIR = COUNTRIES[country].dataDir;
+  const GEO_DIR = COUNTRIES[country].geoDir;
   const meta = readJson<DetectionsMeta>(path.join(DATA_DIR, "detections.meta.json"));
   const harmonization = readJson<HarmonizationFile>(path.join(DATA_DIR, "harmonization.json"));
   const metadata = readJson<MetadataFile>(path.join(DATA_DIR, "metadata.json"));
@@ -308,6 +326,8 @@ function load(): Store {
   }
 
   return {
+    country,
+    countryName: COUNTRIES[country].name,
     n,
     nDays,
     firstDay: meta.first_day,
@@ -360,14 +380,33 @@ function load(): Store {
 }
 
 /** A incrementer quand la forme de Store change : evite de reutiliser un cache perime en developpement. */
-const STORE_SCHEMA = 4;
-const globalStore = globalThis as unknown as { __hotspotStore?: { schema: number; store: Store } };
+const STORE_SCHEMA = 6;
+const globalStore = globalThis as unknown as {
+  __hotspotStores?: { schema: number; stores: Partial<Record<CountryCode, { store: Store; stamp: number; checked: number }>> };
+};
 
-export function getStore(): Store {
-  const cached = globalStore.__hotspotStore;
-  if (cached && cached.schema === STORE_SCHEMA) return cached.store;
-  const store = load();
-  globalStore.__hotspotStore = { schema: STORE_SCHEMA, store };
+/** Date d'ecriture des fichiers du pipeline : une archive reconstruite est rechargee sans redemarrer le serveur. */
+function stamp(country: CountryCode): number {
+  try {
+    const dir = COUNTRIES[country].dataDir;
+    return Math.max(fs.statSync(path.join(dir, "detections.meta.json")).mtimeMs, fs.statSync(path.join(dir, "geography.json")).mtimeMs);
+  } catch {
+    return 0;
+  }
+}
+
+/** Archive d'un pays, gardee en memoire et rechargee si le pipeline l'a reecrite (verifie au plus toutes les 5 s). */
+export function getStore(country: CountryCode = "GAB"): Store {
+  let cached = globalStore.__hotspotStores;
+  if (!cached || cached.schema !== STORE_SCHEMA) cached = globalStore.__hotspotStores = { schema: STORE_SCHEMA, stores: {} };
+  const hit = cached.stores[country];
+  const now = Date.now();
+  if (hit && (now - hit.checked < 5000 || stamp(country) === hit.stamp)) {
+    hit.checked = now;
+    return hit.store;
+  }
+  const store = load(country);
+  cached.stores[country] = { store, stamp: stamp(country), checked: now };
   return store;
 }
 

@@ -1,24 +1,24 @@
 {
- "built_at": "2026-11-15T06:07:36Z",
+ "built_at": "2026-11-15T08:38:05Z",
  "data_kind": "real",
  "data_kind_label": "Donnees NASA FIRMS reelles (archives annuelles par pays), figees a la date d'acces indiquee",
  "country": "Gabon",
  "coverage": {
   "first_date": "2000-11-01",
-  "last_date": "2025-12-31"
+  "last_date": "2026-11-14"
  },
  "rows": {
-  "read": 292589,
-  "kept": 292589,
-  "rejected": 0,
-  "eligible": 225533,
-  "outside_provinces": 7581
+  "read": 316285,
+  "kept": 309233,
+  "rejected": 7052,
+  "eligible": 235544,
+  "outside_provinces": 8953
  },
  "by_satellite": {
-  "terra": 23907,
-  "aqua": 35375,
-  "snpp": 147745,
-  "noaa20": 85562
+  "terra": 24453,
+  "aqua": 37343,
+  "snpp": 154456,
+  "noaa20": 92981
  },
  "envelope": {
   "lon_min": 8.0,
@@ -26,33 +26,71 @@
   "lat_min": -4.5,
   "lat_max": 3.0
  },
+ "recent": {
+  "generated_at": "2026-11-15T08:23:47Z",
+  "start": "2026-01-01",
+  "mask_validation": {
+   "test_year": 2025,
+   "rows": 24042,
+   "static_precision": 0.7438,
+   "static_recall": 0.9825,
+   "vegetation_precision": 0.9946,
+   "agreement": 0.9029
+  },
+  "datasets": {
+   "modis": {
+    "ranges": {
+     "SP": [
+      "2026-01-01",
+      "2026-08-31"
+     ],
+     "NRT": [
+      "2026-09-01",
+      "2026-11-15"
+     ]
+    },
+    "kept": 2825,
+    "outside": 11801,
+    "type_inferred": 0
+   },
+   "viirs-snpp": {
+    "ranges": {
+     "SP": [
+      "2026-01-01",
+      "2026-07-31"
+     ],
+     "NRT": [
+      "2026-08-01",
+      "2026-11-02"
+     ]
+    },
+    "kept": 10100,
+    "outside": 37882,
+    "type_inferred": 0
+   },
+   "viirs-jpss1": {
+    "ranges": {
+     "SP": [
+      "2026-01-01",
+      "2026-07-31"
+     ],
+     "NRT": [
+      "2026-08-01",
+      "2026-11-15"
+     ]
+    },
+    "kept": 10771,
+    "outside": 40908,
+    "type_inferred": 0
+   }
+  },
+  "provisional_from": "2026-08-01"
+ },
  "firms": {
   "base_url": "https://firms.modaps.eosdis.nasa.gov/data/country",
-  "missing_years": [
-   {
-    "dataset": "modis",
-    "year": 2026,
-    "url": "https://firms.modaps.eosdis.nasa.gov/data/country/modis/2026/modis_2026_Gabon.csv",
-    "http_status": 404,
-    "checked_at": "2026-11-13T09:25:58Z"
-   },
-   {
-    "dataset": "viirs-snpp",
-    "year": 2026,
-    "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/2026/viirs-snpp_2026_Gabon.csv",
-    "http_status": 404,
-    "checked_at": "2026-11-13T09:26:55Z"
-   },
-   {
-    "dataset": "viirs-jpss1",
-    "year": 2026,
-    "url": "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-jpss1/2026/viirs-jpss1_2026_Gabon.csv",
-    "http_status": 404,
-    "checked_at": "2026-11-13T09:27:36Z"
-   }
-  ],
+  "missing_years": [],
   "accessed_first": "2026-11-13T09:24:56Z",
-  "accessed_last": "2026-11-13T09:27:34Z"
+  "accessed_last": "2026-11-15T08:36:38Z"
  },
  "boundaries": [
   {

@@ -3,14 +3,18 @@ documentee dans l'application (page Methode), pas une prescription de la NASA.""
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 RAW_DIR = ROOT / "data" / "raw"
-WEB_DATA_DIR = ROOT / "web" / "data"
-WEB_GEO_DIR = ROOT / "web" / "public" / "geo"
+
+# Pays traite : HOTSPOT_COUNTRY=GAB (defaut) ou FRA. Chaque pays a son archive, sa grille, son calage.
+COUNTRY = os.environ.get("HOTSPOT_COUNTRY", "GAB").strip().upper()
+if COUNTRY not in ("GAB", "FRA"):
+    raise SystemExit(f"Pays inconnu : {COUNTRY} (GAB ou FRA)")
 
 EPOCH = date(2000, 1, 1)  # jour 0 de l'index temporel
 
@@ -26,11 +30,40 @@ class Grid:
     nrows: int = 130  # -4,0 -> 2,5
 
 
-GRID = Grid()
+@dataclass(frozen=True)
+class CountryProfile:
+    iso: str
+    name: str
+    firms_name: str
+    grid: Grid
+    # Emprise attendue pour le controle qualite (pays + marge). Une coordonnee
+    # valide mais hors emprise est rejetee et journalisee, jamais corrigee.
+    envelope: dict
+    data_dir: Path
+    geo_dir: Path
+    manifest: str
+    # Unites administratives de niveau 1 (provinces au Gabon, regions en France).
+    level1: str
 
-# Emprise attendue pour le controle qualite (Gabon + marge). Une coordonnee
-# valide mais hors emprise est rejetee et journalisee, jamais corrigee.
-ENVELOPE = {"lon_min": 8.0, "lon_max": 15.0, "lat_min": -4.5, "lat_max": 3.0}
+
+PROFILES = {
+    "GAB": CountryProfile(
+        "GAB", "Gabon", "Gabon", Grid(),
+        {"lon_min": 8.0, "lon_max": 15.0, "lat_min": -4.5, "lat_max": 3.0},
+        ROOT / "web" / "data", ROOT / "web" / "public" / "geo", "manifest.json", "province",
+    ),
+    # France metropolitaine et Corse : l'archive FIRMS « France » ne contient pas l'outre-mer.
+    "FRA": CountryProfile(
+        "FRA", "France métropolitaine", "France", Grid(lon0=-5.5, lat0=41.3, step=0.05, ncols=308, nrows=200),
+        {"lon_min": -5.8, "lon_max": 10.0, "lat_min": 41.0, "lat_max": 51.4},
+        ROOT / "web" / "data" / "fra", ROOT / "web" / "public" / "geo" / "fra", "manifest_FRA.json", "region",
+    ),
+}
+PROFILE = PROFILES[COUNTRY]
+GRID = PROFILE.grid
+ENVELOPE = PROFILE.envelope
+WEB_DATA_DIR = PROFILE.data_dir
+WEB_GEO_DIR = PROFILE.geo_dir
 
 
 @dataclass(frozen=True)
