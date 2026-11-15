@@ -5,7 +5,7 @@
  * Non modal sur ordinateur (la page reste visible et utilisable pendant l'echange), plein ecran sur telephone.
  */
 
-import { ArrowCounterClockwise, ArrowUp, CaretDown, Check, CompassTool, DownloadSimple, Info, Microphone, SpeakerHigh, SpeakerSimpleSlash, Stop, Trash, WarningCircle, X } from "@phosphor-icons/react/dist/ssr";
+import { ArrowCounterClockwise, ArrowUp, CaretDown, ChartLineUp, Check, CompassTool, DownloadSimple, Info, MapTrifold, Microphone, SpeakerHigh, SpeakerSimpleSlash, Stop, Trash, WarningCircle, X } from "@phosphor-icons/react/dist/ssr";
 import { usePathname } from "next/navigation";
 import { Fragment, useEffect, useRef, useState } from "react";
 
@@ -346,11 +346,11 @@ export function AssistantPanel() {
         className="fixed inset-x-0 bottom-0 top-[8dvh] z-40 flex animate-fade-up flex-col overflow-hidden rounded-t-[22px] border border-line-strong bg-surface shadow-[0_-12px_48px_-12px_rgb(0_0_0/0.7)] md:inset-x-auto md:bottom-4 md:right-4 md:top-4 md:w-[420px] md:rounded-[22px] md:shadow-[0_24px_64px_-16px_rgb(0_0_0/0.75)]"
       >
         {/* En-tete */}
-        <header className="flex items-center gap-3 border-b border-line px-4 py-3">
+        <header className="flex shrink-0 items-center gap-3 border-b border-line bg-bg/25 px-4 py-3">
           <AssistantMark size={34} />
           <div className="min-w-0 flex-1">
             <p className="text-[15px] font-semibold tracking-[-0.01em] text-ink">{BRAND.assistant}</p>
-            <p className="flex items-center gap-1.5 text-[12px] text-ink-3">
+            <p className="mt-1 flex w-fit items-center gap-1.5 rounded-full border border-line bg-surface px-2 py-0.5 text-[11px] text-ink-2">
               <span aria-hidden className={cx("size-1.5 rounded-full", status === null ? "bg-ink-3" : available ? "bg-good" : "bg-warning")} />
               {status === null ? "Vérification du service" : available ? "Prêt à vous aider" : "Aide hors ligne"}
             </p>
@@ -375,13 +375,35 @@ export function AssistantPanel() {
         </header>
 
         {/* Conversation */}
-        <div ref={scroller} className="flex-1 overflow-y-auto px-4 py-4" aria-live="polite">
+        <div ref={scroller} className="min-h-0 flex-1 overflow-y-auto bg-[linear-gradient(180deg,rgba(8,18,38,0.24),transparent_40%)] px-4 py-4" aria-live="polite" aria-relevant="additions text">
           {welcome ? (
-            <div className="mb-4 rounded-panel bg-[linear-gradient(150deg,#163152,#10213a)] p-4">
-              <p className="text-[16px] font-semibold tracking-[-0.01em] text-ink">Bienvenue dans {BRAND.name}</p>
-              <p className="mt-2 text-[13.5px] leading-relaxed text-ink-2">
-                Je suis {BRAND.assistant}. Je vous aide à explorer 25 ans de détections satellitaires au Gabon : je peux expliquer un graphique, régler la carte ou la période à votre place, et préparer vos exports.
+            <section className="mb-4 overflow-hidden rounded-panel border border-accent/20 bg-[radial-gradient(ellipse_at_top_right,rgba(18,191,210,0.12),transparent_55%),linear-gradient(150deg,#163152,#10213a)] p-4">
+              <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-accent-strong">
+                <AssistantMark size={22} />
+                Copilote de données
+              </div>
+              <h2 className="mt-3 text-[18px] font-semibold leading-snug tracking-[-0.02em] text-ink">Bonjour, que souhaitez-vous explorer ?</h2>
+              <p className="mt-2 text-[13px] leading-relaxed text-ink-2">
+                Je suis {BRAND.assistant}, votre guide pour comprendre les détections satellitaires du Gabon. Je peux expliquer les graphiques, ajuster la carte et la période, ou préparer un export.
               </p>
+              <div className="mt-3 grid grid-cols-3 gap-2">
+                <div className="rounded-control border border-line-strong/70 bg-bg/25 px-2.5 py-2">
+                  <MapTrifold size={16} className="text-accent" />
+                  <p className="mt-1.5 text-[11.5px] font-medium text-ink">Explorer</p>
+                  <p className="text-[10.5px] leading-snug text-ink-3">carte & zone</p>
+                </div>
+                <div className="rounded-control border border-line-strong/70 bg-bg/25 px-2.5 py-2">
+                  <ChartLineUp size={16} className="text-accent" />
+                  <p className="mt-1.5 text-[11.5px] font-medium text-ink">Comprendre</p>
+                  <p className="text-[10.5px] leading-snug text-ink-3">chiffres & méthode</p>
+                </div>
+                <div className="rounded-control border border-line-strong/70 bg-bg/25 px-2.5 py-2">
+                  <DownloadSimple size={16} className="text-accent" />
+                  <p className="mt-1.5 text-[11.5px] font-medium text-ink">Préparer</p>
+                  <p className="text-[10.5px] leading-snug text-ink-3">vos exports</p>
+                </div>
+              </div>
+              <p className="mt-3 text-[11px] leading-relaxed text-ink-3">Archives historiques jusqu’au 31 décembre 2025 · pas d’alerte en temps réel.</p>
               <div className="mt-3.5 flex flex-wrap gap-2">
                 <Button
                   size="sm"
@@ -391,13 +413,17 @@ export function AssistantPanel() {
                     applyLocal([{ type: "start_tour" }]);
                   }}
                 >
-                  Commencer la visite guidée
+                  <CompassTool size={14} />
+                  Voir la visite guidée
                 </Button>
-                <Button size="sm" variant="ghost" onClick={dismissWelcome}>
-                  Explorer seul
+                <Button size="sm" variant="ghost" onClick={() => {
+                  dismissWelcome();
+                  if (available) input.current?.focus();
+                }}>
+                  Poser une question
                 </Button>
               </div>
-            </div>
+            </section>
           ) : null}
 
           {resumeStep !== null && !welcome ? (
@@ -417,23 +443,35 @@ export function AssistantPanel() {
           ) : null}
 
           {messages.length === 0 && !welcome ? (
-            <div className="mb-4">
-              <p className="text-[15px] font-medium text-ink">Que souhaitez-vous explorer ?</p>
-              <p className="mt-1 text-[13px] leading-relaxed text-ink-3">
-                {available ? "Posez une question en langage courant, ou demandez une action : « Montre le Haut-Ogooué en 2024 »." : "Voici l'aide disponible sans l'assistant IA."}
+            <div className="mb-4 rounded-panel border border-line bg-bg/25 p-4">
+              <p className="text-[15px] font-semibold text-ink">Votre copilote pour explorer les données</p>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-ink-3">
+                {available ? "Demandez une explication ou une action, par exemple : « Montre le Haut-Ogooué en 2024 »." : "L’assistant IA est hors ligne pour le moment. Consultez les questions fréquentes ou utilisez la visite guidée."}
               </p>
             </div>
           ) : null}
 
-          <ol className="flex flex-col gap-4">
+          {messages.length > 0 ? (
+            <div className="mb-4 flex items-center gap-2 border-b border-line/70 pb-2 text-[11px] font-medium uppercase tracking-[0.12em] text-ink-3">
+              <span className="size-1.5 rounded-full bg-accent" aria-hidden />
+              Conversation
+              <span className="ml-auto normal-case tracking-normal">{messages.length} message{messages.length > 1 ? "s" : ""}</span>
+            </div>
+          ) : null}
+
+          <ol aria-label="Messages de la conversation" className="flex flex-col gap-5">
             {messages.map((m) => (
               <li key={m.id} className={cx("flex", m.role === "user" ? "justify-end" : "justify-start")}>
                 {m.role === "user" ? (
-                  <div className="max-w-[85%] rounded-[16px] rounded-br-[6px] bg-accent/15 px-3.5 py-2.5 text-[14px] leading-relaxed text-ink">{m.text}</div>
+                  <div className="max-w-[88%] rounded-[18px] rounded-br-[6px] border border-accent/20 bg-[linear-gradient(145deg,rgba(18,191,210,0.18),rgba(18,191,210,0.08))] px-4 py-3 text-[14px] leading-relaxed text-ink shadow-[0_6px_18px_-12px_rgb(18_191_210/0.5)]">
+                    <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent-strong">Vous</p>
+                    <p className="whitespace-pre-wrap">{m.text}</p>
+                  </div>
                 ) : (
                   <div className="flex max-w-full gap-2.5">
                     <AssistantMark size={24} className="mt-0.5 shrink-0" />
-                    <div className={cx("min-w-0 text-[14px] leading-relaxed", m.error ? "text-warning" : "text-ink-2")}>
+                    <div className={cx("min-w-0 flex-1 rounded-[16px] rounded-tl-[6px] border border-line bg-surface-2/75 px-3.5 py-3 text-[14px] leading-relaxed", m.error ? "text-warning" : "text-ink-2")}>
+                      <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent-strong">{BRAND.assistant}</p>
                       <RichText text={m.text} />
                       <Receipts message={m} onConfirm={(r) => confirmExport(m, r)} />
                       {m.sources?.length ? <p className="mt-2.5 text-[11.5px] text-ink-3">Chiffres lus dans : {m.sources.join(" · ")}</p> : null}
@@ -470,7 +508,7 @@ export function AssistantPanel() {
         </div>
 
         {/* Suggestions et saisie */}
-        <footer className="border-t border-line px-4 pb-4 pt-3">
+        <footer className="shrink-0 border-t border-line bg-surface px-4 pb-4 pt-3">
           {voiceMode ? (
             <VoiceConversation
               serverTranscription={status?.transcription === true}

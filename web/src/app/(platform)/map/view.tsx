@@ -339,7 +339,7 @@ export function MapView() {
         {/* Bandeau d'etat */}
         <div className="pointer-events-none absolute inset-x-3 top-3 flex flex-col items-start gap-2 pr-12">
           <div className="pointer-events-auto flex max-w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-control border border-line-strong bg-surface/95 px-3 py-2 text-[12.5px] backdrop-blur" role="status" aria-live="polite">
-            <button type="button" onClick={() => setPanelOpen(true)} className="flex items-center gap-1.5 font-medium text-accent lg:hidden">
+            <button type="button" data-tour="map-filters" onClick={() => setPanelOpen(true)} className="flex items-center gap-1.5 font-medium text-accent lg:hidden">
               <Faders size={15} />
               Filtres
             </button>
