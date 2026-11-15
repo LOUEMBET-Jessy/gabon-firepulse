@@ -7,6 +7,8 @@ import { useEffect, useRef, useState } from "react";
 
 import { activityBreaks } from "@/components/heatmaps";
 import { HEAT, SENSOR_COLOR } from "@/lib/labels";
+
+import { attachSatellites, type SatelliteLayer } from "./satellites";
 import type { DetectionsResponse, GridResponse, ZoneSpec } from "@/lib/types";
 
 export const GABON_BOUNDS: [[number, number], [number, number]] = [
@@ -48,6 +50,8 @@ export interface FireMapProps {
   flight?: { key: number; bbox: Bbox | null; maxZoom?: number } | null;
   onZoom?: (zoom: number) => void;
   placeRadiusKm?: number;
+  /** Satellites MODIS et VIIRS en orbite (illustration, vue Terre seulement). */
+  showSatellites?: boolean;
 }
 
 const empty = { type: "FeatureCollection" as const, features: [] };
@@ -301,6 +305,7 @@ export default function FireMap(props: FireMapProps) {
   const departmentsRef = useRef<ProvinceFeature[]>([]);
   const placesRef = useRef<Map<number, { lon: number; lat: number; name: string }>>(new Map());
   const detailMarkers = useRef<{ marker: Marker; min: number; max: number }[]>([]);
+  const satellitesRef = useRef<SatelliteLayer | null>(null);
   const [ready, setReady] = useState(false);
   const introDone = useRef(false);
   const [failed, setFailed] = useState<string | null>(null);
@@ -400,6 +405,10 @@ export default function FireMap(props: FireMapProps) {
         /* les limites sont un contexte facultatif : la carte reste utilisable sans etiquettes */
       });
 
+    if (globe && !passive) {
+      satellitesRef.current = attachSatellites(map);
+      satellitesRef.current.setVisible(callbacks.current.showSatellites !== false);
+    }
     if (globe) {
       const label = (text: string, cls: string, lngLat: [number, number], min: number, max: number) => {
         const el = document.createElement("div");
@@ -547,6 +556,8 @@ export default function FireMap(props: FireMapProps) {
       labelsRef.current = [];
       detailMarkers.current.forEach(({ marker }) => marker.remove());
       detailMarkers.current = [];
+      satellitesRef.current?.remove();
+      satellitesRef.current = null;
       map.remove();
       mapRef.current = null;
       setReady(false);
@@ -661,6 +672,10 @@ export default function FireMap(props: FireMapProps) {
     else map.setFilter("province-active", ["==", ["get", "index"], zone.kind === "province" ? zone.index : -1]);
     map.setFilter("department-active", ["==", ["get", "index"], highlight?.department ?? (zone.kind === "department" ? zone.index : -1)]);
   }, [highlight, zone, ready, globe]);
+
+  useEffect(() => {
+    satellitesRef.current?.setVisible(props.showSatellites !== false);
+  }, [props.showSatellites, ready]);
 
   // Vols demandes par la navigation (fil d'Ariane, recherche, continents).
   useEffect(() => {

@@ -162,6 +162,24 @@ export function MapView() {
   const [cardOpen, setCardOpen] = useState(false);
   const [flight, setFlight] = useState<{ key: number; bbox: [number, number, number, number] | null; maxZoom?: number } | null>(null);
   const [zoomLevel, setZoomLevel] = useState(6);
+  // Satellites en orbite : une illustration, que l'on peut masquer (choix memorise dans ce navigateur).
+  const [satellites, setSatellites] = useState(true);
+  useEffect(() => {
+    try {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- preference lue une fois apres le montage
+      if (window.localStorage.getItem("hotspot.globe.satellites") === "0") setSatellites(false);
+    } catch {
+      /* stockage indisponible */
+    }
+  }, []);
+  const toggleSatellites = (on: boolean) => {
+    setSatellites(on);
+    try {
+      window.localStorage.setItem("hotspot.globe.satellites", on ? "1" : "0");
+    } catch {
+      /* stockage indisponible */
+    }
+  };
   // Arrivee depuis l'espace : une fois par navigateur, jamais si l'utilisateur limite les animations.
   // Lecture sans ecriture a l'initialisation (React peut l'executer deux fois) ; la marque est posee apres coup.
   const [intro] = useState(() => {
@@ -350,6 +368,9 @@ export function MapView() {
         <Checkbox checked={showProvinces} onChange={setShowProvinces}>
           Limites des provinces
         </Checkbox>
+        <Checkbox checked={satellites} onChange={toggleSatellites}>
+          Satellites MODIS et VIIRS en vue Terre
+        </Checkbox>
         <Checkbox
           checked={basemap}
           onChange={(on) => {
@@ -395,6 +416,7 @@ export function MapView() {
           flight={flight}
           onPickArea={onPickArea}
           onZoom={setZoomLevel}
+          showSatellites={satellites}
           placeRadiusKm={meta.data?.placeRadiusKm}
           mode={mode}
           points={noSatellite || noConfidence ? null : d?.points}
@@ -489,6 +511,13 @@ export function MapView() {
           <div data-tour="map-legend" className="pointer-events-auto max-w-full rounded-control border border-line-strong bg-surface/95 px-3 py-2 backdrop-blur">
             {mode === "points" ? (
               <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-ink-2">
+                {zoomLevel < 4 && satellites ? (
+                  <li className="flex w-full items-center gap-1.5 text-ink-3">
+                    <span aria-hidden className="h-[3px] w-3 rounded-full bg-accent" />
+                    <span aria-hidden className="-ml-1 h-[3px] w-3 rounded-full bg-ember" />
+                    Orbites illustratives de MODIS et VIIRS, temps accéléré : positions non réelles, fauchées à l'échelle.
+                  </li>
+                ) : null}
                 {zoomLevel < 5.4 ? (
                   <li className="flex items-center gap-1.5 text-ink-3">
                     <span aria-hidden className="inline-block size-3 rounded-full border-[3px] border-l-snpp border-t-modis border-r-noaa20 border-b-snpp" />
