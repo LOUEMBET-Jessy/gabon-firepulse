@@ -260,15 +260,20 @@ function mapKey(): string | null {
   return key ? key : null;
 }
 
+/**
+ * L'observatoire lit les fichiers publics des 7 derniers jours, avec ou sans cle : l'API « area » plafonne a
+ * 5 jours par requete et chaque appel consomme le quota de la cle, reserve au prolongement de l'archive
+ * (pipeline/recent.py). FIRMS_LIVE_API=1 force l'API, sur 5 jours.
+ */
 export function liveMode(): { mode: "api" | "files"; maxDays: number } {
-  return mapKey() ? { mode: "api", maxDays: 10 } : { mode: "files", maxDays: 7 };
+  return mapKey() && process.env.FIRMS_LIVE_API === "1" ? { mode: "api", maxDays: 5 } : { mode: "files", maxDays: 7 };
 }
 
 function feedUrl(feed: FeedSpec, territory: LiveTerritory): { url: string; shown: string } {
-  const key = mapKey();
+  const key = liveMode().mode === "api" ? mapKey() : null;
   if (key) {
     const area = TERRITORIES[territory].bbox.join(",");
-    const url = `${FIRMS}/api/area/csv/${key}/${feed.apiSource}/${area}/10`;
+    const url = `${FIRMS}/api/area/csv/${key}/${feed.apiSource}/${area}/5`;
     return { url, shown: url.replace(key, "CLE_MASQUEE") };
   }
   const url = `${FIRMS}/data/active_fire/${feed.dir}/csv/${feed.prefix}_${TERRITORIES[territory].firmsRegion}_7d.csv`;

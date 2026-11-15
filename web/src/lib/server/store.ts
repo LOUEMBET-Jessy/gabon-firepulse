@@ -85,6 +85,13 @@ export interface MetadataFile {
   country: string;
   coverage: { first_date: string; last_date: string };
   rows: { read: number; kept: number; rejected: number; eligible: number; outside_provinces: number };
+  /** Prolongement par l'API FIRMS au-dela des archives annuelles (pipeline/recent.py). */
+  recent?: {
+    start: string;
+    provisional_from: string | null;
+    mask_validation: { test_year: number; static_precision: number; static_recall: number; vegetation_precision: number; agreement: number };
+    datasets: Record<string, { ranges: { SP?: [string, string]; NRT?: [string, string] }; kept: number; type_inferred: number }>;
+  } | null;
   firms: {
     base_url: string;
     missing_years: { dataset: string; year: number; url: string; http_status: number }[];
@@ -373,17 +380,33 @@ function load(country: CountryCode): Store {
 }
 
 /** A incrementer quand la forme de Store change : evite de reutiliser un cache perime en developpement. */
-const STORE_SCHEMA = 5;
-const globalStore = globalThis as unknown as { __hotspotStores?: { schema: number; stores: Partial<Record<CountryCode, Store>> } };
+const STORE_SCHEMA = 6;
+const globalStore = globalThis as unknown as {
+  __hotspotStores?: { schema: number; stores: Partial<Record<CountryCode, { store: Store; stamp: number; checked: number }>> };
+};
 
-/** Archive d'un pays, chargee une fois par processus. Gabon par defaut. */
+/** Date d'ecriture des fichiers du pipeline : une archive reconstruite est rechargee sans redemarrer le serveur. */
+function stamp(country: CountryCode): number {
+  try {
+    const dir = COUNTRIES[country].dataDir;
+    return Math.max(fs.statSync(path.join(dir, "detections.meta.json")).mtimeMs, fs.statSync(path.join(dir, "geography.json")).mtimeMs);
+  } catch {
+    return 0;
+  }
+}
+
+/** Archive d'un pays, gardee en memoire et rechargee si le pipeline l'a reecrite (verifie au plus toutes les 5 s). */
 export function getStore(country: CountryCode = "GAB"): Store {
   let cached = globalStore.__hotspotStores;
   if (!cached || cached.schema !== STORE_SCHEMA) cached = globalStore.__hotspotStores = { schema: STORE_SCHEMA, stores: {} };
   const hit = cached.stores[country];
-  if (hit) return hit;
+  const now = Date.now();
+  if (hit && (now - hit.checked < 5000 || stamp(country) === hit.stamp)) {
+    hit.checked = now;
+    return hit.store;
+  }
   const store = load(country);
-  cached.stores[country] = store;
+  cached.stores[country] = { store, stamp: stamp(country), checked: now };
   return store;
 }
 

@@ -29,6 +29,26 @@ Pour une version de production : `pnpm build` puis `pnpm start`.
 
 L'application lit une copie locale des données : elle fonctionne sans connexion. Seuls le fond de carte « relief NASA Blue Marble » (désactivé par défaut) et l'assistant IA ont besoin du réseau.
 
+## Analyser de 2000 à aujourd'hui
+
+Les archives annuelles FIRMS par pays ne sont publiées qu'après la fin de l'année : sans autre source, l'analyse s'arrête au 31 décembre 2025. Pour la prolonger jusqu'à aujourd'hui :
+
+1. Demandez une clé gratuite FIRMS (MAP_KEY) avec votre adresse e-mail : https://firms.modaps.eosdis.nasa.gov/api/map_key/
+2. Ajoutez-la dans `web/.env.local` : `FIRMS_MAP_KEY=...`
+3. Pour chaque pays, prolongez puis reconstruisez :
+
+```bash
+python pipeline/recent.py && python pipeline/build.py && python pipeline/geography.py
+HOTSPOT_COUNTRY=FRA python pipeline/recent.py && HOTSPOT_COUNTRY=FRA python pipeline/build.py && HOTSPOT_COUNTRY=FRA python pipeline/geography.py
+```
+
+`recent.py` interroge l'API « area » de FIRMS par fenêtres de 5 jours : données **SP** (traitement standard, définitif) tant qu'elles existent, puis **NRT** (temps quasi réel) jusqu'à la date la plus récente. Les lignes sont remises au format exact des archives annuelles et traitées par la même chaîne (contrôle, relais, calage, références). Deux écarts sont gérés et mesurés :
+
+- **Étendue** : on garde les points du pays et ceux des cellules où l'archive a déjà eu des détections (plateformes en mer comprises).
+- **Type de source** : les produits NRT ne disent pas si une détection est un feu de végétation ou un site industriel. Le type est déduit de l'archive (emplacement déjà classé « source statique » par la NASA, ou en mer). Validé sur 2025, dont le vrai type est connu : parmi les détections classées « végétation », 99,5 % le sont vraiment au Gabon et 98,3 % en France ; 98 % des sources statiques sont retrouvées.
+
+Les jours issus du flux NRT sont signalés « provisoires » sur tous les écrans. `python pipeline/recent.py --check` mesure la qualité du masque sans réseau ni clé.
+
 ## Deux pays : Gabon et France métropolitaine
 
 Le sélecteur « Gabon | France » de la barre du haut fait basculer tous les écrans (vue d'ensemble, carte, calendrier, tendances, comparaison des capteurs, périodes inhabituelles, rapports, assistant) sur l'archive du pays choisi. Chaque pays a sa chaîne complète : archives FIRMS annuelles 2000-2025, contrôle, calage MODIS vers VIIRS mesuré et validé sur ses propres années communes, références saisonnières. En France : 13 régions, 96 départements, villes de plus de 5 000 habitants (GeoNames). La sélection (pays, zone, période) est gardée dans un cookie de session : le serveur rend directement le bon écran.
@@ -53,7 +73,7 @@ Sources : Natural Earth (pays, domaine public), geoBoundaries ADM2 (département
 
 Sur la carte, « Observations » bascule entre l'**archive 2000-2025** (harmonisée, base de tous les calculs) et le **temps réel** : les dernières détections MODIS (Terra, Aqua) et VIIRS (Suomi-NPP, NOAA-20, NOAA-21) publiées par la NASA pour le **Gabon** et la **France métropolitaine**.
 
-- **Sources** : sans clé, les fichiers officiels « active fire » de FIRMS (7 derniers jours, régions « Northern and Central Africa » et « Europe »). Avec une clé `FIRMS_MAP_KEY` (gratuite, à demander sur firms.modaps.eosdis.nasa.gov) dans `web/.env.local`, le serveur passe à l'API « area » de FIRMS, limitée à l'emprise de chaque pays, jusqu'à 10 jours.
+- **Sources** : sans clé, les fichiers officiels « active fire » de FIRMS (7 derniers jours, régions « Northern and Central Africa » et « Europe »). La clé `FIRMS_MAP_KEY` sert au prolongement de l'archive (voir plus haut) ; l'observatoire reste sur les fichiers publics, qui couvrent 7 jours sans consommer le quota de la clé (`FIRMS_LIVE_API=1` force l'API, limitée à 5 jours).
 - **Actualisation maîtrisée** : chaque flux (capteur × pays) est vérifié au plus toutes les 10 minutes, à l'ouverture ou au rafraîchissement de la page, par requête conditionnelle : rien n'est retéléchargé si la NASA n'a rien publié. Le bouton « Actualiser » force une vérification (au plus toutes les 2 minutes). Les copies sont gardées en mémoire et dans `web/.cache/live/` : si FIRMS est injoignable, la dernière copie est servie et marquée « ancienne ».
 - **Affichage** : carrés pour MODIS, disques pour VIIRS, halo pour les détections de moins de 24 h. La fiche donne l'acquisition (UTC), le satellite, le capteur, la confiance native, la puissance radiative, la région ou province, le département, le produit et la date de synchronisation.
 - **Filtres** : pays, période (24 h, 48 h, 7 jours), satellite. La fiche d'un pays classe ses régions (France) ou provinces (Gabon), puis leurs départements.
@@ -131,7 +151,7 @@ web/e2e/             parcours de test dans un vrai navigateur
 ## Tests
 
 ```bash
-python -m unittest discover -s pipeline/tests   # 13 tests du pipeline
+python -m unittest discover -s pipeline/tests   # 16 tests du pipeline
 cd web
 pnpm test                                       # 75 tests : statistiques, moteur, cohérence avec le pipeline, géographie, France, temps réel, assistant (Claude, Gemini, voix)
 pnpm dev                                        # puis, dans un autre terminal :

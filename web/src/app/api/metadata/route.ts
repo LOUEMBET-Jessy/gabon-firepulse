@@ -13,6 +13,15 @@ export function GET(request: Request) {
       builtAt: store.metadata.built_at,
       country: store.metadata.country,
       countryCode: store.country,
+      recent: store.metadata.recent
+        ? {
+            start: store.metadata.recent.start,
+            provisionalFrom: store.metadata.recent.provisional_from,
+            vegetationPrecision: store.metadata.recent.mask_validation.vegetation_precision,
+            staticRecall: store.metadata.recent.mask_validation.static_recall,
+            testYear: store.metadata.recent.mask_validation.test_year,
+          }
+        : null,
       countryName: store.countryName,
       geoUrl: COUNTRIES[store.country].geoUrl,
       level1: store.country === "FRA" ? { one: "région", many: "régions" } : { one: "province", many: "provinces" },

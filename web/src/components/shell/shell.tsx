@@ -26,6 +26,7 @@ import { setAssistant, useAssistant } from "@/state/assistant";
 import { useFilters } from "@/state/filters";
 
 import { CountrySwitch, DataBadge, PeriodPicker, ZonePicker } from "./pickers";
+import { ProvisionalBanner } from "./provisional";
 
 interface NavItem {
   href: string;
@@ -259,6 +260,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
         </header>
 
         <main className={cx("relative flex-1", isMap ? "min-h-0 pb-[64px] lg:pb-0" : "px-4 pb-28 pt-8 md:px-8 lg:pb-16")}>
+          {isMap ? null : <ProvisionalBanner />}
           <div key={pathname} className={isMap ? "h-full" : "stagger mx-auto flex w-full max-w-[1320px] flex-col gap-6"}>
             {restored ? (
               children

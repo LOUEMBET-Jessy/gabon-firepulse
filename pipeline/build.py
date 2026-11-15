@@ -314,6 +314,9 @@ def main() -> int:
             "rows": {"read": total_read, "kept": n, "rejected": total_rejected, "eligible": int(eligible.sum()), "outside_provinces": int((province_idx == -1).sum())},
             "by_satellite": stats_by(np.ones(n, dtype=bool)),
             "envelope": ENVELOPE,
+            # Prolongement par l'API FIRMS (recent.py) : periodes SP et NRT, debut des donnees provisoires,
+            # validation du masque de sources statiques. Absent si l'archive s'arrete aux fichiers annuels.
+            "recent": manifest.get("recent"),
             "firms": {
                 "base_url": manifest["firms_base_url"],
                 "missing_years": manifest["firms_missing"],
