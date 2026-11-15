@@ -71,9 +71,9 @@ export const TERRITORIES: Record<LiveTerritory, TerritorySpec> = {
     name: "France métropolitaine",
     firmsRegion: "Europe",
     bbox: [-5.6, 41.2, 9.8, 51.2],
-    country: "fra_country.geojson",
-    level1: { file: "fra_regions.geojson", label: "Région" },
-    level2: { file: "fra_departments.geojson", label: "Département" },
+    country: "fra/country.geojson",
+    level1: { file: "fra/provinces.geojson", label: "Région" },
+    level2: { file: "fra/departments.geojson", label: "Département" },
   },
 };
 
@@ -91,6 +91,8 @@ export interface LiveDetection {
   frp: number | null;
   daynight: "D" | "N";
   version: string;
+  scan: number | null;
+  track: number | null;
   territory: LiveTerritory;
   level1: string | null;
   level2: string | null;
@@ -207,6 +209,7 @@ export function parseFirmsCsv(text: string, feed: FeedSpec, territory: LiveTerri
   const col = (name: string) => header.indexOf(name);
   const iLat = col("latitude"), iLon = col("longitude"), iDate = col("acq_date"), iTime = col("acq_time");
   const iSat = col("satellite"), iConf = col("confidence"), iVer = col("version"), iFrp = col("frp"), iDn = col("daynight");
+  const iScan = col("scan"), iTrack = col("track");
   if (iLat < 0 || iLon < 0 || iDate < 0 || iTime < 0) {
     if (text.trim().length === 0 || lines.length <= 1) return [];
     throw new Error("Format inattendu : colonnes latitude, longitude, acq_date ou acq_time absentes.");
@@ -239,6 +242,8 @@ export function parseFirmsCsv(text: string, feed: FeedSpec, territory: LiveTerri
       frp: Number.isFinite(frp) ? frp : null,
       daynight: (f[iDn] ?? "").trim().toUpperCase() === "N" ? "N" : "D",
       version: (f[iVer] ?? "").trim(),
+      scan: Number.isFinite(Number(f[iScan])) && iScan >= 0 ? Number(f[iScan]) : null,
+      track: Number.isFinite(Number(f[iTrack])) && iTrack >= 0 ? Number(f[iTrack]) : null,
       territory,
       level1: geo.level1.find((a) => inArea(lon, lat, a))?.name ?? null,
       level2: geo.level2.find((a) => inArea(lon, lat, a))?.name ?? null,

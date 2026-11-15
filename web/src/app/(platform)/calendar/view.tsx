@@ -10,7 +10,7 @@ import { DayHeatmap, HeatmapKey, MonthHeatmap, ScaleLegend, WeekHeatmap, activit
 import { zoneLabel } from "@/components/shell/pickers";
 import { pageIcon } from "@/components/shell/shell";
 import { Button, ChartSkeleton, ErrorState, Notice, PageHeader, Panel, PanelHeader, Segmented, SourceNote, buttonClass, cx, inputClass } from "@/components/ui";
-import { exportUrl, useCalendar, useDaily, useMetadata } from "@/lib/api";
+import { exportUrl, useHydrated, useCalendar, useDaily, useMetadata } from "@/lib/api";
 import { fmtDate, fmtInt, lastDayOfMonth, MONTHS, monthLabel, pad2 } from "@/lib/format";
 import { CONFIG_LABEL, DEFINITIONS, UNIT } from "@/lib/labels";
 import { CONFIG_KEYS } from "@/lib/types";
@@ -30,6 +30,7 @@ export function CalendarView() {
   const { zone, from, to, setPeriod } = useFilters();
   const router = useRouter();
   const meta = useMetadata();
+  const hydrated = useHydrated();
   const calendar = useCalendar(zone);
   // Vue du calendrier dans le magasin partage : l'assistant peut changer le pas de temps ou ouvrir un mois.
   const view = useView((v) => v.calendar);
@@ -106,7 +107,7 @@ export function CalendarView() {
           </>
         }
         actions={
-          <a className={buttonClass("secondary", "md")} href={exportUrl("monthly", "csv", zone)} download>
+          <a className={buttonClass("secondary", "md")} href={hydrated ? exportUrl("monthly", "csv", zone) : undefined} download>
             <DownloadSimple size={16} />
             Série mensuelle (CSV)
           </a>

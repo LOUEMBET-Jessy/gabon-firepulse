@@ -166,7 +166,7 @@ function remember<T>(cache: Map<string, T>, key: string, value: T): T {
 }
 
 export function zoneDaily(zone: ZoneSpec, store: Store = getStore()): ZoneDaily {
-  const key = zoneKey(zone);
+  const key = `${store.country}|${zoneKey(zone)}`;
   const cached = dailyCache.get(key);
   if (cached) return cached;
 
@@ -396,7 +396,7 @@ function monthSpans(store: Store): MonthSpan[] {
 }
 
 export function calendar(zone: ZoneSpec, store: Store = getStore()): CalendarResponse {
-  const key = zoneKey(zone);
+  const key = `${store.country}|${zoneKey(zone)}`;
   const cached = calendarCache.get(key);
   if (cached) return cached;
 

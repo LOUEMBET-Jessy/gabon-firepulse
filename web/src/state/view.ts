@@ -31,6 +31,8 @@ export interface ViewState {
     filters: MapFilters;
     basemap: boolean;
     showProvinces: boolean;
+    /** Fond detaille en ligne (rues, quartiers, lieux-dits), jusqu'au zoom 18. */
+    streets: boolean;
     /** Archive harmonisee 2000-2025, ou observatoire temps quasi reel (NASA FIRMS NRT). */
     source: "archive" | "live";
     live: { territories: ("GAB" | "FRA")[]; days: number; sats: Record<"terra" | "aqua" | "snpp" | "noaa20" | "noaa21", boolean> };
@@ -54,6 +56,7 @@ const INITIAL: ViewState = {
     filters: DEFAULT_MAP_FILTERS,
     basemap: false,
     showProvinces: true,
+    streets: false,
     source: "archive",
     live: { territories: ["GAB", "FRA"], days: 7, sats: { terra: true, aqua: true, snpp: true, noaa20: true, noaa21: true } },
   },

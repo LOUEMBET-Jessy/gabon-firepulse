@@ -28,6 +28,7 @@ from hotspot.config import (  # noqa: E402
     CV_MIN_REFERENCE,
     ELIGIBLE_TYPE,
     ENVELOPE,
+    PROFILE,
     EPOCH,
     GAP_RULES,
     GAP_WITNESS_MIN_DETECTIONS,
@@ -75,7 +76,7 @@ def write_json(path: Path, payload) -> None:
 
 
 def main() -> int:
-    manifest = json.loads((RAW_DIR / "manifest.json").read_text("utf-8"))
+    manifest = json.loads((RAW_DIR / PROFILE.manifest).read_text("utf-8"))
     sources = sorted(manifest["firms_files"], key=lambda f: (f["dataset"], f["year"]))
     sensor_of = {s.dataset: s.sensor for s in SATELLITES}
 
@@ -100,7 +101,7 @@ def main() -> int:
     off_grid = int((det["cell"] < 0).sum())
     if off_grid:
         raise RuntimeError(f"{off_grid} detections hors grille : elargir la grille")
-    provinces = load_provinces(RAW_DIR / "boundaries" / "geoboundaries_GAB_ADM1_simplified.geojson")
+    provinces = load_provinces(RAW_DIR / "boundaries" / f"geoboundaries_{PROFILE.iso}_ADM1_simplified.geojson")
     det["province"] = assign_provinces(det["lon"].to_numpy(), det["lat"].to_numpy(), provinces)
 
     versions = sorted(det["version"].unique())
@@ -122,9 +123,12 @@ def main() -> int:
     cal_month, ym = hz.calendar_arrays(n_days)
     first_day = {s.code: (s.first_day - EPOCH).days for s in SATELLITES}
     observed_first = {s.code: int(day[sat == s.code].min()) for s in SATELLITES}
+    # La mise en service est une date connue de la mission ; la premiere detection peut arriver quelques jours
+    # apres dans un pays peu actif (aucun feu le premier jour). Elle ne peut jamais la preceder.
     for s in SATELLITES:
-        if observed_first[s.code] != first_day[s.code]:
-            raise RuntimeError(f"{s.name} : premiere detection {hz.day_to_date(observed_first[s.code])} differente de la date attendue {s.first_day}")
+        delay = observed_first[s.code] - first_day[s.code]
+        if delay < 0 or delay > 45:
+            raise RuntimeError(f"{s.name} : premiere detection {hz.day_to_date(observed_first[s.code])} incoherente avec la mise en service {s.first_day}")
 
     all_counts = {s.code: hz.daily_counts(day, sat == s.code, n_days) for s in SATELLITES}
     gaps = hz.find_gaps(all_counts, first_day, n_days - 1, cal_month)
@@ -332,8 +336,8 @@ def main() -> int:
             ],
         },
     )
-    country = json.loads((RAW_DIR / "boundaries" / "geoboundaries_GAB_ADM0_simplified.geojson").read_text("utf-8"))
-    write_json(WEB_GEO_DIR / "country.geojson", {"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"name": "Gabon"}, "geometry": f["geometry"]} for f in country["features"]]})
+    country = json.loads((RAW_DIR / "boundaries" / f"geoboundaries_{PROFILE.iso}_ADM0_simplified.geojson").read_text("utf-8"))
+    write_json(WEB_GEO_DIR / "country.geojson", {"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"name": PROFILE.name}, "geometry": f["geometry"]} for f in country["features"]]})
 
     print(f"\nEcrit : {n} detections ({offset / 1e6:.1f} Mo), {int(eligible.sum())} eligibles, {int((province_idx == -1).sum())} hors provinces")
     return 0

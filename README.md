@@ -15,6 +15,9 @@ Prérequis : Python 3.11 ou plus récent avec `numpy` et `pandas`, Node.js 20 ou
 python pipeline/acquire.py     # télécharge les archives FIRMS et les limites administratives dans data/raw/
 python pipeline/build.py       # contrôle, harmonise et écrit web/data/ et web/public/geo/
 python pipeline/geography.py   # pays du monde, départements et localités du Gabon (après build.py)
+HOTSPOT_COUNTRY=FRA python pipeline/acquire.py     # même chaîne pour la France métropolitaine
+HOTSPOT_COUNTRY=FRA python pipeline/build.py       # -> web/data/fra/ et web/public/geo/fra/
+HOTSPOT_COUNTRY=FRA python pipeline/geography.py
 
 # 2. Application
 cd web
@@ -25,6 +28,15 @@ pnpm dev                       # ou : npm run dev   ->  http://localhost:3210
 Pour une version de production : `pnpm build` puis `pnpm start`.
 
 L'application lit une copie locale des données : elle fonctionne sans connexion. Seuls le fond de carte « relief NASA Blue Marble » (désactivé par défaut) et l'assistant IA ont besoin du réseau.
+
+## Deux pays : Gabon et France métropolitaine
+
+Le sélecteur « Gabon | France » de la barre du haut fait basculer tous les écrans (vue d'ensemble, carte, calendrier, tendances, comparaison des capteurs, périodes inhabituelles, rapports, assistant) sur l'archive du pays choisi. Chaque pays a sa chaîne complète : archives FIRMS annuelles 2000-2025, contrôle, calage MODIS vers VIIRS mesuré et validé sur ses propres années communes, références saisonnières. En France : 13 régions, 96 départements, villes de plus de 5 000 habitants (GeoNames). La sélection (pays, zone, période) est gardée dans un cookie de session : le serveur rend directement le bon écran.
+
+## Précision de la carte
+
+- **Fond détaillé « Rues et quartiers »** (OpenStreetMap, en ligne, désactivé par défaut) : rues, quartiers et lieux-dits jusqu'au zoom 18.
+- **Emprise réelle des pixels** : à partir du zoom 10, chaque détection est entourée du rectangle de son pixel au sol (`scan` × `track` publiés par la NASA, environ 0,4 km pour VIIRS et 1 km ou plus pour MODIS). Le feu est quelque part dans ce rectangle : en dessous de cette taille, aucune donnée satellitaire ne permet de dire dans quel quartier il se trouvait. Les quartiers sont donc des repères de lecture, pas des zones d'analyse.
 
 ## Explorer depuis le globe
 
@@ -121,13 +133,14 @@ web/e2e/             parcours de test dans un vrai navigateur
 ```bash
 python -m unittest discover -s pipeline/tests   # 13 tests du pipeline
 cd web
-pnpm test                                       # 69 tests : statistiques, moteur, cohérence avec le pipeline, géographie, temps réel, assistant (Claude, Gemini, voix)
+pnpm test                                       # 75 tests : statistiques, moteur, cohérence avec le pipeline, géographie, France, temps réel, assistant (Claude, Gemini, voix)
 pnpm dev                                        # puis, dans un autre terminal :
 node e2e/flows.mjs                              # 20 parcours d'acceptation (Chrome installé requis)
 node e2e/assistant.mjs                          # 9 parcours de l'assistant
 node e2e/assistant-live.mjs                     # 8 essais avec le vrai fournisseur IA (clé requise, requêtes facturées)
 node e2e/voice-live.mjs question.wav            # conversation vocale complète : un fichier WAV sert de micro (clé requise)
 node e2e/globe.mjs                              # 4 parcours du globe : anneaux par capteur, département, localité, arrivée depuis l'espace
+node e2e/france.mjs                             # 3 parcours de l'archive France : bascule, chiffres, région
 node e2e/live.mjs                               # 3 parcours de l'observatoire temps réel (réseau requis : données NASA FIRMS réelles)
 ```
 

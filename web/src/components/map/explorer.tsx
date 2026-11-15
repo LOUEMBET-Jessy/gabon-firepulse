@@ -4,7 +4,7 @@
  * Exploration geographique : fil d'Ariane (Terre, continent, pays, province, departement, localite),
  * recherche de lieux, et fiche du territoire selectionne.
  *
- * Seul le Gabon dispose de detections chargees : pour les autres pays, la fiche le dit, sans chiffre.
+ * Le Gabon et la France metropolitaine disposent d'une archive : pour les autres pays, la fiche le dit, sans chiffre.
  * Les indicateurs sont une aide a l'analyse et a la priorisation des verifications de terrain,
  * jamais une prediction d'incendie.
  */
@@ -16,7 +16,7 @@ import { useMemo, useState } from "react";
 import type { AreaPick } from "@/components/map/fire-map";
 import { rememberPlace, zoneLabel } from "@/components/shell/pickers";
 import { Button, ReliabilityBadge, SensorMark, Skeleton, StatusBadge, cx } from "@/components/ui";
-import { useCalendar, useDepartmentRegions, useMetadata, useOverview, useRegions } from "@/lib/api";
+import { getApiCountry, useCalendar, useDepartmentRegions, useMetadata, useOverview, useRegions } from "@/lib/api";
 import { fmtDelta, fmtInt, MONTHS_SHORT } from "@/lib/format";
 import { SATELLITES } from "@/lib/labels";
 import type { MetadataResponse, ZoneSpec } from "@/lib/types";
@@ -39,12 +39,29 @@ export const CONTINENTS: { name: string; bbox: Bbox }[] = [
 /** Memes limites que GABON_BOUNDS de la carte (non importe ici : le moteur de carte ne se charge que dans le navigateur). */
 export const GABON_BBOX: Bbox = [8.45, -4.1, 14.75, 2.45];
 
+/** Pays dotes d'une archive harmonisee. */
+export const ARCHIVE_COUNTRIES = {
+  GAB: { iso: "GAB", name: "Gabon", continent: "Afrique", bbox: GABON_BBOX },
+  FRA: { iso: "FRA", name: "France métropolitaine", continent: "Europe", bbox: [-5.2, 41.3, 9.6, 51.1] as Bbox },
+} as const;
+
+/** Territoire « pays » de l'archive consultee (ou d'un autre pays dote d'une archive). */
+export function archiveCountry(code: "GAB" | "FRA" = getApiCountry()): Extract<Territory, { kind: "country" }> {
+  const c = ARCHIVE_COUNTRIES[code];
+  return { kind: "country", iso: c.iso, name: c.name, continent: c.continent, bbox: c.bbox };
+}
+
+export function hasArchive(iso: string): iso is "GAB" | "FRA" {
+  return iso === "GAB" || iso === "FRA";
+}
+
+/** Territoire couvert par une archive (pays, province ou region, departement, localite). */
 export function isGabon(t: Territory): boolean {
-  return t.kind === "province" || t.kind === "department" || t.kind === "place" || (t.kind === "country" && t.iso === "GAB");
+  return t.kind === "province" || t.kind === "department" || t.kind === "place" || (t.kind === "country" && hasArchive(t.iso));
 }
 
 export function territoryZone(t: Territory): ZoneSpec | null {
-  if (t.kind === "country") return t.iso === "GAB" ? { kind: "country" } : null;
+  if (t.kind === "country") return t.iso === getApiCountry() ? { kind: "country" } : null;
   if (t.kind === "province") return { kind: "province", index: t.index };
   if (t.kind === "department") return { kind: "department", index: t.index };
   if (t.kind === "place") return { kind: "place", id: t.id };
@@ -52,7 +69,7 @@ export function territoryZone(t: Territory): ZoneSpec | null {
 }
 
 export function territoryFromZone(zone: ZoneSpec): Territory | null {
-  if (zone.kind === "country") return { kind: "country", iso: "GAB", name: "Gabon", continent: "Afrique", bbox: GABON_BBOX };
+  if (zone.kind === "country") return archiveCountry();
   if (zone.kind === "province") return { kind: "province", index: zone.index };
   if (zone.kind === "department") return { kind: "department", index: zone.index };
   if (zone.kind === "place") return { kind: "place", id: zone.id, name: "" };
@@ -62,12 +79,12 @@ export function territoryFromZone(zone: ZoneSpec): Territory | null {
 type Crumb = { label: string; target: Territory };
 
 function crumbs(t: Territory, meta: MetadataResponse | undefined): Crumb[] {
-  const gabon: Territory = { kind: "country", iso: "GAB", name: "Gabon", continent: "Afrique", bbox: GABON_BBOX };
+  const home = archiveCountry();
   const out: Crumb[] = [{ label: "Terre", target: { kind: "world" } }];
   if (t.kind === "world") return out;
   if (t.kind === "continent") return [...out, { label: t.name, target: t }];
   if (t.kind === "country") return [...out, { label: t.continent, target: { kind: "continent", name: t.continent } }, { label: t.name, target: t }];
-  out.push({ label: "Afrique", target: { kind: "continent", name: "Afrique" } }, { label: "Gabon", target: gabon });
+  out.push({ label: home.continent, target: { kind: "continent", name: home.continent } }, { label: home.name, target: home });
   const province = t.kind === "province" ? t.index : t.kind === "department" ? meta?.departments[t.index]?.province : t.kind === "place" ? (t.province ?? meta?.towns.find((x) => x.id === t.id)?.province) : undefined;
   const department = t.kind === "department" ? t.index : t.kind === "place" ? (t.department ?? meta?.towns.find((x) => x.id === t.id)?.department) : undefined;
   if (province !== undefined && province >= 0 && meta) out.push({ label: meta.provinces[province].name, target: { kind: "province", index: province } });
@@ -237,7 +254,7 @@ export function TerritoryCard({
   const same = zone && JSON.stringify(zone) === JSON.stringify(activeZone);
 
   const children =
-    territory.kind === "country" && territory.iso === "GAB"
+    territory.kind === "country" && territory.iso === getApiCountry()
       ? regions.data?.regions.map((r) => ({ name: r.name, value: r.harmonized, target: { kind: "province", index: r.index } as Territory }))
       : territory.kind === "province"
         ? departments.data?.regions.map((r) => ({ name: r.name, value: r.harmonized, target: { kind: "department", index: r.index } as Territory }))
@@ -269,13 +286,21 @@ export function TerritoryCard({
           <>
             <p className="text-[13px] leading-relaxed text-ink-2">
               {territory.kind === "country"
-                ? `Aucune détection n'est chargée pour ce pays. Hot-Spot traite aujourd'hui les archives NASA FIRMS du Gabon : les chiffres, tendances et périodes inhabituelles n'existent que là.`
-                : "Faites tourner le globe et choisissez une région. Les détections de feux chargées concernent le Gabon (archives NASA FIRMS, 2000 à 2025)."}
+                ? hasArchive(territory.iso)
+                  ? "Ce pays a son archive NASA FIRMS 2000 à 2025 : passez-y pour en voir les chiffres, tendances et périodes inhabituelles."
+                  : "Aucune détection n'est chargée pour ce pays. Hot-Spot traite les archives NASA FIRMS du Gabon et de la France métropolitaine : chiffres, tendances et périodes inhabituelles n'existent que là."
+                : "Faites tourner le globe et choisissez une région. Les archives chargées couvrent le Gabon et la France métropolitaine (NASA FIRMS, 2000 à 2025)."}
             </p>
-            <Button size="sm" variant="primary" onClick={() => onGo({ kind: "country", iso: "GAB", name: "Gabon", continent: "Afrique", bbox: GABON_BBOX })}>
-              Aller au Gabon
-              <ArrowRight size={14} />
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm" variant="primary" onClick={() => onGo(archiveCountry("GAB"))}>
+                Gabon
+                <ArrowRight size={14} />
+              </Button>
+              <Button size="sm" variant="primary" onClick={() => onGo(archiveCountry("FRA"))}>
+                France
+                <ArrowRight size={14} />
+              </Button>
+            </div>
           </>
         ) : (
           <>

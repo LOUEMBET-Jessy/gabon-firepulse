@@ -7,7 +7,7 @@ import { AnnualChart, SeasonalChart } from "@/components/charts";
 import { zoneLabel } from "@/components/shell/pickers";
 import { pageIcon } from "@/components/shell/shell";
 import { Button, Checkbox, ErrorState, PageHeader, Panel, PanelHeader, Skeleton, StatusBadge, buttonClass } from "@/components/ui";
-import { exportUrl, useCalendar, useMetadata, useOverview, useRegions } from "@/lib/api";
+import { exportUrl, useCalendar, useHydrated, useMetadata, useOverview, useRegions } from "@/lib/api";
 import { fmt1, fmtArea, fmtDate, fmtDateTimeUtc, fmtDelta, fmtInt, fmtPct, fmtPeriod, fmtScore, MONTHS, monthLabel } from "@/lib/format";
 import { DEFINITIONS, KIND_LABEL, RELIABILITY, SATELLITES, STATUS } from "@/lib/labels";
 import { ANOMALY_SETTINGS } from "@/lib/science/anomaly";
@@ -30,6 +30,7 @@ function Fact({ label, children }: { label: string; children: React.ReactNode })
 export function ReportsView() {
   const { zone, from, to } = useFilters();
   const meta = useMetadata();
+  const hydrated = useHydrated();
   const overview = useOverview(zone, from, to);
   const calendar = useCalendar(zone);
   const regions = useRegions(from, to);
@@ -124,7 +125,7 @@ export function ReportsView() {
                     <span className="block text-[13.5px] font-medium text-ink">{title}</span>
                     <span className="block text-[12.5px] leading-snug text-ink-3">{detail}</span>
                   </span>
-                  <a className={buttonClass("secondary", "sm")} href={href} download aria-label={`Télécharger : ${title}`}>
+                  <a className={buttonClass("secondary", "sm")} href={hydrated ? href : undefined} download aria-label={`Télécharger : ${title}`}>
                     <DownloadSimple size={15} />
                     Télécharger
                   </a>

@@ -14,7 +14,8 @@ Sorties :
 - web/public/geo/places.geojson       lieux habites, avec leur province et leur departement ;
 - web/data/departments.bin            indice de departement de chaque detection (int8, -1 hors polygone) ;
 - web/data/geography.json             listes, sources et parametres lus par le serveur ;
-- web/public/geo/fra_*.geojson         France metropolitaine (pays, 13 regions, 96 departements), pour l'observatoire.
+Lancer pour chaque pays : HOTSPOT_COUNTRY=FRA python pipeline/geography.py (France metropolitaine,
+13 regions, 96 departements, villes de plus de 5 000 habitants, sorties dans web/data/fra et web/public/geo/fra).
 
 Aucune donnee de detection n'est creee ici : seuls des rattachements geographiques sont calcules.
 """
@@ -33,11 +34,15 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "pipeline"))
 
+from hotspot.config import PROFILE  # noqa: E402
 from hotspot.geo import assign_provinces, load_provinces, points_in_geometry  # noqa: E402
 
 RAW = ROOT / "data" / "raw"
-WEB_DATA = ROOT / "web" / "data"
-WEB_GEO = ROOT / "web" / "public" / "geo"
+# Pays traite : HOTSPOT_COUNTRY=GAB (defaut) ou FRA, comme pour build.py.
+ISO = PROFILE.iso
+WEB_DATA = PROFILE.data_dir
+WEB_GEO = PROFILE.geo_dir
+WORLD_GEO = ROOT / "web" / "public" / "geo"
 
 # Rayon de la zone d'analyse autour d'une localite : un point n'a pas de surface,
 # l'analyse porte donc sur un disque, annonce comme tel a l'ecran.
@@ -107,7 +112,7 @@ def world() -> list[dict]:
 
 
 def departments(provinces: list[dict]) -> list[dict]:
-    collection = json.loads((RAW / "boundaries" / "geoboundaries_GAB_ADM2_simplified.geojson").read_text("utf-8"))
+    collection = json.loads((RAW / "boundaries" / f"geoboundaries_{ISO}_ADM2_simplified.geojson").read_text("utf-8"))
     items = []
     for f in collection["features"]:
         name = str(f["properties"].get("shapeName", "")).strip()
@@ -130,9 +135,15 @@ def departments(provinces: list[dict]) -> list[dict]:
 
 
 def places(country_geometry: dict, provinces: list[dict], depts: list[dict]) -> list[dict]:
-    with zipfile.ZipFile(RAW / "places" / "geonames_GA.zip") as z:
-        text = z.read("GA.txt").decode("utf-8")
-    rows = [line.split("\t") for line in text.splitlines() if line]
+    # Gabon : tous les lieux habites (GA.zip). France : villes de plus de 5 000 habitants (cities5000).
+    if ISO == "GAB":
+        with zipfile.ZipFile(RAW / "places" / "geonames_GA.zip") as z:
+            text = z.read("GA.txt").decode("utf-8")
+        rows = [line.split("\t") for line in text.splitlines() if line]
+    else:
+        with zipfile.ZipFile(RAW / "places" / "geonames_cities5000.zip") as z:
+            text = z.read("cities5000.txt").decode("utf-8")
+        rows = [r for r in (line.split("\t") for line in text.splitlines() if line) if r[8] == "FR"]
     out = []
     for r in rows:
         if r[6] != "P" or r[7] in ("PPLX", "PPLH", "PPLQ", "PPLW"):
@@ -212,72 +223,32 @@ def simplify(geometry: dict, tolerance: float) -> dict:
     return {"type": "MultiPolygon", "coordinates": out}
 
 
-FRANCE_METRO = (-5.6, 41.2, 9.8, 51.2)
-
-
-def france() -> dict:
-    """France metropolitaine (Corse comprise) : pays, regions (ADM1) et departements (ADM2), simplifies pour le web."""
-    out = {}
-    # Tolerances en degres (environ 400 m, 600 m, 800 m) : invisibles aux zooms ou chaque niveau s'affiche.
-    for level, name, tolerance in (("ADM0", "country", 0.004), ("ADM1", "regions", 0.006), ("ADM2", "departments", 0.008)):
-        collection = json.loads((RAW / "boundaries" / f"geoboundaries_FRA_{level}_simplified.geojson").read_text("utf-8"))
-        features = []
-        for f in collection["features"]:
-            geom = simplify(f["geometry"], tolerance)
-            # Ne garder que les polygones de metropole (l'ADM0 contient aussi l'outre-mer).
-            kept = [poly for poly in geom["coordinates"] if FRANCE_METRO[0] <= np.mean([c[0] for c in poly[0]]) <= FRANCE_METRO[2] and FRANCE_METRO[1] <= np.mean([c[1] for c in poly[0]]) <= FRANCE_METRO[3]]
-            if not kept:
-                continue
-            features.append({"name": str(f["properties"].get("shapeName", "France")).strip(), "geometry": {"type": "MultiPolygon", "coordinates": kept}})
-        features.sort(key=lambda x: x["name"])
-        for i, f in enumerate(features):
-            f["index"] = i
-        out[name] = features
-    # Departement -> region par vote sur une grille de points interieurs (memes regles que pour le Gabon).
-    for d in out["departments"]:
-        arr = np.vstack([np.asarray(poly[0]) for poly in d["geometry"]["coordinates"]])
-        gx, gy = np.meshgrid(np.linspace(arr[:, 0].min(), arr[:, 0].max(), 40), np.linspace(arr[:, 1].min(), arr[:, 1].max(), 40))
-        gx, gy = gx.ravel(), gy.ravel()
-        inside = points_in_geometry(gx, gy, d["geometry"])
-        votes = np.full(int(inside.sum()), -1)
-        for r in out["regions"]:
-            m = points_in_geometry(gx[inside], gy[inside], r["geometry"]) & (votes == -1)
-            votes[m] = r["index"]
-        votes = votes[votes >= 0]
-        d["region"] = int(np.bincount(votes).argmax()) if votes.size else -1
-    for name, features in out.items():
-        (WEB_GEO / f"fra_{name}.geojson").write_text(
-            json.dumps(
-                {
-                    "type": "FeatureCollection",
-                    "features": [
-                        {"type": "Feature", "properties": {k: v for k, v in f.items() if k != "geometry"}, "geometry": f["geometry"]} for f in features
-                    ],
-                },
-                ensure_ascii=False,
-                separators=(",", ":"),
-            ),
-            "utf-8",
-        )
-    return {k: len(v) for k, v in out.items()}
-
-
 def main() -> None:
-    provinces = load_provinces(RAW / "boundaries" / "geoboundaries_GAB_ADM1_simplified.geojson")
-    country = json.loads((RAW / "boundaries" / "geoboundaries_GAB_ADM0_simplified.geojson").read_text("utf-8"))["features"][0]["geometry"]
-    w = world()
+    provinces = load_provinces(RAW / "boundaries" / f"geoboundaries_{ISO}_ADM1_simplified.geojson")
+    country = json.loads((RAW / "boundaries" / f"geoboundaries_{ISO}_ADM0_simplified.geojson").read_text("utf-8"))["features"][0]["geometry"]
+    w = world() if ISO == "GAB" else []
     depts = departments(provinces)
     pl = places(country, provinces, depts)
     dept_of_row, n = detection_departments(depts)
 
     WEB_GEO.mkdir(parents=True, exist_ok=True)
-    (WEB_GEO / "world.geojson").write_text(json.dumps({"type": "FeatureCollection", "features": w}, ensure_ascii=False, separators=(",", ":")), "utf-8")
+    if w:
+        (WORLD_GEO / "world.geojson").write_text(json.dumps({"type": "FeatureCollection", "features": w}, ensure_ascii=False, separators=(",", ":")), "utf-8")
+    # France : limites detaillees, simplifiees pour le navigateur (le rattachement des detections utilise l'original).
+    shape = (lambda g, tol: simplify(g, tol)) if ISO == "FRA" else (lambda g, tol: rounded(g, 4))
+    if ISO == "FRA":
+        for name, tol in (("provinces.geojson", 0.006), ("country.geojson", 0.004)):
+            path = WEB_GEO / name
+            collection = json.loads(path.read_text("utf-8"))
+            for f in collection["features"]:
+                f["geometry"] = simplify(f["geometry"], tol)
+            path.write_text(json.dumps(collection, ensure_ascii=False, separators=(",", ":")), "utf-8")
     (WEB_GEO / "departments.geojson").write_text(
         json.dumps(
             {
                 "type": "FeatureCollection",
                 "features": [
-                    {"type": "Feature", "properties": {"index": d["index"], "name": d["name"], "province": d["province"]}, "geometry": rounded(d["geometry"], 4)}
+                    {"type": "Feature", "properties": {"index": d["index"], "name": d["name"], "province": d["province"]}, "geometry": shape(d["geometry"], 0.008)}
                     for d in depts
                 ],
             },
@@ -306,7 +277,7 @@ def main() -> None:
     )
     (WEB_DATA / "departments.bin").write_bytes(np.ascontiguousarray(dept_of_row).tobytes())
 
-    adm2_meta = json.loads((RAW / "boundaries" / "geoboundaries_GAB_ADM2.meta.json").read_text("utf-8"))
+    adm2_meta = json.loads((RAW / "boundaries" / f"geoboundaries_{ISO}_ADM2.meta.json").read_text("utf-8"))
     towns = [p for p in pl if p["kind"] != "village"]
     payload = {
         "built_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -323,7 +294,7 @@ def main() -> None:
                 "url": "https://www.naturalearthdata.com/downloads/110m-cultural-vectors/",
             },
             "departments": {
-                "name": f"geoBoundaries, Gabon ADM2 ({adm2_meta.get('boundaryCanonical') or 'départements'})",
+                "name": f"geoBoundaries, {PROFILE.name} ADM2 ({adm2_meta.get('boundaryCanonical') or 'départements'})",
                 "year": adm2_meta.get("boundaryYearRepresented"),
                 "license": adm2_meta.get("boundaryLicense"),
                 "source": adm2_meta.get("boundarySource"),
@@ -331,9 +302,9 @@ def main() -> None:
                 "units": len(depts),
             },
             "places": {
-                "name": "GeoNames, lieux habités du Gabon (GA.zip)",
+                "name": "GeoNames, lieux habités du Gabon (GA.zip)" if ISO == "GAB" else "GeoNames, villes de France de plus de 5 000 habitants (cities5000)",
                 "license": "Creative Commons Attribution 4.0",
-                "url": "https://download.geonames.org/export/dump/GA.zip",
+                "url": "https://download.geonames.org/export/dump/" + ("GA.zip" if ISO == "GAB" else "cities5000.zip"),
                 "count": len(pl),
                 "withPopulation": sum(1 for p in pl if p["pop"] > 0),
             },
@@ -342,8 +313,6 @@ def main() -> None:
     }
     (WEB_DATA / "geography.json").write_text(json.dumps(payload, ensure_ascii=False, indent=1), "utf-8")
 
-    fr = france()
-    print(f"France métropolitaine : {fr}")
     unassigned = [d["name"] for d in depts if d["province"] == -1]
     print(f"{len(w)} pays, {len(depts)} départements ({len(unassigned)} sans province : {unassigned}), {len(pl)} localités dont {len(towns)} villes")
     print(f"{n} détections, {int((dept_of_row == -1).sum())} hors départements")

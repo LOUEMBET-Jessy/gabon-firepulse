@@ -26,12 +26,15 @@ ROOT = Path(__file__).resolve().parent.parent
 RAW = ROOT / "data" / "raw"
 FIRMS_DIR = RAW / "firms"
 BOUNDS_DIR = RAW / "boundaries"
-MANIFEST = RAW / "manifest.json"
+sys.path.insert(0, str(ROOT / "pipeline"))
+from hotspot.config import PROFILE  # noqa: E402
+
+MANIFEST = RAW / PROFILE.manifest
 
 USER_AGENT = "firms-archive-client/1.0 (research prototype)"
 FIRMS_BASE = "https://firms.modaps.eosdis.nasa.gov/data/country"
-COUNTRY = "Gabon"
-ISO3 = "GAB"
+COUNTRY = PROFILE.firms_name
+ISO3 = PROFILE.iso
 
 # Jeu FIRMS -> (premiere annee a tenter, derniere annee a tenter).
 # Les annees absentes cote serveur (404) sont consignees, pas masquees.

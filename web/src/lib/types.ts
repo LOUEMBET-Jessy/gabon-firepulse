@@ -271,6 +271,9 @@ export interface DetectionsResponse {
   bySatellite: PerSatellite;
   /** Colonnes paralleles. Null si le total depasse le plafond d'affichage. */
   points: {
+    /** Dimensions du pixel au sol, en km (balayage, trace). */
+    scan?: (number | null)[];
+    track?: (number | null)[];
     index: number[];
     lon: number[];
     lat: number[];
@@ -378,6 +381,12 @@ export interface PlaceInfo {
 }
 
 export interface MetadataResponse {
+  /** Pays de l'archive, son nom affiche et l'adresse de ses limites (provinces, departements, localites). */
+  countryCode: "GAB" | "FRA";
+  countryName: string;
+  geoUrl: string;
+  /** Nom des unites de niveau 1 : provinces au Gabon, regions en France. */
+  level1: { one: string; many: string };
   dataKind: "real" | "simulated";
   dataKindLabel: string;
   builtAt: string;
@@ -437,6 +446,9 @@ export interface LiveDetection {
   frp: number | null;
   daynight: "D" | "N";
   version: string;
+  /** Dimensions du pixel au sol, en km. */
+  scan: number | null;
+  track: number | null;
   territory: LiveTerritory;
   level1: string | null;
   level2: string | null;

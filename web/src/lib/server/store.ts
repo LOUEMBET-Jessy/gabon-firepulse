@@ -10,8 +10,15 @@ import path from "node:path";
 import type { CalibrationSummary, ConfigKey, GapRecord, SatelliteMeta, SourceFile } from "../types";
 import { CONFIG_KEYS } from "../types";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const GEO_DIR = path.join(process.cwd(), "public", "geo");
+/** Pays disponibles : chacun a son archive harmonisee (pipeline lance avec HOTSPOT_COUNTRY). */
+export type CountryCode = "GAB" | "FRA";
+export const COUNTRIES: Record<CountryCode, { name: string; dataDir: string; geoDir: string; geoUrl: string }> = {
+  GAB: { name: "Gabon", dataDir: path.join(process.cwd(), "data"), geoDir: path.join(process.cwd(), "public", "geo"), geoUrl: "/geo" },
+  FRA: { name: "France métropolitaine", dataDir: path.join(process.cwd(), "data", "fra"), geoDir: path.join(process.cwd(), "public", "geo", "fra"), geoUrl: "/geo/fra" },
+};
+export function isCountry(value: unknown): value is CountryCode {
+  return value === "GAB" || value === "FRA";
+}
 const DAY_MS = 86_400_000;
 
 interface ColumnMeta {
@@ -116,6 +123,8 @@ export interface GeographyFile {
 }
 
 export interface Store {
+  country: CountryCode;
+  countryName: string;
   n: number;
   nDays: number;
   firstDay: number;
@@ -221,7 +230,9 @@ function geometryBbox(geometry: { type: string; coordinates: unknown }): [number
   return [w, s, e, n];
 }
 
-function load(): Store {
+function load(country: CountryCode): Store {
+  const DATA_DIR = COUNTRIES[country].dataDir;
+  const GEO_DIR = COUNTRIES[country].geoDir;
   const meta = readJson<DetectionsMeta>(path.join(DATA_DIR, "detections.meta.json"));
   const harmonization = readJson<HarmonizationFile>(path.join(DATA_DIR, "harmonization.json"));
   const metadata = readJson<MetadataFile>(path.join(DATA_DIR, "metadata.json"));
@@ -308,6 +319,8 @@ function load(): Store {
   }
 
   return {
+    country,
+    countryName: COUNTRIES[country].name,
     n,
     nDays,
     firstDay: meta.first_day,
@@ -360,14 +373,17 @@ function load(): Store {
 }
 
 /** A incrementer quand la forme de Store change : evite de reutiliser un cache perime en developpement. */
-const STORE_SCHEMA = 4;
-const globalStore = globalThis as unknown as { __hotspotStore?: { schema: number; store: Store } };
+const STORE_SCHEMA = 5;
+const globalStore = globalThis as unknown as { __hotspotStores?: { schema: number; stores: Partial<Record<CountryCode, Store>> } };
 
-export function getStore(): Store {
-  const cached = globalStore.__hotspotStore;
-  if (cached && cached.schema === STORE_SCHEMA) return cached.store;
-  const store = load();
-  globalStore.__hotspotStore = { schema: STORE_SCHEMA, store };
+/** Archive d'un pays, chargee une fois par processus. Gabon par defaut. */
+export function getStore(country: CountryCode = "GAB"): Store {
+  let cached = globalStore.__hotspotStores;
+  if (!cached || cached.schema !== STORE_SCHEMA) cached = globalStore.__hotspotStores = { schema: STORE_SCHEMA, stores: {} };
+  const hit = cached.stores[country];
+  if (hit) return hit;
+  const store = load(country);
+  cached.stores[country] = store;
   return store;
 }
 

@@ -191,7 +191,7 @@ export function DashboardView() {
         <Panel className="flex flex-col xl:col-span-7" interactive>
           <PanelHeader title="Où l'activité se concentre" subtitle="Jours actifs harmonisés par cellule d'environ 5 km, sur la période." actions={<MoreLink href="/map">Ouvrir la carte</MoreLink>} />
           <div className="relative mx-5 mb-4 mt-3 min-h-[340px] flex-1 overflow-hidden rounded-control border border-line">
-            {grid.error ? <ErrorState error={grid.error} onRetry={() => grid.mutate()} compact /> : <FireMap mode="grid" points={undefined} grid={grid.data} zone={zone} passive className="absolute inset-0" />}
+            {grid.error ? <ErrorState error={grid.error} onRetry={() => grid.mutate()} compact /> : <FireMap geoBase={meta.data?.geoUrl} mode="grid" points={undefined} grid={grid.data} zone={zone} passive className="absolute inset-0" />}
           </div>
           <SourceNote provenance={grid.data?.provenance} />
         </Panel>
@@ -221,7 +221,7 @@ export function DashboardView() {
       {/* Provinces et qualite de l'observation */}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
         <Panel className="xl:col-span-8">
-          <PanelHeader title="Activité par province" subtitle="Touchez une province pour en faire la zone d'analyse. Densité en cellules-jour pour 1 000 km²." />
+          <PanelHeader title={`Activité par ${meta.data?.level1.one ?? "province"}`} subtitle={`Touchez une ${meta.data?.level1.one ?? "province"} pour en faire la zone d'analyse. Densité en cellules-jour pour 1 000 km².`} />
           {regions.error ? (
             <ErrorState error={regions.error} onRetry={() => regions.mutate()} compact />
           ) : regions.data ? (

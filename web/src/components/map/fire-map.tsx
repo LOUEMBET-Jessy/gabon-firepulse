@@ -16,6 +16,14 @@ export const GABON_BOUNDS: [[number, number], [number, number]] = [
   [14.75, 2.45],
 ];
 
+/**
+ * Fond detaille OpenStreetMap (tuiles officielles) : rues, quartiers et lieux-dits jusqu'au zoom 19.
+ * Assombri a l'affichage pour rester lisible sous les detections. Charge seulement si l'utilisateur l'active.
+ */
+const STREETS_TILES = ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"];
+/** Zoom a partir duquel l'emprise reelle de chaque pixel est dessinee. */
+const ZOOM_FOOTPRINTS = 9.5;
+
 const BASEMAP_TILES =
   "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_ShadedRelief_Bathymetry/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg";
 
@@ -52,6 +60,10 @@ export interface FireMapProps {
   placeRadiusKm?: number;
   /** Satellites MODIS et VIIRS en orbite (illustration, vue Terre seulement). */
   showSatellites?: boolean;
+  /** Fond detaille en ligne : rues et quartiers. */
+  streets?: boolean;
+  /** Adresse des limites du pays de l'archive : « /geo » (Gabon) ou « /geo/fra » (France). */
+  geoBase?: string;
   /** Observatoire temps reel : detections NASA FIRMS recentes, limites francaises, selection d'une detection. */
   liveMode?: boolean;
   live?: LiveDetection[] | null;
@@ -178,8 +190,8 @@ function clusterElement(m: number, s: number, n: number, onClick: () => void): H
 const style: StyleSpecification = {
   version: 8,
   sources: {
-    country: { type: "geojson", data: "/geo/country.geojson" },
-    provinces: { type: "geojson", data: "/geo/provinces.geojson", promoteId: "index" },
+    country: { type: "geojson", data: empty },
+    provinces: { type: "geojson", data: empty, promoteId: "index" },
     basemap: {
       type: "raster",
       tiles: [BASEMAP_TILES],
@@ -187,6 +199,8 @@ const style: StyleSpecification = {
       maxzoom: 8,
       attribution: "Fond : NASA GIBS, Blue Marble",
     },
+    streets: { type: "raster", tiles: STREETS_TILES, tileSize: 256, maxzoom: 19, attribution: "Fond : © contributeurs OpenStreetMap" },
+    footprints: { type: "geojson", data: empty },
     grid: { type: "geojson", data: empty },
     points: { type: "geojson", data: empty },
     selected: { type: "geojson", data: empty },
@@ -202,6 +216,13 @@ const style: StyleSpecification = {
       layout: { visibility: "none" },
       paint: { "raster-brightness-max": 0.5, "raster-saturation": -0.45, "raster-contrast": 0.1, "raster-fade-duration": 200 },
     },
+    {
+      id: "streets",
+      type: "raster",
+      source: "streets",
+      layout: { visibility: "none" },
+      paint: { "raster-brightness-max": 0.55, "raster-saturation": -0.85, "raster-contrast": 0.18, "raster-fade-duration": 200 },
+    },
     { id: "country-fill", type: "fill", source: "country", paint: { "fill-color": "#12284a", "fill-opacity": 1 } },
     { id: "grid-fill", type: "fill", source: "grid", paint: { "fill-color": HEAT[1], "fill-opacity": 0.92 } },
     { id: "grid-line", type: "line", source: "grid", minzoom: 8.5, paint: { "line-color": "#081226", "line-width": 0.6 } },
@@ -215,6 +236,20 @@ const style: StyleSpecification = {
       paint: { "line-color": "#12bfd2", "line-width": 2 },
     },
     { id: "zone-line", type: "line", source: "zone", paint: { "line-color": "#12bfd2", "line-width": 2 } },
+    {
+      id: "footprints-fill",
+      type: "fill",
+      source: "footprints",
+      minzoom: ZOOM_FOOTPRINTS,
+      paint: { "fill-color": ["get", "color"], "fill-opacity": ["interpolate", ["linear"], ["zoom"], ZOOM_FOOTPRINTS, 0, ZOOM_FOOTPRINTS + 1, 0.16] },
+    },
+    {
+      id: "footprints-line",
+      type: "line",
+      source: "footprints",
+      minzoom: ZOOM_FOOTPRINTS,
+      paint: { "line-color": ["get", "color"], "line-width": 1, "line-opacity": ["interpolate", ["linear"], ["zoom"], ZOOM_FOOTPRINTS, 0, ZOOM_FOOTPRINTS + 1, 0.8] },
+    },
     {
       id: "points-viirs",
       type: "circle",
@@ -299,10 +334,10 @@ function globeStyle(): StyleSpecification {
     sources: {
       ...style.sources,
       world: { type: "geojson", data: "/geo/world.geojson" },
-      departments: { type: "geojson", data: "/geo/departments.geojson" },
-      places: { type: "geojson", data: "/geo/places.geojson" },
-      fra_regions: { type: "geojson", data: "/geo/fra_regions.geojson" },
-      fra_departments: { type: "geojson", data: "/geo/fra_departments.geojson" },
+      departments: { type: "geojson", data: empty },
+      places: { type: "geojson", data: empty },
+      fra_regions: { type: "geojson", data: "/geo/fra/provinces.geojson" },
+      fra_departments: { type: "geojson", data: "/geo/fra/departments.geojson" },
       live: { type: "geojson", data: empty },
       "live-selected": { type: "geojson", data: empty },
       clusters: {
@@ -342,7 +377,10 @@ export default function FireMap(props: FireMapProps) {
   const labelsRef = useRef<Marker[]>([]);
   const departmentsRef = useRef<ProvinceFeature[]>([]);
   const placesRef = useRef<Map<number, { lon: number; lat: number; name: string }>>(new Map());
-  const detailMarkers = useRef<{ marker: Marker; min: number; max: number }[]>([]);
+  const detailMarkers = useRef<{ marker: Marker; min: number; max: number; country: boolean }[]>([]);
+  const syncRef = useRef<() => void>(() => {});
+  const geoBase = props.geoBase ?? "/geo";
+  const [countryBounds, setCountryBounds] = useState<[[number, number], [number, number]]>(GABON_BOUNDS);
   const satellitesRef = useRef<SatelliteLayer | null>(null);
   const [ready, setReady] = useState(false);
   const introDone = useRef(false);
@@ -366,7 +404,7 @@ export default function FireMap(props: FireMapProps) {
         style: globe ? globeStyle() : style,
         ...(globe && intro ? { center: SPACE_VIEW.center, zoom: SPACE_VIEW.zoom } : { bounds: GABON_BOUNDS, fitBoundsOptions: { padding: passive ? 12 : 40 } }),
         minZoom: globe ? 0.6 : 4,
-        maxZoom: globe ? 14 : 13,
+        maxZoom: globe ? 18 : 13,
         ...(globe
           ? {}
           : {
@@ -435,24 +473,6 @@ export default function FireMap(props: FireMapProps) {
       setReady(true);
     });
 
-    // Etiquettes de provinces en HTML : aucune police distante n'est necessaire.
-    fetch("/geo/provinces.geojson")
-      .then((r) => r.json())
-      .then((collection: { features: ProvinceFeature[] }) => {
-        provincesRef.current = collection.features;
-        if (passive) return;
-        labelsRef.current = collection.features.map((feature) => {
-          const [w, s, e, n] = ringBounds(outerRing(feature.geometry));
-          const el = document.createElement("div");
-          el.textContent = feature.properties.name;
-          el.className = "pointer-events-none select-none whitespace-nowrap text-[10.5px] font-medium tracking-wide text-ink-2/80 [text-shadow:0_1px_3px_#081226,0_0_2px_#081226]";
-          return new Marker({ element: el, anchor: "center" }).setLngLat([(w + e) / 2, (s + n) / 2]).addTo(map);
-        });
-      })
-      .catch(() => {
-        /* les limites sont un contexte facultatif : la carte reste utilisable sans etiquettes */
-      });
-
     if (globe && !passive) {
       satellitesRef.current = attachSatellites(map);
       satellitesRef.current.setVisible(callbacks.current.showSatellites !== false);
@@ -463,38 +483,16 @@ export default function FireMap(props: FireMapProps) {
         el.textContent = text;
         el.className = `map-label ${cls}`;
         el.style.display = "none";
-        detailMarkers.current.push({ marker: new Marker({ element: el, anchor: "center", opacityWhenCovered: "0" }).setLngLat(lngLat).addTo(map), min, max });
+        detailMarkers.current.push({ marker: new Marker({ element: el, anchor: "center", opacityWhenCovered: "0" }).setLngLat(lngLat).addTo(map), min, max, country: false });
       };
       CONTINENT_LABELS.forEach(([name, lon, lat]) => label(name, "map-label-continent", [lon, lat], 0, 3.2));
-      fetch("/geo/departments.geojson")
-        .then((r) => r.json())
-        .then((c: { features: (ProvinceFeature & { properties: { label?: [number, number] } })[] }) => {
-          departmentsRef.current = c.features;
-          c.features.forEach((f) => {
-            const [w, s, e, n] = ringBounds(outerRing(f.geometry));
-            label(f.properties.name, "map-label-department", [(w + e) / 2, (s + n) / 2], ZOOM_DEPARTMENTS + 0.3, 24);
-          });
-          syncLabels();
-        })
-        .catch(() => {});
-      fetch("/geo/places.geojson")
-        .then((r) => r.json())
-        .then((c: { features: { properties: { id: number; name: string; kind: string; pop: number }; geometry: { coordinates: [number, number] } }[] }) => {
-          for (const f of c.features) {
-            placesRef.current.set(f.properties.id, { lon: f.geometry.coordinates[0], lat: f.geometry.coordinates[1], name: f.properties.name });
-            if (f.properties.kind === "village") continue;
-            const min = f.properties.kind === "capital" ? 4.2 : f.properties.kind === "admin" || f.properties.pop >= 100000 ? ZOOM_TOWNS : f.properties.pop >= 20000 ? ZOOM_TOWNS + 1.2 : ZOOM_TOWNS + 1.8;
-            label(f.properties.name, f.properties.kind === "capital" ? "map-label-capital" : "map-label-town", f.geometry.coordinates, min, 24);
-          }
-          syncLabels();
-        })
-        .catch(() => {});
-      const syncLabels = () => {
+            const syncLabels = () => {
         const z = map.getZoom();
         for (const { marker, min, max } of detailMarkers.current) marker.getElement().style.display = z >= min && z < max ? "" : "none";
         labelsRef.current.forEach((m) => (m.getElement().style.visibility = z >= 4.6 && z < ZOOM_DEPARTMENTS + 0.3 ? "" : "hidden"));
         callbacks.current.onZoom?.(z);
       };
+      syncRef.current = syncLabels;
       map.on("zoom", syncLabels);
       map.once("idle", syncLabels);
 
@@ -637,6 +635,144 @@ export default function FireMap(props: FireMapProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- carte creee une seule fois ; globe et intro sont fixes pour une instance
   }, [passive]);
 
+  // Pays de l'archive : limites, etiquettes des provinces ou regions, departements, villes, emprise.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    let cancelled = false;
+    const set = (id: string, url: string) => (map.getSource(id) as GeoJSONSource | undefined)?.setData(url);
+    set("country", `${geoBase}/country.geojson`);
+    set("provinces", `${geoBase}/provinces.geojson`);
+    if (globe) {
+      set("departments", `${geoBase}/departments.geojson`);
+      set("places", `${geoBase}/places.geojson`);
+    }
+    labelsRef.current.forEach((m) => m.remove());
+    labelsRef.current = [];
+    detailMarkers.current = detailMarkers.current.filter((d) => {
+      if (!d.country) return true;
+      d.marker.remove();
+      return false;
+    });
+    placesRef.current.clear();
+    const json = (url: string) => fetch(url).then((r) => r.json());
+    const label = (text: string, cls: string, lngLat: [number, number], min: number, max: number) => {
+      const el = document.createElement("div");
+      el.textContent = text;
+      el.className = `map-label ${cls}`;
+      el.style.display = "none";
+      detailMarkers.current.push({ marker: new Marker({ element: el, anchor: "center", opacityWhenCovered: "0" }).setLngLat(lngLat).addTo(map), min, max, country: true });
+    };
+    json(`${geoBase}/country.geojson`)
+      .then((c: { features: { geometry: Geometry }[] }) => {
+        if (cancelled || !c.features.length) return;
+        const [w, s, e, n] = ringBounds(c.features.flatMap((f) => (f.geometry.type === "MultiPolygon" ? (f.geometry.coordinates as number[][][][]).map((p) => p[0]) : [(f.geometry.coordinates as number[][][])[0]])).flat());
+        setCountryBounds([
+          [w - 0.15, s - 0.15],
+          [e + 0.15, n + 0.15],
+        ]);
+      })
+      .catch(() => {});
+    // Etiquettes de provinces ou de regions en HTML : aucune police distante n'est necessaire.
+    json(`${geoBase}/provinces.geojson`)
+      .then((collection: { features: ProvinceFeature[] }) => {
+        if (cancelled) return;
+        provincesRef.current = collection.features;
+        if (passive) return;
+        labelsRef.current = collection.features.map((feature) => {
+          const [w, s, e, n] = ringBounds(outerRing(feature.geometry));
+          const el = document.createElement("div");
+          el.textContent = feature.properties.name;
+          el.className = "pointer-events-none select-none whitespace-nowrap text-[10.5px] font-medium tracking-wide text-ink-2/80 [text-shadow:0_1px_3px_#081226,0_0_2px_#081226]";
+          return new Marker({ element: el, anchor: "center", opacityWhenCovered: "0" }).setLngLat([(w + e) / 2, (s + n) / 2]).addTo(map);
+        });
+        syncRef.current();
+      })
+      .catch(() => {
+        /* les limites sont un contexte facultatif : la carte reste utilisable sans etiquettes */
+      });
+    if (globe) {
+      json(`${geoBase}/departments.geojson`)
+        .then((c: { features: ProvinceFeature[] }) => {
+          if (cancelled) return;
+          departmentsRef.current = c.features;
+          c.features.forEach((f) => {
+            const [w, s, e, n] = ringBounds(outerRing(f.geometry));
+            label(f.properties.name, "map-label-department", [(w + e) / 2, (s + n) / 2], ZOOM_DEPARTMENTS + 0.3, 24);
+          });
+          syncRef.current();
+        })
+        .catch(() => {});
+      json(`${geoBase}/places.geojson`)
+        .then((c: { features: { properties: { id: number; name: string; kind: string; pop: number }; geometry: { coordinates: [number, number] } }[] }) => {
+          if (cancelled) return;
+          for (const f of c.features) {
+            placesRef.current.set(f.properties.id, { lon: f.geometry.coordinates[0], lat: f.geometry.coordinates[1], name: f.properties.name });
+            if (f.properties.kind === "village") continue;
+            const min = f.properties.kind === "capital" ? 4.2 : f.properties.kind === "admin" || f.properties.pop >= 100000 ? ZOOM_TOWNS : f.properties.pop >= 20000 ? ZOOM_TOWNS + 1.2 : ZOOM_TOWNS + 1.8;
+            label(f.properties.name, f.properties.kind === "capital" ? "map-label-capital" : "map-label-town", f.geometry.coordinates, min, 24);
+          }
+          syncRef.current();
+        })
+        .catch(() => {});
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [geoBase, ready, globe, passive]);
+
+  /**
+   * Emprise reelle des pixels : rectangle de « scan » km (le long du balayage, est-ouest pour ces orbites polaires)
+   * sur « track » km (le long de la trace, nord-sud), centre sur le point publie. Orientation approchee.
+   */
+  const { live: liveRows, liveMode: liveOn } = props;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    const source = map.getSource("footprints") as GeoJSONSource | undefined;
+    if (!source) return;
+    const rect = (lon: number, lat: number, scan: number, track: number, color: string) => {
+      const dLon = scan / 2 / (111.32 * Math.cos((lat * Math.PI) / 180));
+      const dLat = track / 2 / 110.57;
+      return {
+        type: "Feature" as const,
+        properties: { color },
+        geometry: { type: "Polygon" as const, coordinates: [[[lon - dLon, lat - dLat], [lon + dLon, lat - dLat], [lon + dLon, lat + dLat], [lon - dLon, lat + dLat], [lon - dLon, lat - dLat]]] },
+      };
+    };
+    const colors = ["terra", "aqua", "snpp", "noaa20", "noaa21"].map((k) => LIVE_SATELLITE_INFO[k as keyof typeof LIVE_SATELLITE_INFO].color);
+    if (liveOn && liveRows) {
+      source.setData({
+        type: "FeatureCollection",
+        features: liveRows.filter((d) => d.scan && d.track).map((d) => rect(d.lon, d.lat, d.scan!, d.track!, LIVE_SATELLITE_INFO[d.satellite].color)),
+      });
+      return;
+    }
+    if (mode !== "points" || !points || !points.scan || !points.track) return void source.setData(empty);
+    const features = [];
+    for (let i = 0; i < points.index.length; i++) {
+      const sc = points.scan[i];
+      const tr = points.track[i];
+      if (sc && tr) features.push(rect(points.lon[i], points.lat[i], sc, tr, colors[points.sat[i]] ?? colors[0]));
+    }
+    source.setData({ type: "FeatureCollection", features });
+  }, [points, mode, ready, liveRows, liveOn]);
+
+  // Fond detaille : les aplats sombres s'effacent pour laisser lire rues et quartiers.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    const on = Boolean(props.streets);
+    map.setLayoutProperty("streets", "visibility", on ? "visible" : "none");
+    if (on) {
+      map.setPaintProperty("country-fill", "fill-opacity", 0);
+      if (map.getLayer("world-fill")) map.setPaintProperty("world-fill", "fill-opacity", ["interpolate", ["linear"], ["zoom"], 3, 1, 5, 0]);
+    } else {
+      map.setPaintProperty("country-fill", "fill-opacity", props.basemap ? 0 : 1);
+      if (map.getLayer("world-fill")) map.setPaintProperty("world-fill", "fill-opacity", 1);
+    }
+  }, [props.streets, props.basemap, ready]);
+
   // Detections natives.
   useEffect(() => {
     const map = mapRef.current;
@@ -718,7 +854,7 @@ export default function FireMap(props: FireMapProps) {
       return;
     }
     zoneSource.setData(empty);
-    if (zone.kind === "country") return void map.fitBounds(GABON_BOUNDS, { padding: passive ? 12 : wide ? padding : 40, duration });
+    if (zone.kind === "country") return void map.fitBounds(countryBounds, { padding: passive ? 12 : wide ? padding : 40, duration });
     const fit = () => {
       const list = zone.kind === "department" ? departmentsRef.current : provincesRef.current;
       const feature = list.find((f) => f.properties.index === zone.index);
@@ -733,7 +869,7 @@ export default function FireMap(props: FireMapProps) {
       return () => window.clearTimeout(timer);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- le cadrage suit la zone ; les autres valeurs sont fixes pour une instance
-  }, [zone, ready, passive]);
+  }, [zone, ready, passive, countryBounds]);
 
   // Surlignage du territoire selectionne sur le globe (sans changer la zone d'analyse).
   useEffect(() => {

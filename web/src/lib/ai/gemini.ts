@@ -97,7 +97,7 @@ async function runTurn(
   signal: AbortSignal | undefined,
   voice: boolean,
 ): Promise<AssistantReply> {
-  const store = getStore();
+  const store = getStore(context.country ?? "GAB");
   const ctx: AssistantContext = structuredClone(context);
   const actions: AssistantAction[] = [];
   const sources: string[] = [];

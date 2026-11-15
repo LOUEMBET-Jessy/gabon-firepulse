@@ -79,6 +79,8 @@ export function needsConfirmation(action: AssistantAction): boolean {
 /** Etat de l'application transmis a l'assistant a chaque message. */
 export interface AssistantContext {
   page: PageKey;
+  /** Pays de l'archive consultee (Gabon par defaut). */
+  country?: "GAB" | "FRA";
   zone: ZoneSpec;
   from: string;
   to: string;

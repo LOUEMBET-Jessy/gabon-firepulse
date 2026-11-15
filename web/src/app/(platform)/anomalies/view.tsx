@@ -10,7 +10,7 @@ import { HeatmapKey, MonthHeatmap, ScaleLegend } from "@/components/heatmaps";
 import { zoneLabel } from "@/components/shell/pickers";
 import { pageIcon } from "@/components/shell/shell";
 import { Button, ChartSkeleton, EmptyState, ErrorState, PageHeader, Panel, PanelHeader, ReliabilityBadge, Segmented, SourceNote, StatusBadge, buttonClass, cx } from "@/components/ui";
-import { exportUrl, useCalendar, useMetadata } from "@/lib/api";
+import { exportUrl, useHydrated, useCalendar, useMetadata } from "@/lib/api";
 import { fmtDelta, fmtInt, fmtScore, lastDayOfMonth, MONTHS, monthLabel, pad2 } from "@/lib/format";
 import { DEFINITIONS, KIND_LABEL } from "@/lib/labels";
 import { ANOMALY_SETTINGS } from "@/lib/science/anomaly";
@@ -26,6 +26,7 @@ export function AnomaliesView() {
   const router = useRouter();
   const params = useSearchParams();
   const meta = useMetadata();
+  const hydrated = useHydrated();
   const calendar = useCalendar(zone);
   const direction = useView((v) => v.anomalies.direction);
   const setDirection = (d: Direction) => updateView("anomalies", { direction: d });
@@ -84,7 +85,7 @@ export function AnomaliesView() {
           </>
         }
         actions={
-          <a className={buttonClass("secondary", "md")} href={exportUrl("anomalies", "csv", zone)} download>
+          <a className={buttonClass("secondary", "md")} href={hydrated ? exportUrl("anomalies", "csv", zone) : undefined} download>
             <DownloadSimple size={16} />
             Liste (CSV)
           </a>

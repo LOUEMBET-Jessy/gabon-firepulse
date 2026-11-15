@@ -47,7 +47,8 @@ export function resolveZone(raw: unknown, store: Store): ZoneSpec {
   if (typeof raw !== "string" || !raw.trim()) throw new ToolInputError("zone manquante");
   const value = raw.trim();
   const plain = normalize(value);
-  if (["country", "gabon", "pays", "pays entier", "tout le gabon"].includes(plain)) return { kind: "country" };
+  const own = normalize(store.countryName);
+  if (["country", "pays", "pays entier", "tout le pays", own, own.split(" ")[0], `tout le ${own}`, `toute la ${own.split(" ")[0]}`].includes(plain)) return { kind: "country" };
   if (["bbox:", "province:", "department:", "place:"].some((prefix) => value.startsWith(prefix))) {
     try {
       return parseZone(value, store);
@@ -67,7 +68,7 @@ export function resolveZone(raw: unknown, store: Store): ZoneSpec {
     .sort((a, b) => b.pop - a.pop)[0];
   if (town) return { kind: "place", id: town.id };
   throw new ToolInputError(
-    `zone inconnue : « ${value.slice(0, 60)} ». Zones possibles : country, une province (${store.meta.provinces.map((p) => p.name).join(", ")}), un département du Gabon, une localité (zone de ${store.geography.place_radius_km} km autour), ou bbox:ouest,sud,est,nord.`,
+    `zone inconnue : « ${value.slice(0, 60)} ». Zones possibles : country, une province (${store.meta.provinces.map((p) => p.name).join(", ")}), un département, une ville (zone de ${store.geography.place_radius_km} km autour), ou bbox:ouest,sud,est,nord.`,
   );
 }
 
@@ -120,8 +121,11 @@ const SENSORS_ALL: readonly SatelliteKey[] = SATELLITE_KEYS;
 const CONFIDENCE_ALL: readonly ConfidenceKey[] = ["low", "nominal", "high"];
 
 /** Valide le contexte envoye par le navigateur. Tout champ invalide est rejete ou ramene a une valeur sure. */
-export function validateContext(raw: unknown, store: Store = getStore()): AssistantContext {
+export function validateContext(raw: unknown, given?: Store): AssistantContext {
   const o = asObject(raw);
+  // Le pays choisit l'archive sur laquelle tout le reste est valide (zones, periode).
+  const country = o.country === "FRA" ? "FRA" : "GAB";
+  const store = given ?? getStore(country);
   const page = PAGE_KEYS.includes(o.page as PageKey) ? (o.page as PageKey) : "home";
   let zone: ZoneSpec = { kind: "country" };
   const z = asObject(o.zone);
@@ -142,7 +146,7 @@ export function validateContext(raw: unknown, store: Store = getStore()): Assist
   } catch {
     /* periode absente ou invalide : couverture complete */
   }
-  const ctx: AssistantContext = { page, zone, from, to };
+  const ctx: AssistantContext = { page, country, zone, from, to };
   const m = asObject(o.map);
   if (m.mode === "points" || m.mode === "grid") {
     const filter = <T extends string>(v: unknown, all: readonly T[]) => (Array.isArray(v) ? (v.filter((x) => all.includes(x as T)) as T[]) : [...all]);
@@ -175,6 +179,7 @@ export function describeContext(ctx: AssistantContext, store: Store = getStore()
   const lines = [
     "Contexte applicatif actuel (fourni par l'interface Hot-Spot, à jour) :",
     `- page ouverte : ${ctx.page}`,
+    `- pays de l'archive : ${store.countryName}`,
     `- zone d'analyse : ${zone.label} (${zoneKey(ctx.zone)})`,
     `- période sélectionnée : du ${ctx.from} au ${ctx.to}`,
     `- données disponibles : du ${dayToIso(store, store.firstDay)} au ${dayToIso(store, store.lastDay)}`,
@@ -192,7 +197,7 @@ export function describeContext(ctx: AssistantContext, store: Store = getStore()
 
 /* ------------------------------------------------------------------ Definitions */
 
-const ZONE_DESC = "Zone : « country » pour le Gabon entier, le nom d'une province (ex. « Haut-Ogooué »), d'un département (ex. « Mpassa ») ou d'une localité du Gabon (ex. « Franceville » : analyse dans un rayon de 15 km), ou « bbox:ouest,sud,est,nord » en degrés décimaux. Seul le Gabon dispose de données. Par défaut : la zone sélectionnée dans l'interface.";
+const ZONE_DESC = "Zone dans le pays consulté : « country » pour le pays entier, le nom d'une province ou région (ex. « Haut-Ogooué », « Nouvelle-Aquitaine »), d'un département (ex. « Mpassa », « Gironde ») ou d'une ville (ex. « Franceville », « Bordeaux » : analyse dans un rayon de 15 km), ou « bbox:ouest,sud,est,nord » en degrés décimaux. Par défaut : la zone sélectionnée dans l'interface.";
 const DATE_DESC = "Date au format AAAA-MM-JJ.";
 
 const schema = (properties: Record<string, unknown>, required: string[] = []): Tool["input_schema"] => ({

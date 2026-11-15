@@ -23,6 +23,7 @@ const SECTIONS = [
   ["zones", "Calage par zone"],
   ["anomalies", "Périodes inhabituelles"],
   ["limites", "Limites"],
+  ["france", "France"],
   ["geographie", "Géographie"],
   ["temps-reel", "Temps réel"],
   ["sources", "Sources"],
@@ -83,6 +84,10 @@ const MODEL_LABEL: Record<string, string> = { global: "un facteur unique", seaso
 
 export default function MethodologyPage() {
   const store = getStore();
+  const fr = getStore("FRA");
+  const frTa = fr.harmonization.calibration.TA!;
+  const frEligible = fr.eligible.reduce((acc, v) => acc + v, 0);
+  const frStatic = fr.type.reduce((acc, v) => acc + (v === 2 ? 1 : 0), 0);
   const h = store.harmonization;
   const meta = store.metadata;
   const sats = store.meta.satellites;
@@ -324,6 +329,27 @@ export default function MethodologyPage() {
             <strong>Affichage.</strong> Au-delà de {fmtInt(POINT_CAP)} détections, la carte n'affiche pas les points plutôt que d'en montrer un échantillon ; la grille harmonisée et l'export restent complets.
           </li>
         </ul>
+      </Section>
+
+      <Section id="france" title="La France métropolitaine : même méthode, autre régime de feux">
+        <p>
+          La France métropolitaine (Corse comprise) a sa propre archive NASA FIRMS, traitée par la même chaîne : contrôle, cellule-jour de 0,05°, un seul capteur par jour, calage de MODIS sur VIIRS Suomi-NPP mesuré <strong>sur les années communes françaises</strong> et validé en retirant une année à la fois. Rien n'est transposé du Gabon : chaque pays a ses facteurs, ses références saisonnières et ses périodes inhabituelles.
+        </p>
+        <Table
+          head={["Indicateur", "France métropolitaine", "Gabon"]}
+          numeric={[1, 2]}
+          rows={[
+            ["Détections lues", fmtInt(fr.n), fmtInt(store.n)],
+            ["Retenues dans l'indice (feu de végétation, confiance non faible)", `${fmtInt(frEligible)} (${fmtPct(frEligible / fr.n)})`, fmtPct(store.eligible.reduce((a, v) => a + v, 0) / store.n)],
+            ["Sources statiques terrestres (type 2), écartées", fmtPct(frStatic / fr.n), fmtPct(store.type.reduce((a, v) => a + (v === 2 ? 1 : 0), 0) / store.n)],
+            ["Calage Terra + Aqua : erreur mensuelle médiane", fmtPct(frTa.validation.monthly_median_abs_pct_error, 1), fmtPct(ta.validation.monthly_median_abs_pct_error, 1)],
+            ["Calage Terra + Aqua : erreur annuelle moyenne", fmtPct(frTa.validation.annual_mean_abs_pct_error, 1), fmtPct(ta.validation.annual_mean_abs_pct_error, 1)],
+            ["Interruptions de capteur détectées", String(fr.harmonization.gaps.length), String(h.gaps.length)],
+          ]}
+        />
+        <p>
+          En France, plus de la moitié des détections VIIRS récentes sont classées par la NASA comme sources statiques (sites industriels, torchères) : l'indice les écarte, comme au Gabon. Les feux de végétation y sont moins nombreux et plus concentrés dans le temps : le calage mensuel est donc moins précis qu'au Gabon, et les zones petites ou peu actives sont signalées comme fragiles.
+        </p>
       </Section>
 
       <Section id="geographie" title="Géographie d'exploration : globe, départements, localités">

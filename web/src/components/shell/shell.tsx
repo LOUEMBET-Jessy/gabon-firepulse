@@ -23,8 +23,9 @@ import { AssistantSpotlight, GuidedTour } from "@/components/assistant/spotlight
 import { AssistantMark, BRAND, BrandMark, Wordmark } from "@/components/brand";
 import { cx } from "@/components/ui";
 import { setAssistant, useAssistant } from "@/state/assistant";
+import { useFilters } from "@/state/filters";
 
-import { DataBadge, PeriodPicker, ZonePicker } from "./pickers";
+import { CountrySwitch, DataBadge, PeriodPicker, ZonePicker } from "./pickers";
 
 interface NavItem {
   href: string;
@@ -217,6 +218,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isMap = pathname === "/map";
   const [more, setMore] = useState(false);
+  const { restored } = useFilters();
   const inMore = !PRIMARY.includes(pathname);
   return (
     <div className="print-root orbit-glow flex min-h-[100dvh]">
@@ -246,6 +248,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
             <Logo compact />
           </div>
           <div className="flex min-w-0 flex-1 items-center gap-2">
+            <CountrySwitch />
             <ZonePicker />
             <PeriodPicker />
           </div>
@@ -257,7 +260,14 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
         <main className={cx("relative flex-1", isMap ? "min-h-0 pb-[64px] lg:pb-0" : "px-4 pb-28 pt-8 md:px-8 lg:pb-16")}>
           <div key={pathname} className={isMap ? "h-full" : "stagger mx-auto flex w-full max-w-[1320px] flex-col gap-6"}>
-            {children}
+            {restored ? (
+              children
+            ) : (
+              <div className="flex flex-col gap-6" role="status" aria-label="Chargement de l'écran">
+                <div className="skeleton h-12 w-72" />
+                <div className="skeleton h-[52vh] w-full" />
+              </div>
+            )}
           </div>
         </main>
       </div>

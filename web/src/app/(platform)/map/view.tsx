@@ -4,12 +4,12 @@ import { ArrowSquareOut, DownloadSimple, Faders, PencilSimpleLine, X } from "@ph
 import { useCallback, useEffect, useState } from "react";
 
 import { FireMap } from "@/components/blocks";
-import { CONTINENTS, GABON_BBOX, Navigator, TerritoryCard, isGabon, territoryFromZone, territoryZone, type Territory } from "@/components/map/explorer";
+import { CONTINENTS, Navigator, TerritoryCard, archiveCountry, hasArchive, isGabon, territoryFromZone, territoryZone, type Territory } from "@/components/map/explorer";
 import { LIVE_SATS, LiveControls, LiveDetectionCard, LiveTerritoryCard, TERRITORY_BBOX, ago, type LiveFocus } from "@/components/map/live";
 import { ScaleLegend, activityBreaks } from "@/components/heatmaps";
 import { DRAW_EVENT, DRAW_FLAG, zoneLabel } from "@/components/shell/pickers";
 import { Button, Checkbox, ErrorState, Notice, Segmented, SensorMark, Skeleton, buttonClass, cx } from "@/components/ui";
-import { exportUrl, useDetection, useDetections, useGrid, useLive, useMetadata, type MapFilters } from "@/lib/api";
+import { exportUrl, useHydrated, useDetection, useDetections, useGrid, useLive, useMetadata, type MapFilters } from "@/lib/api";
 import { fmtCoord, fmtDateTimeUtc, fmtInt, fmtPeriod } from "@/lib/format";
 import { CONF_LABEL, DEFINITIONS, LIVE_SATELLITE_INFO, SATELLITES } from "@/lib/labels";
 import type { DetectionDetail, GridCell, LiveTerritory, ZoneSpec } from "@/lib/types";
@@ -144,10 +144,12 @@ function CellCard({ cell, step, onClose }: { cell: GridCell; step: number; onClo
 }
 
 export function MapView() {
-  const { zone, from, to, setZone } = useFilters();
+  const { zone, from, to, setZone, country, setCountry } = useFilters();
   const meta = useMetadata();
+  const hydrated = useHydrated();
   // Mode, filtres et couches vivent dans le magasin partage : l'assistant les lit et les modifie.
-  const { mode, filters, basemap, showProvinces, source, live: liveFilters } = useView((v) => v.map);
+  const { mode, filters, basemap, showProvinces, streets, source, live: liveFilters } = useView((v) => v.map);
+  const setStreets = (value: boolean) => updateView("map", { streets: value });
   const isLive = source === "live";
   const setMode = (value: MapMode) => updateView("map", { mode: value });
   const setFilters = (fn: (f: MapFilters) => MapFilters) => updateView("map", { filters: fn(filters) });
@@ -219,13 +221,18 @@ export function MapView() {
       setCell(null);
       if (t.kind === "world") return fly(null);
       if (t.kind === "continent") return fly(CONTINENTS.find((c) => c.name === t.name)?.bbox ?? null, 4);
-      if (t.kind === "country" && t.iso !== "GAB") return fly(t.bbox, 5.5);
+      if (t.kind === "country" && !hasArchive(t.iso)) return fly(t.bbox, 5.5);
+      // Autre pays dote d'une archive : tous les ecrans basculent sur ce pays.
+      if (t.kind === "country" && t.iso !== country) {
+        setCountry(t.iso as "GAB" | "FRA");
+        return fly(t.bbox, 7);
+      }
       const z = territoryZone(t)!;
       // Meme zone : un nouvel objet relance le cadrage (on a pu s'en eloigner en naviguant).
-      if (sameZone(z, zone)) return z.kind === "country" ? fly(GABON_BBOX, 7) : setZone({ ...z });
+      if (sameZone(z, zone)) return z.kind === "country" ? fly(archiveCountry().bbox, 7) : setZone({ ...z });
       setZone(z);
     },
-    [zone, setZone],
+    [zone, setZone, country, setCountry],
   );
 
   /** Clic sur le globe : un pays fait voyager ; dans le Gabon, le clic montre la fiche sans deplacer la carte. */
@@ -248,7 +255,7 @@ export function MapView() {
       if (pick.kind === "country") return go(pick);
       return;
     }
-    if (pick.kind === "country" && (pick.iso !== "GAB" || zoomLevel < 4.4)) return go(pick);
+    if (pick.kind === "country" && (pick.iso !== country || zoomLevel < 4.4)) return go(pick);
     if (pick.kind === "country") return;
     setTerritory(pick);
     setCardOpen(true);
@@ -285,7 +292,7 @@ export function MapView() {
       fly(t.length === 1 ? TERRITORY_BBOX[t[0]] : [-8, -6, 18, 52], 6);
     } else {
       setLiveFocus(null);
-      fly(GABON_BBOX, 7);
+      fly(archiveCountry().bbox, 7);
     }
   };
   const liveDetail = isLive && selectedLive ? live.data?.detections.find((x) => x.id === selectedLive) : undefined;
@@ -298,7 +305,7 @@ export function MapView() {
         : liveFocus
           ? { country: liveFocus.territory }
           : {}
-    : territory.kind === "country" && territory.iso !== "GAB"
+    : territory.kind === "country" && territory.iso !== country
       ? { country: territory.iso }
       : territory.kind === "province"
         ? { province: territory.index }
@@ -345,7 +352,7 @@ export function MapView() {
       <p className="mt-1 text-[11.5px] leading-relaxed text-ink-3">
         {isLive
           ? "Dernières détections NASA FIRMS pour le Gabon et la France, actualisées automatiquement. Non harmonisées, non définitives."
-          : "Archive NASA FIRMS du Gabon, contrôlée et harmonisée : la base de tous les calculs de la plateforme."}
+          : `Archive NASA FIRMS 2000-2025 ${country === "FRA" ? "de la France métropolitaine" : "du Gabon"}, contrôlée et harmonisée : la base de tous les calculs de la plateforme.`}
       </p>
     </Group>
   );
@@ -380,6 +387,14 @@ export function MapView() {
         >
           Relief NASA Blue Marble (en ligne)
         </Checkbox>
+        <Checkbox checked={streets} onChange={setStreets}>
+          Rues et quartiers, très détaillé (en ligne)
+        </Checkbox>
+        {streets ? (
+          <p className="text-[11.5px] leading-relaxed text-ink-3">
+            Fond OpenStreetMap, lisible jusqu'aux rues et aux quartiers. À partir du zoom 10, chaque détection montre l'emprise réelle de son pixel : le feu est quelque part dans ce rectangle, pas forcément au point.
+          </p>
+        ) : null}
         <p className="text-[11.5px] leading-relaxed text-ink-3">France : régions et départements geoBoundaries (Licence Ouverte Etalab 2.0, état 2022). Gabon : geoBoundaries.</p>
       </Group>
     </>
@@ -495,6 +510,14 @@ export function MapView() {
         >
           Relief NASA Blue Marble (en ligne)
         </Checkbox>
+        <Checkbox checked={streets} onChange={setStreets}>
+          Rues et quartiers, très détaillé (en ligne)
+        </Checkbox>
+        {streets ? (
+          <p className="text-[11.5px] leading-relaxed text-ink-3">
+            Fond OpenStreetMap, lisible jusqu'aux rues et aux quartiers. À partir du zoom 10, chaque détection montre l'emprise réelle de son pixel : le feu est quelque part dans ce rectangle, pas forcément au point.
+          </p>
+        ) : null}
         {basemap && basemapError ? <p className="text-[11.5px] text-warning">Fond en ligne indisponible. La carte continue de fonctionner avec les limites locales.</p> : null}
         <p className="text-[11.5px] leading-relaxed text-ink-3">
           Provinces : geoBoundaries (CC BY-SA 3.0, état 2005). Départements : geoBoundaries (CC BY 3.0, état 2018). Localités : GeoNames (CC BY 4.0). Pays du monde : Natural Earth. Repères, pas références juridiques.
@@ -503,11 +526,11 @@ export function MapView() {
 
       <Group title="Exporter la sélection" hint="L'export contient exactement les détections retenues par les filtres ci-dessus, avec le renvoi à leur ligne source.">
         <div className="flex flex-wrap gap-2">
-          <a className={buttonClass("secondary", "sm")} href={exportUrl("detections", "csv", zone, from, to, mode === "points" ? filters : undefined)} download>
+          <a className={buttonClass("secondary", "sm")} href={hydrated ? exportUrl("detections", "csv", zone, from, to, mode === "points" ? filters : undefined) : undefined} download>
             <DownloadSimple size={15} />
             CSV
           </a>
-          <a className={buttonClass("secondary", "sm")} href={exportUrl("detections", "geojson", zone, from, to, mode === "points" ? filters : undefined)} download>
+          <a className={buttonClass("secondary", "sm")} href={hydrated ? exportUrl("detections", "geojson", zone, from, to, mode === "points" ? filters : undefined) : undefined} download>
             <DownloadSimple size={15} />
             GeoJSON
           </a>
@@ -525,6 +548,8 @@ export function MapView() {
 
       <div className="relative min-w-0 flex-1">
         <FireMap
+          geoBase={meta.data?.geoUrl}
+          streets={streets}
           globe
           intro={intro}
           highlight={highlight}

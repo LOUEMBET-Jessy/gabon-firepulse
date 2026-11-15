@@ -65,7 +65,7 @@ export async function runAssistant(
   if (config.provider === "gemini") return runGemini(history, context, config, { generate: options.generateContent, signal: options.signal, voice: options.voice });
 
   const create = options.createMessage ?? defaultCreateMessage();
-  const store = getStore();
+  const store = getStore(context.country ?? "GAB");
   const ctx: AssistantContext = structuredClone(context);
   const actions: AssistantAction[] = [];
   const sources: string[] = [];
